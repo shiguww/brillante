@@ -1,0 +1,22 @@
+{
+  "include": ["**/*.ts"],
+  "compilerOptions": {
+    "baseUrl": ".",
+    "strict": true,
+    "lib": ["es2022"],
+    "module": "es2022",
+    "target": "es2022",
+    "skipLibCheck": true,
+    "noUnusedLocals": true,
+    "esModuleInterop": true,
+    "moduleDetection": "force",
+    "noUnusedParameters": true,
+    "noImplicitOverride": true,
+    "paths": { "#/*": ["src/*"] },
+    "moduleResolution": "bundler",
+    "noUncheckedIndexedAccess": true,
+    "noFallthroughCasesInSwitch": true,
+    "useUnknownInCatchVariables": true,
+    "noPropertyAccessFromIndexSignature": true
+  }
+}

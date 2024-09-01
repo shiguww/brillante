@@ -1,0 +1,18 @@
+{
+	"private": true,
+  "version": "0.0.0",
+  "name": "brillante",
+  "dependencies": {
+		"zod": "^3.23.8",
+		"commander": "^12.1.0"
+	},
+	"devDependencies": {
+		"tsx": "^4.19.0",
+		"typescript": "^5.5.4",
+		"@types/node": "^22.5.1"
+	},
+  "scripts": {
+    "brillante": "tsx src/index.ts"
+  },
+	"packageManager": "pnpm@9.9.0"
+}
