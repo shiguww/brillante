@@ -5,6 +5,8 @@ import assert from "node:assert/strict";
 
 import KDMMapDataParser from "#/kdm/parsers/kdm-map-data";
 import KDMMapDataBuilder from "#/kdm/builders/kdm-map-data";
+import KDMLinkDataParser from "#/kdm/parsers/kdm-link-data";
+import KDMLinkDataBuilder from "#/kdm/builders/kdm-link-data";
 
 const program = new Command()
   .version("v0.0.0");
@@ -36,6 +38,12 @@ kdm
         .build();
     }
 
+    if (type === "link-data") {
+      buffer = new KDMLinkDataBuilder()
+        .import(data)
+        .build();
+    }
+
     assert(buffer !== null, `Unsupported KDM file type: '${type}'.`);
 
     await fs.writeFile(output, buffer);
@@ -62,6 +70,12 @@ kdm
         .export();
     }
 
+    if (type === "link-data") {
+      data = new KDMLinkDataParser()
+        .parse(buffer)
+        .export();
+    }
+
     assert(data !== null, `Unsupported KDM file type: '${type}'.`);
 
     await fs.writeFile(output, JSON.stringify(data, undefined, 4));
@@ -84,6 +98,12 @@ kdm
 
     if (type === "map-data") {
       data = new KDMMapDataParser()
+        .parse(buffer)
+        .inspect();
+    }
+
+    if (type === "link-data") {
+      data = new KDMLinkDataParser()
         .parse(buffer)
         .inspect();
     }
