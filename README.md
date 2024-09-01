@@ -39,6 +39,6 @@ After editing `kdm_mapdata.json`, you can build a `kdm_mapdata.bin` file which c
 pnpm brillante kdm build -t map-data -i kdm_mapdata.json -o kdm_mapdata.bin
 ```
 
-Please refer to the list of supported files for a complete of supported types.
+Please refer to the list of supported files for a complete list of supported types.
 
 Keep in mind that different versions of the tool might have different JSON exports and, as such, might not work with each other.
