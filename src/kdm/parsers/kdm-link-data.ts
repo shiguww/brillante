@@ -118,25 +118,31 @@ class KDMLinkDataParser extends KDMLinkData implements KDMParser {
 
       const subentriesCount = buffer.getUInt32();
 
-      let unknownF1: null | number = null;
-      let unknownF2: null | number = null;
-      let unknownF3: null | number = null;
+      if (buffer.offset >= this.section6.offset) {
+        const unknownF1 = null;
+        const unknownF2 = null;
+        const unknownF3 = null;
 
-      if (buffer.offset < this.section6.offset) {
-        unknownF1 = buffer.getUInt32();
+        const entry = KDMPointer({
+          unknownF0, subentriesCount,
+          subentryContainer, unknownF1,
+          unknownF2, unknownF3
+        }, pointer.offset);
 
-        if (buffer.offset < this.section6.offset) {
-          unknownF2 = buffer.getUInt16();
-          unknownF3 = buffer.getUInt16();
-        }
+        this.section5.entries.push(entry);
+      } else {
+        const unknownF1 = buffer.getUInt32();
+        const unknownF2 = buffer.getUInt16();
+        const unknownF3 = buffer.getUInt16();
+
+        const entry = KDMPointer({
+          unknownF0, subentriesCount,
+          subentryContainer, unknownF1,
+          unknownF2, unknownF3
+        }, pointer.offset);
+
+        this.section5.entries.push(entry);
       }
-
-      const entry = KDMPointer({
-        unknownF0, subentriesCount, subentryContainer,
-        unknownF1, unknownF2, unknownF3
-      }, pointer.offset);
-
-      this.section5.entries.push(entry);
     });
 
     // parse subentry containers
@@ -156,7 +162,7 @@ class KDMLinkDataParser extends KDMLinkData implements KDMParser {
           startingRoom: KDMString.NULL,
           startingEvent: KDMString.NULL,
           endingTransition: KDMString.NULL,
-          startingTransition: KDMString.NULL,
+          startingTransition: KDMString.NULL
         }, buffer.getUInt32()));
       }
 
@@ -167,7 +173,7 @@ class KDMLinkDataParser extends KDMLinkData implements KDMParser {
     });
 
     // parse subentries
-    this.section5.entries.map((entry) => entry.subentryContainer.subentries).flat().forEach((subentry, index) => {
+    this.section5.entries.map((entry) => entry.subentryContainer.subentries).flat().forEach((subentry) => {
       buffer.seek(subentry.offset);
 
       subentry.unknownH0 = buffer.getUInt32();
