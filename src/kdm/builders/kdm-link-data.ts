@@ -103,7 +103,7 @@ class KDMLinkDataBuilder extends KDMLinkData implements KDMBuilder {
       entry.subentryContainer.subentries.forEach((subentry) => {
         subentry.offset = buffer.offset;
 
-        buffer.setUInt32(subentry.unknownH0, subentry.unknownH1, subentry.unknownH2);
+        buffer.setUInt32(subentry.linkType, subentry.unknownH1, subentry.unknownH2);
         buffer.setUInt32(subentry.startingRoom.offset, subentry.startingTransition.offset);
         buffer.setUInt32(subentry.endingRoom.offset, subentry.endingTransition.offset);
         buffer.setUInt32(subentry.startingEvent.offset, subentry.endingEvent.offset);

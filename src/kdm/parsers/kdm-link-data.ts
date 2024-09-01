@@ -151,7 +151,7 @@ class KDMLinkDataParser extends KDMLinkData implements KDMParser {
 
       for (let i = 0; i < entry.subentriesCount; i += 1) {
         entry.subentryContainer.subentries.push(KDMPointer({
-          unknownH0: 0,
+          linkType: 0,
           unknownH1: 0,
           unknownH2: 0,
           unknownH3: 0,
@@ -176,7 +176,7 @@ class KDMLinkDataParser extends KDMLinkData implements KDMParser {
     this.section5.entries.map((entry) => entry.subentryContainer.subentries).flat().forEach((subentry) => {
       buffer.seek(subentry.offset);
 
-      subentry.unknownH0 = buffer.getUInt32();
+      subentry.linkType = buffer.getUInt32();
       subentry.unknownH1 = buffer.getUInt32();
       subentry.unknownH2 = buffer.getUInt32();
 

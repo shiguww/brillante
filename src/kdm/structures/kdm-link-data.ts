@@ -3,7 +3,10 @@ import KDM from "#/kdm/structures/kdm";
 import KDMString from "#/kdm/kdm-string";
 import KDMPointer from "#/kdm/kdm-pointer";
 
-const KDM_LINK_DATA_EXPORT_VERSION = 0;
+const KDM_LINK_DATA_EXPORT_VERSION = 1;
+
+const KDMLinkDataExportLinkType = z.enum(["standard-bero", "pipe", "door", "world-bero", "goal", "unused", "save-block"]);
+type KDMLinkDataExportLinkType = z.infer<typeof KDMLinkDataExportLinkType>;
 
 const KDMLinkDataExportSection0 = z.object({
   unknownA0: z.number()
@@ -60,7 +63,7 @@ const KDMLinkDataExportSection4 = z.object({
 type KDMLinkDataExportSection4 = z.infer<typeof KDMLinkDataExportSection4>;
 
 const KDMLinkDataExportSection5SubEntry = z.object({
-  unknownH0: z.number(),
+  linkType: KDMLinkDataExportLinkType,
   unknownH1: z.number(),
   unknownH2: z.number(),
   startingRoom: z.string(),
@@ -146,6 +149,16 @@ type KDMLinkDataExport = z.infer<typeof KDMLinkDataExport>;
 
 //
 
+enum KDMLinkDataLinkType {
+  PIPE = 1,
+  DOOR = 2,
+  GOAL = 5,
+  UNUSED = 4,
+  SAVE_BLOCK = 6,
+  WORLD_BERO = 3,
+  STANDARD_BERO = 0
+}
+
 type KDMLinkDataSection0 = KDMPointer<{
   unknownA0: number;
   strings: KDMString[]
@@ -192,7 +205,7 @@ type KDMLinkDataSection4 = KDMPointer<{
 }>;
 
 type KDMLinkDataSection5SubEntry = KDMPointer<{
-  unknownH0: number;
+  linkType: KDMLinkDataLinkType;
   unknownH1: number;
   unknownH2: number;
   startingRoom: KDMString;
@@ -353,7 +366,33 @@ class KDMLinkData extends KDM<KDMLinkDataExport> {
     const endingTransition = subentry.endingTransition.valueOf();
     const startingTransition = subentry.startingTransition.valueOf();
 
-    return ({ ...subentry, endingRoom, endingEvent, startingRoom, startingEvent, endingTransition, startingTransition });
+    let linkType: KDMLinkDataExportLinkType = "standard-bero";
+
+    switch (subentry.linkType) {
+      case KDMLinkDataLinkType.DOOR:
+        linkType = "door";
+        break;
+      case KDMLinkDataLinkType.GOAL:
+        linkType = "goal";
+        break;
+      case KDMLinkDataLinkType.PIPE:
+        linkType = "pipe";
+        break;
+      case KDMLinkDataLinkType.UNUSED:
+        linkType = "unused";
+        break;
+      case KDMLinkDataLinkType.SAVE_BLOCK:
+        linkType = "save-block";
+        break;
+      case KDMLinkDataLinkType.WORLD_BERO:
+        linkType = "world-bero";
+        break;
+      case KDMLinkDataLinkType.STANDARD_BERO:
+        linkType = "standard-bero";
+        break;
+    }
+
+    return ({ ...subentry, linkType, endingRoom, endingEvent, startingRoom, startingEvent, endingTransition, startingTransition });
   }
 
   private exportSection5Entry(entry: KDMLinkDataSection5Entry): KDMLinkDataExportSection5Entry {
@@ -450,7 +489,33 @@ class KDMLinkData extends KDM<KDMLinkDataExport> {
     const endingTransition = this.findString(subentry.endingTransition);
     const startingTransition = this.findString(subentry.startingTransition);
 
-    return KDMPointer({ ...subentry, endingRoom, endingEvent, startingRoom, startingEvent, endingTransition, startingTransition });
+    let linkType: KDMLinkDataLinkType = KDMLinkDataLinkType.STANDARD_BERO;
+
+    switch (subentry.linkType) {
+      case "door":
+        linkType = KDMLinkDataLinkType.DOOR;
+        break;
+      case "goal":
+        linkType = KDMLinkDataLinkType.GOAL;
+        break;
+      case "pipe":
+        linkType = KDMLinkDataLinkType.PIPE;
+        break;
+      case "unused":
+        linkType = KDMLinkDataLinkType.UNUSED;
+        break;
+      case "save-block":
+        linkType = KDMLinkDataLinkType.SAVE_BLOCK;
+        break;
+      case "world-bero":
+        linkType = KDMLinkDataLinkType.WORLD_BERO;
+        break;
+      case "standard-bero":
+        linkType = KDMLinkDataLinkType.STANDARD_BERO;
+        break;
+    }
+
+    return KDMPointer({ ...subentry, linkType, endingRoom, endingEvent, startingRoom, startingEvent, endingTransition, startingTransition });
   }
 
   private importSection5Entry(entry: KDMLinkDataExportSection5Entry): KDMLinkDataSection5Entry {
