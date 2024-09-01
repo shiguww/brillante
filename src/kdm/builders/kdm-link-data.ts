@@ -91,6 +91,13 @@ class KDMLinkDataBuilder extends KDMLinkData implements KDMBuilder {
       this.section5.unknownK3, this.section5.unknownK4
     );
 
+    // Entries without unknown metadata must be placed at the end.
+    this.section5.entries.sort((a, b) => {
+      if(a.unknownF1 === null && b.unknownF1 !== null) return 1;
+      if(a.unknownF1 !== null && b.unknownF1 === null) return -1;
+      return 0;
+    });
+
     this.section5.entries.forEach((entry) => {
       // build subentries
       entry.subentryContainer.subentries.forEach((subentry) => {
@@ -128,19 +135,7 @@ class KDMLinkDataBuilder extends KDMLinkData implements KDMBuilder {
 
       if (entry.unknownF1 !== null) {
         buffer.setUInt32(entry.unknownF1);
-      }
-
-      if (entry.unknownF2 !== null || entry.unknownF3 !== null) {
-        if (entry.unknownF2 !== null && entry.unknownF3 !== null) {
-          buffer.setUInt16(entry.unknownF2, entry.unknownF3);
-        } else {
-          throw new Error(
-            `unknownF2 was ${entry.unknownF2} but unknownF3 was ${entry.unknownF3}.` +
-            `Since those are shorts they MUST either be both present or absent so that ` +
-            `the offset of the next section is a multiple of 4. Aborting.` +
-            `Current buffer offset: ${buffer.offset}. Current entry: ${entry}`
-          );
-        }
+        buffer.setUInt16(entry.unknownF2, entry.unknownF3);
       }
 
       this.section6.entries.push(entry);

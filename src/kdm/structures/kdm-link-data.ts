@@ -85,13 +85,22 @@ const KDMLinkDataExportSection5SubEntryContainer = z.object({
 
 type KDMLinkDataExportSection5SubEntryContainer = z.infer<typeof KDMLinkDataExportSection5SubEntryContainer>;
 
-const KDMLinkDataExportSection5Entry = z.object({
-  unknownF0: z.string(),
-  subentryContainer: KDMLinkDataExportSection5SubEntryContainer,
-  unknownF1: z.number().nullable(),
-  unknownF2: z.number().nullable(),
-  unknownF3: z.number().nullable()
-});
+const KDMLinkDataExportSection5Entry = z.union([
+  z.object({
+    unknownF0: z.string(),
+    subentryContainer: KDMLinkDataExportSection5SubEntryContainer,
+    unknownF1: z.null(),
+    unknownF2: z.null(),
+    unknownF3: z.null()
+  }),
+  z.object({
+    unknownF0: z.string(),
+    subentryContainer: KDMLinkDataExportSection5SubEntryContainer,
+    unknownF1: z.number(),
+    unknownF2: z.number(),
+    unknownF3: z.number()
+  })
+]);
 
 type KDMLinkDataExportSection5Entry = z.infer<typeof KDMLinkDataExportSection5Entry>;
 
@@ -208,9 +217,16 @@ type KDMLinkDataSection5Entry = KDMPointer<{
   unknownF0: KDMString;
   subentryContainer: KDMLinkDataSection5SubEntryContainer;
   subentriesCount: number;
-  unknownF1: null | number;
-  unknownF2: null | number; // short
-  unknownF3: null | number; // short
+  unknownF1: number;
+  unknownF2: number; // short
+  unknownF3: number; // short
+} | {
+  unknownF0: KDMString;
+  subentryContainer: KDMLinkDataSection5SubEntryContainer;
+  subentriesCount: number;
+  unknownF1: null;
+  unknownF2: null;
+  unknownF3: null;
 }>;
 
 type KDMLinkDataSection5 = KDMPointer<{
@@ -336,19 +352,19 @@ class KDMLinkData extends KDM<KDMLinkDataExport> {
     const startingEvent = subentry.startingEvent.valueOf();
     const endingTransition = subentry.endingTransition.valueOf();
     const startingTransition = subentry.startingTransition.valueOf();
-    
+
     return ({ ...subentry, endingRoom, endingEvent, startingRoom, startingEvent, endingTransition, startingTransition });
   }
 
   private exportSection5Entry(entry: KDMLinkDataSection5Entry): KDMLinkDataExportSection5Entry {
     const unknownF0 = entry.unknownF0.valueOf();
     const subentryContainer = this.exportSection5SubEntryContainer(entry.subentryContainer);
-    
+
     return ({ ...entry, unknownF0, subentryContainer });
   }
 
   private exportSection5(): KDMLinkDataExportSection5 {
-    const entries =  this.section5.entries.map((entry) => this.exportSection5Entry(entry));
+    const entries = this.section5.entries.map((entry) => this.exportSection5Entry(entry));
     return ({ ...this.section5, entries });
   }
 
@@ -372,17 +388,17 @@ class KDMLinkData extends KDM<KDMLinkDataExport> {
     const section7 = this.exportSection7();
 
     const _version = KDM_LINK_DATA_EXPORT_VERSION;
-  
+
     return KDMLinkDataExport.parse({
       _version, section0, section1,
       section2, section3, section4,
       section5, section6, section7
     } satisfies KDMLinkDataExport);
   }
-  
+
   private importSection0(data: KDMLinkDataExport): void {
     this.section0 = ({ ...this.section0, ...data.section0 });
-    
+
     // Strings in section 3:
     this.registerStringIfNotExists(data.section3.unknownD2);
 
@@ -390,7 +406,7 @@ class KDMLinkData extends KDM<KDMLinkDataExport> {
     for (const entry of data.section5.entries) {
       this.registerStringIfNotExists(entry.unknownF0);
 
-      for(const subentry of entry.subentryContainer.subentries) {
+      for (const subentry of entry.subentryContainer.subentries) {
         this.registerStringIfNotExists(subentry.endingRoom);
         this.registerStringIfNotExists(subentry.endingEvent);
         this.registerStringIfNotExists(subentry.startingRoom);
@@ -428,13 +444,13 @@ class KDMLinkData extends KDM<KDMLinkDataExport> {
 
   private importSection5SubEntry(subentry: KDMLinkDataExportSection5SubEntry): KDMLinkDataSection5SubEntry {
     const endingRoom = this.findString(subentry.endingRoom);
-    const endingEvent  = this.findString(subentry.endingEvent);
+    const endingEvent = this.findString(subentry.endingEvent);
     const startingRoom = this.findString(subentry.startingRoom);
-    const startingEvent  = this.findString(subentry.startingEvent);
+    const startingEvent = this.findString(subentry.startingEvent);
     const endingTransition = this.findString(subentry.endingTransition);
     const startingTransition = this.findString(subentry.startingTransition);
 
-    return KDMPointer({ ...subentry, endingRoom, endingEvent , startingRoom, startingEvent, endingTransition, startingTransition });
+    return KDMPointer({ ...subentry, endingRoom, endingEvent, startingRoom, startingEvent, endingTransition, startingTransition });
   }
 
   private importSection5Entry(entry: KDMLinkDataExportSection5Entry): KDMLinkDataSection5Entry {
@@ -456,7 +472,7 @@ class KDMLinkData extends KDM<KDMLinkDataExport> {
   }
 
   private importSection7(data: KDMLinkDataExport): void {
-    this.section7 = ({ ...this.section7,  ...data.section7 });
+    this.section7 = ({ ...this.section7, ...data.section7 });
   }
 
   public import(_data: KDMLinkDataExport): this {

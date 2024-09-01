@@ -3,7 +3,7 @@
 
 Supported files:
 * `kdm_mapdata.bin` (`map-data`)
-* `kdm_link_data.bin` (`link-data`) **BUILDING IS NOT WORKING**
+* `kdm_link_data.bin` (`link-data`)
 
 ## Installation
 First, begin by download the latest version of the tool [here](https://github.com/shiguww/brillante/releases) (or [here](https://github.com/shiguww/brillante/archive/refs/heads/develop.zip) for the `develop` branch).
