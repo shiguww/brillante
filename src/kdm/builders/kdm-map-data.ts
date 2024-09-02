@@ -111,7 +111,7 @@ class KDMMapDataBuilder extends KDMMapData implements KDMBuilder {
         entry.name.offset,
         entry.level.offset,
         entry.model.offset,
-        entry.unknownG0,
+        entry.unknownG0.offset,
         entry.unknownG1,
         entry.unknownG2,
         entry.background1.offset,

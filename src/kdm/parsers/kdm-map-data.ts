@@ -105,8 +105,8 @@ class KDMMapDataParser extends KDMMapData implements KDMParser {
       const name = this.findStringWithOffset(buffer.getUInt32());
       const level = this.findStringWithOffset(buffer.getUInt32());
       const model = this.findStringWithOffset(buffer.getUInt32());
+      const unknownG0 = this.findStringWithOffset(buffer.getUInt32());
 
-      const unknownG0 = buffer.getUInt32();
       const unknownG1 = buffer.getUInt32();
       const unknownG2 = buffer.getUInt32();
 
