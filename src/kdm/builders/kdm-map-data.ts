@@ -128,12 +128,14 @@ class KDMMapDataBuilder extends KDMMapData implements KDMBuilder {
         entry.unknownG12
       );
 
-      buffer.setUInt16(
-        entry.unknownG13,
-        entry.unknownG14,
-        entry.unknownG15,
-        entry.unknownG16
-      );
+      if (entry.unknownG13 !== null) {
+        buffer.setUInt16(
+          entry.unknownG13,
+          entry.unknownG14,
+          entry.unknownG15,
+          entry.unknownG16
+        );
+      }
     });
   }
 
@@ -156,7 +158,7 @@ class KDMMapDataBuilder extends KDMMapData implements KDMBuilder {
     this.section7.offset = buffer.offset;
     buffer.setUInt32(this.section7.unknownI0);
   }
-  
+
   public build(): Buffer {
     const buffer = PM4Buffer.new();
 

@@ -128,20 +128,38 @@ class KDMMapDataParser extends KDMMapData implements KDMParser {
 
       const unknownG12 = buffer.getUInt32();
 
-      const unknownG13 = buffer.getUInt16();
-      const unknownG14 = buffer.getUInt16();
-      const unknownG15 = buffer.getUInt16();
-      const unknownG16 = buffer.getUInt16();
+      if (buffer.offset < this.section6.offset) {
+        const unknownG13 = buffer.getUInt16();
+        const unknownG14 = buffer.getUInt16();
+        const unknownG15 = buffer.getUInt16();
+        const unknownG16 = buffer.getUInt16();
 
-      this.section5.entries.push(KDMPointer({
-        unknownG9, script, music,
-        name, level, model, unknownG0,
-        background1, background2, unknownG5,
-        unknownG6, unknownG7, unknownG8,
-        unknownG1, unknownG10, unknownG11,
-        unknownG15, unknownG16, unknownG2,
-        unknownG12, unknownG13, unknownG14
-      }, pointer.offset));
+        this.section5.entries.push(KDMPointer({
+          unknownG9, script, music,
+          name, level, model, unknownG0,
+          background1, background2, unknownG5,
+          unknownG6, unknownG7, unknownG8,
+          unknownG1, unknownG10, unknownG11,
+          unknownG15, unknownG16, unknownG2,
+          unknownG12, unknownG13, unknownG14
+        }, pointer.offset));
+      } else {
+        const unknownG13 = null;
+        const unknownG14 = null;
+        const unknownG15 = null;
+        const unknownG16 = null;
+
+        this.section5.entries.push(KDMPointer({
+          unknownG9, script, music,
+          name, level, model, unknownG0,
+          background1, background2, unknownG5,
+          unknownG6, unknownG7, unknownG8,
+          unknownG1, unknownG10, unknownG11,
+          unknownG15, unknownG16, unknownG2,
+          unknownG12, unknownG13, unknownG14
+        }, pointer.offset));
+      }
+
     });
   }
 
@@ -159,7 +177,7 @@ class KDMMapDataParser extends KDMMapData implements KDMParser {
       );
     }
   }
-  
+
   private parseSection7(buffer: PM4Buffer): void {
     buffer.seek(this.section7.offset);
     this.section7.unknownI0 = buffer.getUInt32();
