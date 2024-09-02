@@ -24,10 +24,9 @@ pnpm install
 ```
 
 ## Usage
-The tool has three possible actions:
+The tool has two possible actions:
 * `build` - Build back a file from a JSON export.
-* `parse` - Export a file to a more readable JSON format.
-* `inspect` - Export a file to JSON format with as much information as possible. **Cannot be built back.**
+* `parse` - Export a file to a editable/readable JSON format.
   
 For example, to export `kdm_mapdata.bin` to `kdm_mapdata.json`, you'd run:
 ```shell

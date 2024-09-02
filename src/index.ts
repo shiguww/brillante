@@ -3,10 +3,8 @@ import fs from "node:fs/promises";
 import { Command } from "commander";
 import assert from "node:assert/strict";
 
-import KDMMapDataParser from "#/kdm/parsers/kdm-map-data";
-import KDMMapDataBuilder from "#/kdm/builders/kdm-map-data";
-import KDMLinkDataParser from "#/kdm/parsers/kdm-link-data";
-import KDMLinkDataBuilder from "#/kdm/builders/kdm-link-data";
+import KDMMapData from "#/kdm/kdm-map-data";
+import KDMLinkData from "#/kdm/kdm-link-data";
 
 const program = new Command()
   .version("v0.0.0");
@@ -33,22 +31,19 @@ kdm
       .then((data) => JSON.parse(data));
 
     if (type === "map-data") {
-      buffer = new KDMMapDataBuilder()
-        .import(data)
+      buffer = new KDMMapData(data)
         .build();
     }
 
     if (type === "link-data") {
-      buffer = new KDMLinkDataBuilder()
-        .import(data)
+      buffer = new KDMLinkData(data)
         .build();
     }
 
     assert(buffer !== null, `Unsupported KDM file type: '${type}'.`);
 
     await fs.writeFile(output, buffer);
-    console.log(`Wrote to ${output}.`);
-    console.log(`Done.`);
+    console.log(`Wrote to ${output}. Done.`);
   });
 
 kdm
@@ -65,54 +60,19 @@ kdm
     const buffer = await fs.readFile(input);
 
     if (type === "map-data") {
-      data = new KDMMapDataParser()
-        .parse(buffer)
-        .export();
+      data = new KDMMapData()
+        .parse(buffer);
     }
 
     if (type === "link-data") {
-      data = new KDMLinkDataParser()
-        .parse(buffer)
-        .export();
+      data = new KDMLinkData()
+        .parse(buffer);
     }
 
     assert(data !== null, `Unsupported KDM file type: '${type}'.`);
 
     await fs.writeFile(output, JSON.stringify(data, undefined, 4));
-    console.log(`Wrote to ${output}.`);
-    console.log(`Done.`);
-  });
-
-kdm
-  .command("inspect")
-  .requiredOption("-t, --type <TYPE>")
-  .requiredOption("-i, --input <PATH>")
-  .requiredOption("-o, --output <PATH>")
-  .action(async (options) => {
-    const type = options.type as string;
-    const input = path.resolve(options.input);
-    const output = path.resolve(options.output || input.replace(".bin", ".kdm.json"));
-
-    let data: null | object = null;
-    const buffer = await fs.readFile(input);
-
-    if (type === "map-data") {
-      data = new KDMMapDataParser()
-        .parse(buffer)
-        .inspect();
-    }
-
-    if (type === "link-data") {
-      data = new KDMLinkDataParser()
-        .parse(buffer)
-        .inspect();
-    }
-
-    assert(data !== null, `Unsupported KDM file type: '${type}'.`);
-
-    await fs.writeFile(output, JSON.stringify(data, undefined, 4));
-    console.log(`Wrote to ${output}.`);
-    console.log(`Done.`);
+    console.log(`Wrote to ${output}. Done.`);
   });
 
 program.parse(process.argv);
