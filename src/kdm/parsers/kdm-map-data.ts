@@ -172,9 +172,13 @@ class KDMMapDataParser extends KDMMapData implements KDMParser {
     this.section6.unknownH3 = buffer.getUInt32();
 
     while (buffer.offset < this.section7.offset) {
-      this.section6.entries.push(
-        KDMPointer({}, buffer.getUInt32())
-      );
+      const pointer = KDMPointer({}, buffer.getUInt32());
+
+      if(pointer.offset === 0) {
+        break;
+      }
+
+      this.section6.entries.push(pointer);
     }
   }
 
