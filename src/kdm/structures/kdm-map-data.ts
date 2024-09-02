@@ -59,33 +59,62 @@ const KDMMapDataExportSection4 = z.object({
 
 type KDMMapDataExportSection4 = z.infer<typeof KDMMapDataExportSection4>;
 
-const KDMMapDataExportSection5Entry = z.object({
-  name: z.string(),
-  level: z.string(),
-  model: z.string(),
-  music: z.string(),
-  script: z.string(),
-  unknownG0: z.number(),
-  unknownG1: z.number(),
-  unknownG2: z.number(),
-  background: z.discriminatedUnion("type", [
-    z.object({ type: z.literal("none") }),
-    z.object({ type: z.literal("color"), color: z.string() }),
-    z.object({ type: z.literal("texture"), texture1: z.string(), texture2: z.string() })
-  ]),
-  unknownG5: z.number(),
-  unknownG6: z.string(),
-  unknownG7: z.number(),
-  unknownG8: z.number(),
-  unknownG9: z.number(),
-  unknownG10: z.string(),
-  unknownG11: z.string(),
-  unknownG12: z.number(),
-  unknownG13: z.number(),
-  unknownG14: z.number(),
-  unknownG15: z.number(),
-  unknownG16: z.number()
-});
+const KDMMapDataExportSection5Entry = z.union([
+  z.object({
+    name: z.string(),
+    level: z.string(),
+    model: z.string(),
+    music: z.string(),
+    script: z.string(),
+    unknownG0: z.string(),
+    unknownG1: z.number(),
+    unknownG2: z.number(),
+    background: z.discriminatedUnion("type", [
+      z.object({ type: z.literal("none") }),
+      z.object({ type: z.literal("color"), color: z.string() }),
+      z.object({ type: z.literal("texture"), texture1: z.string(), texture2: z.string() })
+    ]),
+    unknownG5: z.number(),
+    unknownG6: z.string(),
+    unknownG7: z.number(),
+    unknownG8: z.number(),
+    unknownG9: z.number(),
+    unknownG10: z.string(),
+    unknownG11: z.string(),
+    unknownG12: z.number(),
+    unknownG13: z.null(),
+    unknownG14: z.null(),
+    unknownG15: z.null(),
+    unknownG16: z.null()
+  }),
+  z.object({
+    name: z.string(),
+    level: z.string(),
+    model: z.string(),
+    music: z.string(),
+    script: z.string(),
+    unknownG0: z.string(),
+    unknownG1: z.number(),
+    unknownG2: z.number(),
+    background: z.discriminatedUnion("type", [
+      z.object({ type: z.literal("none") }),
+      z.object({ type: z.literal("color"), color: z.string() }),
+      z.object({ type: z.literal("texture"), texture1: z.string(), texture2: z.string() })
+    ]),
+    unknownG5: z.number(),
+    unknownG6: z.string(),
+    unknownG7: z.number(),
+    unknownG8: z.number(),
+    unknownG9: z.number(),
+    unknownG10: z.string(),
+    unknownG11: z.string(),
+    unknownG12: z.number(),
+    unknownG13: z.number(),
+    unknownG14: z.number(),
+    unknownG15: z.number(),
+    unknownG16: z.number()
+  })
+]);
 
 type KDMMapDataExportSection5Entry = z.infer<typeof KDMMapDataExportSection5Entry>;
 
@@ -115,7 +144,7 @@ const KDMMapDataExportSection7 = z.object({
 
 type KDMMapDataExportSection7 = z.infer<typeof KDMMapDataExportSection7>;
 
-const KDM_MAP_DATA_EXPORT_VERSION = 1;
+const KDM_MAP_DATA_EXPORT_VERSION = 2;
 
 const KDMMapDataExport = z.object({
   _version: z.literal(KDM_MAP_DATA_EXPORT_VERSION),
@@ -186,7 +215,30 @@ type KDMMapDataSection5Entry = KDMPointer<{
   model: KDMString;
   music: KDMString;
   script: KDMString;
-  unknownG0: number;
+  unknownG0: KDMString;
+  unknownG1: number;
+  unknownG2: number;
+  unknownG5: number;
+  unknownG7: number;
+  unknownG8: number;
+  unknownG9: number;
+  unknownG12: number;
+  unknownG13: null;
+  unknownG14: null;
+  unknownG15: null;
+  unknownG16: null;
+  unknownG6: KDMString;
+  unknownG10: KDMString;
+  unknownG11: KDMString;
+  background1: KDMString;
+  background2: KDMString;
+} | {
+  name: KDMString;
+  level: KDMString;
+  model: KDMString;
+  music: KDMString;
+  script: KDMString;
+  unknownG0: KDMString;
   unknownG1: number;
   unknownG2: number;
   unknownG5: number;
@@ -355,6 +407,7 @@ class KDMMapData extends KDM<KDMMapDataExport> {
           model: entry.model.valueOf(),
           music: entry.music.valueOf(),
           script: entry.script.valueOf(),
+          unknownG0: entry.unknownG0.valueOf(),
           unknownG6: entry.unknownG6.valueOf(),
           unknownG10: entry.unknownG10.valueOf(),
           unknownG11: entry.unknownG11.valueOf()
@@ -401,6 +454,7 @@ class KDMMapData extends KDM<KDMMapDataExport> {
       this.registerStringIfNotExists(entry.model);
       this.registerStringIfNotExists(entry.music);
       this.registerStringIfNotExists(entry.script);
+      this.registerStringIfNotExists(entry.unknownG0);
       this.registerStringIfNotExists(entry.unknownG6);
       this.registerStringIfNotExists(entry.unknownG10);
       this.registerStringIfNotExists(entry.unknownG11);
@@ -466,6 +520,7 @@ class KDMMapData extends KDM<KDMMapDataExport> {
           model: this.findString(entry.model),
           music: this.findString(entry.music),
           script: this.findString(entry.script),
+          unknownG0: this.findString(entry.unknownG0),
           unknownG6: this.findString(entry.unknownG6),
           unknownG10: this.findString(entry.unknownG10),
           unknownG11: this.findString(entry.unknownG11)
