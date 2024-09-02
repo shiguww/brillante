@@ -154,7 +154,7 @@ class KDMMapDataBuilder extends KDMMapData implements KDMBuilder {
 
   private buildSection7(buffer: PM4Buffer): void {
     this.section7.offset = buffer.offset;
-    buffer.setUInt32(this.section7.offset);
+    buffer.setUInt32(this.section7.unknownI0);
   }
   
   public build(): Buffer {
