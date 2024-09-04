@@ -66,8 +66,7 @@ const IKDMMapDataSection3 = z.object({
   unknownD0: z.number().default(0),
   unknownD1: z.number().default(0),
   unknownD2: z.string().default(""),
-  unknownD3: z.number().default(0),
-  unknownD4: z.number().default(0)
+  unknownD3: z.number().default(0)
 });
 
 type IKDMMapDataSection3 = z.infer<typeof IKDMMapDataSection3>;
@@ -102,7 +101,6 @@ type IKDMMapDataSection4 = z.infer<typeof IKDMMapDataSection4>;
 
 const IKDMMapDataSection5 = z.object({
   maps: Map.array().default([]),
-  unknownF0: z.number().default(0),
   unknownF1: z.number().default(0),
   unknownF2: z.number().default(0),
   unknownF3: z.number().default(0),
@@ -158,7 +156,7 @@ class KDMMapData extends KDM<IKDMMapData> {
 
     let data: IKDMMapData;
 
-    if(_data !== undefined) {
+    if (_data !== undefined) {
       data = IKDMMapData.parse(_data);
     } else {
       data = IKDMMapData.parse({ _version: I_KDM_MAP_DATA_VERSION });
@@ -274,7 +272,7 @@ class KDMMapData extends KDM<IKDMMapData> {
       this.section3.unknownD1,
       this.findOffsetOfString(this.section3.unknownD2),
       this.section3.unknownD3,
-      this.section3.unknownD4
+      this.section5.maps.length + 1
     );
   }
 
@@ -313,7 +311,7 @@ class KDMMapData extends KDM<IKDMMapData> {
 
   private buildSection5(buffer: PM4Buffer): void {
     this.section5.offset = buffer.offset;
-    buffer.setUInt32(this.section5.unknownF0);
+    buffer.setUInt32(this.section5.maps.length);
 
     buffer.setUInt16(
       this.section5.unknownF1,
@@ -444,7 +442,10 @@ class KDMMapData extends KDM<IKDMMapData> {
 
     this.section3.unknownD3 = buffer.getUInt32();
 
-    this.section3.unknownD4 = buffer.getUInt32();
+    // there is a number indicating the length of mapDataTable.
+    // however we don't need it because the table is terminated
+    // by a NULL byte.
+    buffer.getUInt32();
   }
 
   private parseSection4(buffer: PM4Buffer): void {
@@ -480,8 +481,13 @@ class KDMMapData extends KDM<IKDMMapData> {
     buffer.seek(this.section5.offset);
     assert(this.section6.mapOffsets.length !== 0);
 
-    this.section5.unknownF0 = buffer.getUInt32();
-    
+    // this SEEMS to be the number of MapData entries
+    // but we don't need that? maybe it was purely coincidental
+    // that this number was the number of entries but idk
+    // it doesn't crash when modifying it so i'm assuming
+    // that IT DOES reference that.
+    buffer.getUInt32();
+
     this.section5.unknownF1 = buffer.getUInt16();
     this.section5.unknownF2 = buffer.getUInt16();
     this.section5.unknownF3 = buffer.getUInt16();
