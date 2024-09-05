@@ -215,9 +215,27 @@ const EffectData = z.object({
   unknownM12: z.number().default(0)
 });
 
+const ChangeBGMData = z.object({
+  unknownP0: z.string().default(""),
+  unknownP1: z.string().default(""),
+  unknownP2: z.string().default(""),
+  unknownP3: z.number().default(0),
+  unknownP4: z.number().default(0),
+  unknownP5: z.number().default(0),
+  unknownP6: z.number().default(0)
+});
+
 //
 
 const I_KDM_SOUND_VERSION = 0;
+
+const ChangeBGMDataTable = z.object({
+  unknownQ0: z.number().default(0),
+  unknownQ1: z.number().default(0),
+  entries: ChangeBGMData.array().default([])
+});
+
+type ChangeBGMDataTable = z.infer<typeof ChangeBGMDataTable>;
 
 const EffectDataTable = z.object({
   unknownN0: z.number().default(0),
@@ -273,6 +291,7 @@ const IKDMSound = z.object({
   setup3DataTable: Setup3DataTable.default({}),
   effectDataTable: EffectDataTable.default({}),
   battleBgmDataTable: BattleBgmDataTable.default({}),
+  changeBGMDataTable: ChangeBGMDataTable.default({}),
   trackVolumeDataTable: TrackVolumeDataTable.default({}),
   townWorldMapDataTable: TownWorldMapDataTable.default({})
 });
@@ -296,6 +315,7 @@ class KDMSound extends KDM<IKDMSound> {
   protected groupDataTable: GroupDataTable;
   protected effectDataTable: EffectDataTable;
   protected setup3DataTable: Setup3DataTable;
+  protected changeBGMDataTable: ChangeBGMDataTable;
   protected battleBgmDataTable: BattleBgmDataTable;
   protected trackVolumeDataTable: TrackVolumeDataTable;
   protected townWorldMapDataTable: TownWorldMapDataTable;
@@ -306,6 +326,7 @@ class KDMSound extends KDM<IKDMSound> {
     groupDataTable: number[];
     effectDataTable: number[];
     setup3DataTable: number[];
+    changeBGMDataTable: number[];
     battleBgmDataTable: number[];
     trackVolumeDataTable: number[];
     townWorldMapDataTable: number[];
@@ -329,6 +350,7 @@ class KDMSound extends KDM<IKDMSound> {
       groupDataTable: [],
       setup3DataTable: [],
       effectDataTable: [],
+      changeBGMDataTable: [],
       battleBgmDataTable: [],
       trackVolumeDataTable: [],
       townWorldMapDataTable: []
@@ -337,6 +359,7 @@ class KDMSound extends KDM<IKDMSound> {
     this.groupDataTable = { ...data.groupDataTable };
     this.effectDataTable = { ...data.effectDataTable };
     this.setup3DataTable = { ...data.setup3DataTable };
+    this.changeBGMDataTable = { ...data.changeBGMDataTable };
     this.battleBgmDataTable = { ...data.battleBgmDataTable };
     this.trackVolumeDataTable = { ...data.trackVolumeDataTable };
     this.townWorldMapDataTable = { ...data.townWorldMapDataTable };
@@ -380,6 +403,23 @@ class KDMSound extends KDM<IKDMSound> {
 
   private parseSection5(buffer: PM4Buffer): void {
     buffer.seek(this.sections.at(5)!);
+
+    // changeBGMDataTable
+    this.section6.changeBGMDataTable.forEach((offset) => {
+      buffer.seek(offset);
+      const changeBGMData = ChangeBGMData.default({}).parse(undefined);
+
+      changeBGMData.unknownP0 = this.findStringAtOffset(buffer.getUInt32());
+      changeBGMData.unknownP1 = this.findStringAtOffset(buffer.getUInt32());
+      changeBGMData.unknownP2 = this.findStringAtOffset(buffer.getUInt32());
+      changeBGMData.unknownP3 = buffer.getUInt16();
+      changeBGMData.unknownP4 = buffer.getUInt16();
+      changeBGMData.unknownP5 = buffer.getUInt16();
+      changeBGMData.unknownP6 = buffer.getUInt16();
+
+      assert.equal(buffer.offset, offset + 20);
+      this.changeBGMDataTable.entries.push(changeBGMData);
+    });
 
     // effectDataTable
     this.section6.effectDataTable.forEach((offset) => {
@@ -802,7 +842,24 @@ class KDMSound extends KDM<IKDMSound> {
     }
 
     tables.forEach((table) => {
-      if(table === KDMSound.EFFECT_DATA_TABLE) {
+      if (table === KDMSound.CHANGE_BGM_DATA_TABLE) {
+        this.changeBGMDataTable.unknownQ0 = buffer.getUInt32();
+        this.changeBGMDataTable.unknownQ1 = buffer.getUInt32();
+
+        while (buffer.offset < this.sections.at(7)!) {
+          const offset = buffer.getUInt32();
+
+          if (offset === 0) {
+            break;
+          }
+
+          this.section6.changeBGMDataTable.push(offset);
+        }
+
+        return;
+      }
+
+      if (table === KDMSound.EFFECT_DATA_TABLE) {
         this.effectDataTable.unknownN0 = buffer.getUInt32();
         this.effectDataTable.unknownN1 = buffer.getUInt32();
 
