@@ -199,9 +199,33 @@ const TownWorldMapData = z.object({
   unknownK60: z.number().default(0)
 });
 
+const EffectData = z.object({
+  unknownM0: z.string().default(""),
+  unknownM1: z.number().default(0),
+  unknownM2: z.number().default(0),
+  unknownM3: z.number().default(0),
+  unknownM4: z.number().default(0),
+  unknownM5: z.number().default(0),
+  unknownM6: z.number().default(0),
+  unknownM7: z.number().default(0),
+  unknownM8: z.number().default(0),
+  unknownM9: z.number().default(0),
+  unknownM10: z.number().default(0),
+  unknownM11: z.number().default(0),
+  unknownM12: z.number().default(0)
+});
+
 //
 
 const I_KDM_SOUND_VERSION = 0;
+
+const EffectDataTable = z.object({
+  unknownN0: z.number().default(0),
+  unknownN1: z.number().default(0),
+  entries: EffectData.array().default([])
+});
+
+type EffectDataTable = z.infer<typeof EffectDataTable>;
 
 const TownWorldMapDataTable = z.object({
   unknownL0: z.number().default(0),
@@ -247,6 +271,7 @@ const IKDMSound = z.object({
   _version: z.literal(I_KDM_SOUND_VERSION),
   groupDataTable: GroupDataTable.default({}),
   setup3DataTable: Setup3DataTable.default({}),
+  effectDataTable: EffectDataTable.default({}),
   battleBgmDataTable: BattleBgmDataTable.default({}),
   trackVolumeDataTable: TrackVolumeDataTable.default({}),
   townWorldMapDataTable: TownWorldMapDataTable.default({})
@@ -269,6 +294,7 @@ class KDMSound extends KDM<IKDMSound> {
   protected sections: number[];
 
   protected groupDataTable: GroupDataTable;
+  protected effectDataTable: EffectDataTable;
   protected setup3DataTable: Setup3DataTable;
   protected battleBgmDataTable: BattleBgmDataTable;
   protected trackVolumeDataTable: TrackVolumeDataTable;
@@ -278,6 +304,7 @@ class KDMSound extends KDM<IKDMSound> {
 
   protected section6: {
     groupDataTable: number[];
+    effectDataTable: number[];
     setup3DataTable: number[];
     battleBgmDataTable: number[];
     trackVolumeDataTable: number[];
@@ -301,12 +328,14 @@ class KDMSound extends KDM<IKDMSound> {
     this.section6 = {
       groupDataTable: [],
       setup3DataTable: [],
+      effectDataTable: [],
       battleBgmDataTable: [],
       trackVolumeDataTable: [],
       townWorldMapDataTable: []
     };
 
     this.groupDataTable = { ...data.groupDataTable };
+    this.effectDataTable = { ...data.effectDataTable };
     this.setup3DataTable = { ...data.setup3DataTable };
     this.battleBgmDataTable = { ...data.battleBgmDataTable };
     this.trackVolumeDataTable = { ...data.trackVolumeDataTable };
@@ -352,12 +381,44 @@ class KDMSound extends KDM<IKDMSound> {
   private parseSection5(buffer: PM4Buffer): void {
     buffer.seek(this.sections.at(5)!);
 
+    // effectDataTable
+    this.section6.effectDataTable.forEach((offset) => {
+      buffer.seek(offset);
+
+      const effectData = EffectData
+        .default({})
+        .parse(undefined);
+
+      effectData.unknownM0 = this.findStringAtOffset(
+        buffer.getUInt32()
+      );
+
+      effectData.unknownM1 = buffer.getFloat32();
+      effectData.unknownM2 = buffer.getFloat32();
+      effectData.unknownM3 = buffer.getFloat32();
+
+      effectData.unknownM4 = buffer.getFloat32();
+      effectData.unknownM5 = buffer.getFloat32();
+      effectData.unknownM6 = buffer.getFloat32();
+      effectData.unknownM7 = buffer.getFloat32();
+
+      effectData.unknownM8 = buffer.getFloat32();
+
+      effectData.unknownM9 = buffer.getUInt16();
+      effectData.unknownM10 = buffer.getUInt16();
+      effectData.unknownM11 = buffer.getUInt16();
+      effectData.unknownM12 = buffer.getUInt16();
+
+      assert.equal(buffer.offset, offset + 44);
+      this.effectDataTable.entries.push(effectData);
+    });
+
     // townWorldMapDataTable
     this.section6.townWorldMapDataTable.forEach((offset) => {
       buffer.seek(offset);
 
       const townWorldMapData = TownWorldMapData.default({}).parse(undefined);
-    
+
       townWorldMapData.unknownK0 = this.findStringAtOffset(
         buffer.getUInt32()
       );
@@ -741,6 +802,23 @@ class KDMSound extends KDM<IKDMSound> {
     }
 
     tables.forEach((table) => {
+      if(table === KDMSound.EFFECT_DATA_TABLE) {
+        this.effectDataTable.unknownN0 = buffer.getUInt32();
+        this.effectDataTable.unknownN1 = buffer.getUInt32();
+
+        while (buffer.offset < this.sections.at(7)!) {
+          const offset = buffer.getUInt32();
+
+          if (offset === 0) {
+            break;
+          }
+
+          this.section6.effectDataTable.push(offset);
+        }
+
+        return;
+      }
+
       if (table === KDMSound.TOWN_WORLD_MAP_DATA_TABLE) {
         this.townWorldMapDataTable.unknownL0 = buffer.getUInt32();
         this.townWorldMapDataTable.unknownL1 = buffer.getUInt32();
