@@ -128,6 +128,17 @@ const TrackVolumeData = z.object({
   unknownD58: z.number().default(0)
 });
 
+const GroupData = z.object({
+  unknownH0: z.string().default(""),
+  unknownH1: z.string().default(""),
+  unknownH2: z.number().default(0),
+  unknownH3: z.number().default(0),
+  unknownH4: z.number().default(0),
+  unknownH5: z.number().default(0),
+  unknownH6: z.number().default(0),
+  unknownH7: z.number().default(0)
+});
+
 //
 
 const I_KDM_SOUND_VERSION = 0;
@@ -156,11 +167,20 @@ const TrackVolumeDataTable = z.object({
 
 type TrackVolumeDataTable = z.infer<typeof TrackVolumeDataTable>;
 
+const GroupDataTable = z.object({
+  unknownI0: z.number().default(0),
+  unknownI1: z.number().default(0),
+  entries: GroupData.array().default([])
+});
+
+type GroupDataTable = z.infer<typeof GroupDataTable>;
+
 const IKDMSound = z.object({
   _version: z.literal(I_KDM_SOUND_VERSION),
+  groupDataTable: GroupDataTable.default({}),
   setup3DataTable: Setup3DataTable.default({}),
   battleBgmDataTable: BattleBgmDataTable.default({}),
-  trackVolumeDataTable: TrackVolumeDataTable.default({})
+  trackVolumeDataTable: TrackVolumeDataTable.default({}),
 });
 
 type IKDMSound = z.infer<typeof IKDMSound>;
@@ -178,12 +198,16 @@ class KDMSound extends KDM<IKDMSound> {
   public static readonly TOWN_WORLD_MAP_DATA_TABLE = "townWorldMapDataTable";
 
   protected sections: number[];
+
+  protected groupDataTable: GroupDataTable;
   protected setup3DataTable: Setup3DataTable;
   protected battleBgmDataTable: BattleBgmDataTable;
   protected trackVolumeDataTable: TrackVolumeDataTable;
+
   protected override section0: { offset: number; strings: KDMString[] };
 
   protected section6: {
+    groupDataTable: number[];
     setup3DataTable: number[];
     battleBgmDataTable: number[];
     trackVolumeDataTable: number[];
@@ -204,11 +228,13 @@ class KDMSound extends KDM<IKDMSound> {
     this.section0 = { offset: 0, strings: [] };
 
     this.section6 = {
+      groupDataTable: [],
       setup3DataTable: [],
       battleBgmDataTable: [],
       trackVolumeDataTable: []
     };
 
+    this.groupDataTable = { ...data.groupDataTable };
     this.setup3DataTable = { ...data.setup3DataTable };
     this.battleBgmDataTable = { ...data.battleBgmDataTable };
     this.trackVolumeDataTable = { ...data.trackVolumeDataTable };
@@ -252,6 +278,30 @@ class KDMSound extends KDM<IKDMSound> {
 
   private parseSection5(buffer: PM4Buffer): void {
     buffer.seek(this.sections.at(5)!);
+
+    // groupDataTable
+    this.section6.groupDataTable.forEach((offset) => {
+      buffer.seek(offset);
+      const groupData = GroupData.default({}).parse(undefined);
+
+      groupData.unknownH0 = this.findStringAtOffset(
+        buffer.getUInt32()
+      );
+
+      groupData.unknownH1 = this.findStringAtOffset(
+        buffer.getUInt32()
+      );
+
+      groupData.unknownH2 = buffer.getUInt32();
+      groupData.unknownH3 = buffer.getUInt32();
+
+      groupData.unknownH4 = buffer.getUInt16();
+      groupData.unknownH5 = buffer.getUInt16();
+      groupData.unknownH6 = buffer.getUInt16();
+      groupData.unknownH7 = buffer.getUInt16();
+
+      this.groupDataTable.entries.push(groupData);
+    });
 
     // setup3DataTable
     this.section6.setup3DataTable.forEach((offset) => {
@@ -313,7 +363,7 @@ class KDMSound extends KDM<IKDMSound> {
       battleBgmData.unknownB7 = this.findStringAtOffset(
         buffer.getUInt32()
       );
-      
+
       //
 
       battleBgmData.unknownB8 = buffer.getUInt32();
@@ -327,7 +377,7 @@ class KDMSound extends KDM<IKDMSound> {
       battleBgmData.unknownB11 = this.findStringAtOffset(
         buffer.getUInt32()
       );
-      
+
       //
 
       battleBgmData.unknownB12 = buffer.getUInt32();
@@ -386,7 +436,7 @@ class KDMSound extends KDM<IKDMSound> {
 
       trackVolumeData.unknownD10 = buffer.getFloat32();
       trackVolumeData.unknownD11 = buffer.getUInt32();
-      
+
       trackVolumeData.unknownD12 = buffer.getFloat32();
       trackVolumeData.unknownD13 = buffer.getUInt32();
 
@@ -525,6 +575,23 @@ class KDMSound extends KDM<IKDMSound> {
     }
 
     tables.forEach((table) => {
+      if(table === KDMSound.GROUP_DATA_TABLE) {
+        this.groupDataTable.unknownI0 = buffer.getUInt32();
+        this.groupDataTable.unknownI1 = buffer.getUInt32();
+
+        while (buffer.offset < this.sections.at(7)!) {
+          const offset = buffer.getUInt32();
+
+          if (offset === 0) {
+            break;
+          }
+
+          this.section6.groupDataTable.push(offset);
+        }
+
+        return;
+      }
+
       if (table === KDMSound.BATTLE_BGM_DATA_TABLE) {
         this.battleBgmDataTable.unknownF0 = buffer.getUInt32();
         this.battleBgmDataTable.unknownF1 = buffer.getUInt32();
