@@ -3,6 +3,7 @@ import fs from "node:fs/promises";
 import { Command } from "commander";
 import assert from "node:assert/strict";
 
+import KDMSound from "#/kdm/kdm-sound";
 import KDMMapData from "#/kdm/kdm-map-data";
 import KDMLinkData from "#/kdm/kdm-link-data";
 
@@ -58,6 +59,11 @@ kdm
 
     let data: null | object = null;
     const buffer = await fs.readFile(input);
+
+    if (type === "sound") {
+      data = new KDMSound()
+        .parse(buffer);
+    }
 
     if (type === "map-data") {
       data = new KDMMapData()

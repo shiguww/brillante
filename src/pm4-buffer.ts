@@ -108,6 +108,12 @@ class PM4Buffer {
     return val;
   }
 
+  public getFloat32(): number {
+    const val = this._buffer.readFloatLE(this._offset);
+    this._offset += 4;
+    return val;
+  }
+
   public getCString(): string {
     let end = this._buffer
       .findIndex((ch, i) => i >= this._offset && ch === 0);
