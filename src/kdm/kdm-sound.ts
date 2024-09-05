@@ -139,9 +139,77 @@ const GroupData = z.object({
   unknownH7: z.number().default(0)
 });
 
+const TownWorldMapData = z.object({
+  unknownK0: z.string().default(""),
+  unknownK1: z.string().default(""),
+  unknownK2: z.string().default(""),
+  unknownK3: z.string().default(""),
+  unknownK4: z.number().default(0),
+  unknownK5: z.number().default(0),
+  unknownK6: z.number().default(0),
+  unknownK7: z.number().default(0),
+  unknownK8: z.number().default(0),
+  unknownK9: z.number().default(0),
+  unknownK10: z.number().default(0),
+  unknownK11: z.number().default(0),
+  unknownK12: z.number().default(0),
+  unknownK13: z.number().default(0),
+  unknownK14: z.number().default(0),
+  unknownK15: z.number().default(0),
+  unknownK16: z.number().default(0),
+  unknownK17: z.number().default(0),
+  unknownK18: z.number().default(0),
+  unknownK19: z.number().default(0),
+  unknownK20: z.number().default(0),
+  unknownK21: z.number().default(0),
+  unknownK22: z.number().default(0),
+  unknownK23: z.number().default(0),
+  unknownK24: z.number().default(0),
+  unknownK25: z.number().default(0),
+  unknownK26: z.number().default(0),
+  unknownK27: z.number().default(0),
+  unknownK28: z.number().default(0),
+  unknownK29: z.number().default(0),
+  unknownK30: z.number().default(0),
+  unknownK31: z.number().default(0),
+  unknownK32: z.number().default(0),
+  unknownK33: z.number().default(0),
+  unknownK34: z.number().default(0),
+  unknownK35: z.number().default(0),
+  unknownK36: z.number().default(0),
+  unknownK37: z.number().default(0),
+  unknownK38: z.number().default(0),
+  unknownK39: z.number().default(0),
+  unknownK40: z.number().default(0),
+  unknownK41: z.number().default(0),
+  unknownK42: z.number().default(0),
+  unknownK43: z.number().default(0),
+  unknownK44: z.number().default(0),
+  unknownK45: z.number().default(0),
+  unknownK46: z.number().default(0),
+  unknownK47: z.number().default(0),
+  unknownK48: z.number().default(0),
+  unknownK49: z.number().default(0),
+  unknownK54: z.number().default(0),
+  unknownK55: z.number().default(0),
+  unknownK56: z.number().default(0),
+  unknownK57: z.number().default(0),
+  unknownK58: z.number().default(0),
+  unknownK59: z.number().default(0),
+  unknownK60: z.number().default(0)
+});
+
 //
 
 const I_KDM_SOUND_VERSION = 0;
+
+const TownWorldMapDataTable = z.object({
+  unknownL0: z.number().default(0),
+  unknownL1: z.number().default(0),
+  entries: TownWorldMapData.array().default([])
+});
+
+type TownWorldMapDataTable = z.infer<typeof TownWorldMapDataTable>;
 
 const Setup3DataTable = z.object({
   unknownG0: z.number().default(0),
@@ -181,6 +249,7 @@ const IKDMSound = z.object({
   setup3DataTable: Setup3DataTable.default({}),
   battleBgmDataTable: BattleBgmDataTable.default({}),
   trackVolumeDataTable: TrackVolumeDataTable.default({}),
+  townWorldMapDataTable: TownWorldMapDataTable.default({})
 });
 
 type IKDMSound = z.infer<typeof IKDMSound>;
@@ -203,6 +272,7 @@ class KDMSound extends KDM<IKDMSound> {
   protected setup3DataTable: Setup3DataTable;
   protected battleBgmDataTable: BattleBgmDataTable;
   protected trackVolumeDataTable: TrackVolumeDataTable;
+  protected townWorldMapDataTable: TownWorldMapDataTable;
 
   protected override section0: { offset: number; strings: KDMString[] };
 
@@ -211,6 +281,7 @@ class KDMSound extends KDM<IKDMSound> {
     setup3DataTable: number[];
     battleBgmDataTable: number[];
     trackVolumeDataTable: number[];
+    townWorldMapDataTable: number[];
   }
 
   public constructor(_data?: IKDMSound) {
@@ -231,13 +302,15 @@ class KDMSound extends KDM<IKDMSound> {
       groupDataTable: [],
       setup3DataTable: [],
       battleBgmDataTable: [],
-      trackVolumeDataTable: []
+      trackVolumeDataTable: [],
+      townWorldMapDataTable: []
     };
 
     this.groupDataTable = { ...data.groupDataTable };
     this.setup3DataTable = { ...data.setup3DataTable };
     this.battleBgmDataTable = { ...data.battleBgmDataTable };
     this.trackVolumeDataTable = { ...data.trackVolumeDataTable };
+    this.townWorldMapDataTable = { ...data.townWorldMapDataTable };
   }
 
   private parseSection0(buffer: PM4Buffer): void {
@@ -278,6 +351,99 @@ class KDMSound extends KDM<IKDMSound> {
 
   private parseSection5(buffer: PM4Buffer): void {
     buffer.seek(this.sections.at(5)!);
+
+    // townWorldMapDataTable
+    this.section6.townWorldMapDataTable.forEach((offset) => {
+      buffer.seek(offset);
+
+      const townWorldMapData = TownWorldMapData.default({}).parse(undefined);
+    
+      townWorldMapData.unknownK0 = this.findStringAtOffset(
+        buffer.getUInt32()
+      );
+
+      townWorldMapData.unknownK1 = this.findStringAtOffset(
+        buffer.getUInt32()
+      );
+
+      townWorldMapData.unknownK2 = this.findStringAtOffset(
+        buffer.getUInt32()
+      );
+
+      townWorldMapData.unknownK3 = this.findStringAtOffset(
+        buffer.getUInt32()
+      );
+
+      townWorldMapData.unknownK4 = buffer.getFloat32();
+      townWorldMapData.unknownK5 = buffer.getFloat32();
+
+      townWorldMapData.unknownK6 = buffer.getFloat32();
+      townWorldMapData.unknownK7 = buffer.getFloat32();
+      townWorldMapData.unknownK8 = buffer.getFloat32();
+      townWorldMapData.unknownK9 = buffer.getFloat32();
+
+      townWorldMapData.unknownK10 = buffer.getFloat32();
+      townWorldMapData.unknownK11 = buffer.getFloat32();
+      townWorldMapData.unknownK12 = buffer.getFloat32();
+      townWorldMapData.unknownK13 = buffer.getFloat32();
+
+      townWorldMapData.unknownK14 = buffer.getFloat32();
+      townWorldMapData.unknownK15 = buffer.getFloat32();
+      townWorldMapData.unknownK16 = buffer.getFloat32();
+      townWorldMapData.unknownK17 = buffer.getFloat32();
+
+      townWorldMapData.unknownK18 = buffer.getFloat32();
+      townWorldMapData.unknownK19 = buffer.getFloat32();
+      townWorldMapData.unknownK20 = buffer.getFloat32();
+      townWorldMapData.unknownK21 = buffer.getFloat32();
+
+      townWorldMapData.unknownK22 = buffer.getFloat32();
+      townWorldMapData.unknownK23 = buffer.getFloat32();
+      townWorldMapData.unknownK24 = buffer.getFloat32();
+      townWorldMapData.unknownK25 = buffer.getFloat32();
+
+      townWorldMapData.unknownK26 = buffer.getFloat32();
+      townWorldMapData.unknownK27 = buffer.getFloat32();
+      townWorldMapData.unknownK28 = buffer.getFloat32();
+      townWorldMapData.unknownK29 = buffer.getFloat32();
+
+      townWorldMapData.unknownK30 = buffer.getFloat32();
+      townWorldMapData.unknownK31 = buffer.getFloat32();
+      townWorldMapData.unknownK32 = buffer.getFloat32();
+      townWorldMapData.unknownK33 = buffer.getFloat32();
+
+      townWorldMapData.unknownK34 = buffer.getFloat32();
+      townWorldMapData.unknownK35 = buffer.getFloat32();
+      townWorldMapData.unknownK36 = buffer.getFloat32();
+      townWorldMapData.unknownK37 = buffer.getFloat32();
+
+      townWorldMapData.unknownK38 = buffer.getFloat32();
+      townWorldMapData.unknownK39 = buffer.getFloat32();
+      townWorldMapData.unknownK40 = buffer.getFloat32();
+      townWorldMapData.unknownK41 = buffer.getFloat32();
+
+      townWorldMapData.unknownK42 = buffer.getFloat32();
+      townWorldMapData.unknownK43 = buffer.getFloat32();
+      townWorldMapData.unknownK44 = buffer.getFloat32();
+      townWorldMapData.unknownK45 = buffer.getFloat32();
+
+      townWorldMapData.unknownK46 = buffer.getFloat32();
+      townWorldMapData.unknownK47 = buffer.getFloat32();
+      townWorldMapData.unknownK48 = buffer.getFloat32();
+      townWorldMapData.unknownK49 = buffer.getFloat32();
+
+      townWorldMapData.unknownK54 = buffer.getFloat32();
+      townWorldMapData.unknownK55 = buffer.getFloat32();
+      townWorldMapData.unknownK56 = buffer.getFloat32();
+
+      townWorldMapData.unknownK57 = buffer.getUInt16();
+      townWorldMapData.unknownK58 = buffer.getUInt16();
+      townWorldMapData.unknownK59 = buffer.getUInt16();
+      townWorldMapData.unknownK60 = buffer.getUInt16();
+
+      assert.equal(buffer.offset, offset + 220);
+      this.townWorldMapDataTable.entries.push(townWorldMapData);
+    });
 
     // groupDataTable
     this.section6.groupDataTable.forEach((offset) => {
@@ -575,7 +741,24 @@ class KDMSound extends KDM<IKDMSound> {
     }
 
     tables.forEach((table) => {
-      if(table === KDMSound.GROUP_DATA_TABLE) {
+      if (table === KDMSound.TOWN_WORLD_MAP_DATA_TABLE) {
+        this.townWorldMapDataTable.unknownL0 = buffer.getUInt32();
+        this.townWorldMapDataTable.unknownL1 = buffer.getUInt32();
+
+        while (buffer.offset < this.sections.at(7)!) {
+          const offset = buffer.getUInt32();
+
+          if (offset === 0) {
+            break;
+          }
+
+          this.section6.townWorldMapDataTable.push(offset);
+        }
+
+        return;
+      }
+
+      if (table === KDMSound.GROUP_DATA_TABLE) {
         this.groupDataTable.unknownI0 = buffer.getUInt32();
         this.groupDataTable.unknownI1 = buffer.getUInt32();
 
