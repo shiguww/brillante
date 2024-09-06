@@ -232,6 +232,20 @@ class PM4Buffer {
     return this;
   }
 
+  public setFloat32(...val: number[]): this {
+    assert.ok(this._params.writable);
+
+    const ELEMENT_SIZE = 4;
+    this.fit(this._offset + val.length * ELEMENT_SIZE);
+
+    val.forEach((val) => {
+      this._buffer.writeFloatLE(val, this._offset);
+      this._offset += ELEMENT_SIZE;
+    });
+
+    return this;
+  }
+
   public setCString(...val: string[]): this {
     assert.ok(this._params.writable);
 
