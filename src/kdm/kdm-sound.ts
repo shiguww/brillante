@@ -1028,19 +1028,14 @@ class KDMSound extends KDM<IKDMSound> {
     buffer.setUInt32(0x0004001F);
     buffer.setUInt32(0x00040015);
 
-    this.townWorldMapDataTable.entries.forEach((entry) => {
-      const offset = this.buildTownWorldMapData(buffer, entry);
-      this.townWorldMapDataTable.offsets.push(offset);
+    this.setup3DataTable.entries.forEach((entry) => {
+      const offset = this.buildSetup3Data(buffer, entry);
+      this.setup3DataTable.offsets.push(offset);
     });
 
-    this.changeBGMDataTable.entries.forEach((entry) => {
-      const offset = this.buildChangeBGMData(buffer, entry);
-      this.changeBGMDataTable.offsets.push(offset);
-    });
-
-    this.effectDataTable.entries.forEach((entry) => {
-      const offset = this.buildEffectData(buffer, entry);
-      this.effectDataTable.offsets.push(offset);
+    this.battleBGMDataTable.entries.forEach((entry) => {
+      const offset = this.buildBattleBGMData(buffer, entry);
+      this.battleBGMDataTable.offsets.push(offset);
     });
 
     this.trackVolumeDataTable.entries.forEach((entry) => {
@@ -1053,14 +1048,19 @@ class KDMSound extends KDM<IKDMSound> {
       this.groupDataTable.offsets.push(offset);
     });
 
-    this.setup3DataTable.entries.forEach((entry) => {
-      const offset = this.buildSetup3Data(buffer, entry);
-      this.setup3DataTable.offsets.push(offset);
+    this.townWorldMapDataTable.entries.forEach((entry) => {
+      const offset = this.buildTownWorldMapData(buffer, entry);
+      this.townWorldMapDataTable.offsets.push(offset);
     });
 
-    this.battleBGMDataTable.entries.forEach((entry) => {
-      const offset = this.buildBattleBGMData(buffer, entry);
-      this.battleBGMDataTable.offsets.push(offset);
+    this.effectDataTable.entries.forEach((entry) => {
+      const offset = this.buildEffectData(buffer, entry);
+      this.effectDataTable.offsets.push(offset);
+    });
+
+    this.changeBGMDataTable.entries.forEach((entry) => {
+      const offset = this.buildChangeBGMData(buffer, entry);
+      this.changeBGMDataTable.offsets.push(offset);
     });
   }
 
@@ -1263,43 +1263,10 @@ class KDMSound extends KDM<IKDMSound> {
   protected override parseSection5(buffer: PM4Buffer): void {
     const count = buffer.getUInt32();
 
+    console.log(this);
+
     assert.equal(buffer.getUInt32(), 0x0004001F);
     assert.equal(buffer.getUInt32(), 0x00040015);
-
-    this.townWorldMapDataTable.offsets.forEach((offset) => {
-      buffer.seek(offset);
-
-      const townWorldMapData = this.parseTownWorldMapData(buffer);
-      this.townWorldMapDataTable.entries.push(townWorldMapData);
-    });
-
-    this.changeBGMDataTable.offsets.forEach((offset) => {
-      buffer.seek(offset);
-
-      const changeBGMData = this.parseChangeBGMData(buffer);
-      this.changeBGMDataTable.entries.push(changeBGMData);
-    });
-
-    this.effectDataTable.offsets.forEach((offset) => {
-      buffer.seek(offset);
-
-      const effectData = this.parseEffectData(buffer);
-      this.effectDataTable.entries.push(effectData);
-    });
-
-    this.trackVolumeDataTable.offsets.forEach((offset) => {
-      buffer.seek(offset);
-
-      const trackVolumeData = this.parseTrackVolumeData(buffer);
-      this.trackVolumeDataTable.entries.push(trackVolumeData);
-    });
-
-    this.groupDataTable.offsets.forEach((offset) => {
-      buffer.seek(offset);
-
-      const groupData = this.parseGroupData(buffer);
-      this.groupDataTable.entries.push(groupData);
-    });
 
     this.setup3DataTable.offsets.forEach((offset) => {
       buffer.seek(offset);
@@ -1313,6 +1280,42 @@ class KDMSound extends KDM<IKDMSound> {
 
       const battleBGMData = this.parseBattleBGMData(buffer);
       this.battleBGMDataTable.entries.push(battleBGMData);
+    });
+
+    this.trackVolumeDataTable.offsets.forEach((offset) => {
+      buffer.seek(offset);
+
+      const trackVolumeData = this.parseTrackVolumeData(buffer);
+      this.trackVolumeDataTable.entries.push(trackVolumeData);
+    });
+
+    this.townWorldMapDataTable.offsets.forEach((offset) => {
+      buffer.seek(offset);
+
+      const townWorldMapData = this.parseTownWorldMapData(buffer);
+      this.townWorldMapDataTable.entries.push(townWorldMapData);
+    });
+
+    this.groupDataTable.offsets.forEach((offset) => {
+      buffer.seek(offset);
+
+      const groupData = this.parseGroupData(buffer);
+      this.groupDataTable.entries.push(groupData);
+    });
+
+    this.effectDataTable.offsets.forEach((offset) => {
+      buffer.seek(offset);
+
+      const effectData = this.parseEffectData(buffer);
+      this.effectDataTable.entries.push(effectData);
+    });
+
+
+    this.changeBGMDataTable.offsets.forEach((offset) => {
+      buffer.seek(offset);
+
+      const changeBGMData = this.parseChangeBGMData(buffer);
+      this.changeBGMDataTable.entries.push(changeBGMData);
     });
 
     assert.equal(count, this.objectCount);
