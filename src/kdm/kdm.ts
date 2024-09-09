@@ -219,15 +219,14 @@ abstract class KDM<T> {
     buffer.getUInt32(); // ignore string count.
 
     while (buffer.offset < this.sections.at(1)!) {
+      while(buffer.offset % 4 !== 0) {
+        buffer.getUInt8();
+      }
+      
       const offset = buffer.offset;
       const string = buffer.getCString();
 
-      if(string.length === 0) {
-        this.registerString("\0", offset);
-        continue;
-      }
-
-      this.registerString(string, offset);
+      this.registerString(string || "\0", offset);
       console.log(`${string} @ ${offset} (${string.length})`);
     }
   }
