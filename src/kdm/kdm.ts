@@ -222,9 +222,13 @@ abstract class KDM<T> {
       const offset = buffer.offset;
       const string = buffer.getCString();
 
-      if (string !== "") {
-        this.registerString(string, offset);
+      if(string.length === 0) {
+        this.registerString("\0", offset);
+        continue;
       }
+
+      this.registerString(string, offset);
+      console.log(`${string} @ ${offset} (${string.length})`);
     }
   }
 
