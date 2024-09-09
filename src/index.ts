@@ -31,6 +31,11 @@ kdm
     const data = await fs.readFile(input, "utf8")
       .then((data) => JSON.parse(data));
 
+    if (type === "sound") {
+      buffer = new KDMSound(data)
+        .build();
+    }
+
     if (type === "map-data") {
       buffer = new KDMMapData(data)
         .build();

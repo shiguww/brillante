@@ -91,7 +91,74 @@ class KDMSound extends KDM<IKDMSound> {
   }
 
   protected override prebuild(): void {
+    this.effectDataTable.entries.forEach((entry) => {
+      this.registerStringIfNotExists(entry.unknownM0);
+    });
 
+    this.setup3DataTable.entries.forEach((entry) => {
+      this.registerStringIfNotExists(entry.unknownA0);
+    });
+
+    this.trackVolumeDataTable.entries.forEach((entry) => {
+      this.registerStringIfNotExists(entry.unknownD0);
+    });
+
+    this.groupDataTable.entries.forEach((entry) => {
+      this.registerStringIfNotExists(entry.unknownH0);
+      this.registerStringIfNotExists(entry.unknownH1);
+    });
+
+    this.changeBGMDataTable.entries.forEach((entry) => {
+      this.registerStringIfNotExists(entry.unknownP0);
+      this.registerStringIfNotExists(entry.unknownP1);
+      this.registerStringIfNotExists(entry.unknownP2);
+    });
+
+    this.townWorldMapDataTable.entries.forEach((entry) => {
+      this.registerStringIfNotExists(entry.unknownK0);
+      this.registerStringIfNotExists(entry.unknownK1);
+      this.registerStringIfNotExists(entry.unknownK2);
+      this.registerStringIfNotExists(entry.unknownK3);
+    });
+
+    this.battleBGMDataTable.entries.forEach((entry) => {
+      this.registerStringIfNotExists(entry.unknownB0);
+      this.registerStringIfNotExists(entry.unknownB1);
+      this.registerStringIfNotExists(entry.unknownB3);
+      this.registerStringIfNotExists(entry.unknownB5);
+      this.registerStringIfNotExists(entry.unknownB7);
+      this.registerStringIfNotExists(entry.unknownB9);
+      this.registerStringIfNotExists(entry.unknownB11);
+      this.registerStringIfNotExists(entry.unknownB13);
+      this.registerStringIfNotExists(entry.unknownB14);
+    });
+  }
+
+  private buildChangeBGMData(buffer: PM4Buffer, changeBGMData: ChangeBGMData): number {
+    const offset = buffer.offset;
+
+    buffer.setUInt32(this.findOffsetOfString(changeBGMData.unknownP0));
+    buffer.setUInt32(this.findOffsetOfString(changeBGMData.unknownP1));
+
+    buffer.setUInt32(this.findOffsetOfString(changeBGMData.unknownP2));
+
+    if (changeBGMData.unknownP3 !== null) {
+      buffer.setUInt16(changeBGMData.unknownP3);
+    }
+
+    if (changeBGMData.unknownP4 !== null) {
+      buffer.setUInt16(changeBGMData.unknownP4);
+    }
+
+    if (changeBGMData.unknownP5 !== null) {
+      buffer.setUInt16(changeBGMData.unknownP5);
+    }
+
+    if (changeBGMData.unknownP6 !== null) {
+      buffer.setUInt16(changeBGMData.unknownP6);
+    }
+
+    return offset;
   }
 
   private parseChangeBGMData(buffer: PM4Buffer): ChangeBGMData {
@@ -99,11 +166,21 @@ class KDMSound extends KDM<IKDMSound> {
     const unknownP1 = this.findStringAtOffset(buffer.getUInt32());
 
     const unknownP2 = this.findStringAtOffset(buffer.getUInt32());
-    const unknownP3 = buffer.getUInt16();
-    const unknownP4 = buffer.getUInt16();
 
-    const unknownP5 = buffer.getUInt16();
-    const unknownP6 = buffer.getUInt16();
+    let unknownP3: null | number = null;
+    let unknownP4: null | number = null;
+    let unknownP5: null | number = null;
+    let unknownP6: null | number = null;
+
+    if (this.isInSection(buffer, 5)) {
+      unknownP3 = buffer.getUInt16();
+      unknownP4 = buffer.getUInt16();
+    }
+
+    if (this.isInSection(buffer, 5)) {
+      unknownP5 = buffer.getUInt16();
+      unknownP6 = buffer.getUInt16();
+    }
 
     return {
       unknownP0, unknownP1, unknownP2,
@@ -112,81 +189,188 @@ class KDMSound extends KDM<IKDMSound> {
     };
   }
 
+  private buildTownWorldMapData(buffer: PM4Buffer, townWorldMapData: TownWorldMapData): number {
+    const offset = buffer.offset;
+
+    buffer.setUInt32(this.findOffsetOfString(townWorldMapData.unknownK0));
+    buffer.setUInt32(this.findOffsetOfString(townWorldMapData.unknownK1));
+
+    buffer.setUInt32(this.findOffsetOfString(townWorldMapData.unknownK2));
+    buffer.setUInt32(this.findOffsetOfString(townWorldMapData.unknownK3));
+
+    buffer.setFloat32(townWorldMapData.unknownK4);
+    buffer.setFloat32(townWorldMapData.unknownK5);
+
+    buffer.setFloat32(townWorldMapData.unknownK6);
+    buffer.setFloat32(townWorldMapData.unknownK7);
+
+    buffer.setFloat32(townWorldMapData.unknownK8);
+    buffer.setFloat32(townWorldMapData.unknownK9);
+
+    buffer.setFloat32(townWorldMapData.unknownK10);
+    buffer.setFloat32(townWorldMapData.unknownK11);
+
+    buffer.setFloat32(townWorldMapData.unknownK12);
+    buffer.setFloat32(townWorldMapData.unknownK13);
+
+    buffer.setFloat32(townWorldMapData.unknownK14);
+    buffer.setFloat32(townWorldMapData.unknownK15);
+
+    buffer.setFloat32(townWorldMapData.unknownK16);
+    buffer.setFloat32(townWorldMapData.unknownK17);
+
+    buffer.setFloat32(townWorldMapData.unknownK18);
+    buffer.setFloat32(townWorldMapData.unknownK19);
+
+    buffer.setFloat32(townWorldMapData.unknownK20);
+    buffer.setFloat32(townWorldMapData.unknownK21);
+
+    buffer.setFloat32(townWorldMapData.unknownK22);
+    buffer.setFloat32(townWorldMapData.unknownK23);
+
+    buffer.setFloat32(townWorldMapData.unknownK24);
+    buffer.setFloat32(townWorldMapData.unknownK25);
+
+    buffer.setFloat32(townWorldMapData.unknownK26);
+    buffer.setFloat32(townWorldMapData.unknownK27);
+
+    buffer.setFloat32(townWorldMapData.unknownK28);
+    buffer.setFloat32(townWorldMapData.unknownK29);
+
+    buffer.setFloat32(townWorldMapData.unknownK30);
+    buffer.setFloat32(townWorldMapData.unknownK31);
+
+    buffer.setFloat32(townWorldMapData.unknownK32);
+    buffer.setFloat32(townWorldMapData.unknownK33);
+
+    buffer.setFloat32(townWorldMapData.unknownK34);
+    buffer.setFloat32(townWorldMapData.unknownK35);
+
+    buffer.setFloat32(townWorldMapData.unknownK36);
+    buffer.setFloat32(townWorldMapData.unknownK37);
+
+    buffer.setFloat32(townWorldMapData.unknownK38);
+    buffer.setFloat32(townWorldMapData.unknownK39);
+
+    buffer.setFloat32(townWorldMapData.unknownK40);
+    buffer.setFloat32(townWorldMapData.unknownK41);
+
+    buffer.setFloat32(townWorldMapData.unknownK42);
+    buffer.setFloat32(townWorldMapData.unknownK43);
+
+    buffer.setFloat32(townWorldMapData.unknownK44);
+    buffer.setFloat32(townWorldMapData.unknownK45);
+
+    buffer.setFloat32(townWorldMapData.unknownK46);
+    buffer.setFloat32(townWorldMapData.unknownK47);
+
+    buffer.setFloat32(townWorldMapData.unknownK48);
+    buffer.setFloat32(townWorldMapData.unknownK49);
+
+    buffer.setFloat32(townWorldMapData.unknownK54);
+    buffer.setFloat32(townWorldMapData.unknownK55);
+
+    buffer.setFloat32(townWorldMapData.unknownK56);
+    buffer.setUInt16(townWorldMapData.unknownK57);
+    buffer.setUInt16(townWorldMapData.unknownK58);
+
+    buffer.setUInt16(townWorldMapData.unknownK59);
+    buffer.setUInt16(townWorldMapData.unknownK60);
+
+    assert.equal(buffer.offset, offset + 220);
+    return offset;
+  }
+
   private parseTownWorldMapData(buffer: PM4Buffer): TownWorldMapData {
     const oldOffset = buffer.offset;
 
     const unknownK0 = this.findStringAtOffset(buffer.getUInt32());
     const unknownK1 = this.findStringAtOffset(buffer.getUInt32());
+
     const unknownK2 = this.findStringAtOffset(buffer.getUInt32());
     const unknownK3 = this.findStringAtOffset(buffer.getUInt32());
 
     const unknownK4 = buffer.getFloat32();
     const unknownK5 = buffer.getFloat32();
+
     const unknownK6 = buffer.getFloat32();
     const unknownK7 = buffer.getFloat32();
+
     const unknownK8 = buffer.getFloat32();
     const unknownK9 = buffer.getFloat32();
 
     const unknownK10 = buffer.getFloat32();
     const unknownK11 = buffer.getFloat32();
+
     const unknownK12 = buffer.getFloat32();
     const unknownK13 = buffer.getFloat32();
 
     const unknownK14 = buffer.getFloat32();
     const unknownK15 = buffer.getFloat32();
+
     const unknownK16 = buffer.getFloat32();
     const unknownK17 = buffer.getFloat32();
 
     const unknownK18 = buffer.getFloat32();
     const unknownK19 = buffer.getFloat32();
+
     const unknownK20 = buffer.getFloat32();
     const unknownK21 = buffer.getFloat32();
 
     const unknownK22 = buffer.getFloat32();
     const unknownK23 = buffer.getFloat32();
+
     const unknownK24 = buffer.getFloat32();
     const unknownK25 = buffer.getFloat32();
 
     const unknownK26 = buffer.getFloat32();
     const unknownK27 = buffer.getFloat32();
+
     const unknownK28 = buffer.getFloat32();
     const unknownK29 = buffer.getFloat32();
 
     const unknownK30 = buffer.getFloat32();
     const unknownK31 = buffer.getFloat32();
+
     const unknownK32 = buffer.getFloat32();
     const unknownK33 = buffer.getFloat32();
 
     const unknownK34 = buffer.getFloat32();
     const unknownK35 = buffer.getFloat32();
+
     const unknownK36 = buffer.getFloat32();
     const unknownK37 = buffer.getFloat32();
 
     const unknownK38 = buffer.getFloat32();
     const unknownK39 = buffer.getFloat32();
+
     const unknownK40 = buffer.getFloat32();
     const unknownK41 = buffer.getFloat32();
 
     const unknownK42 = buffer.getFloat32();
     const unknownK43 = buffer.getFloat32();
+
     const unknownK44 = buffer.getFloat32();
     const unknownK45 = buffer.getFloat32();
 
     const unknownK46 = buffer.getFloat32();
     const unknownK47 = buffer.getFloat32();
+
     const unknownK48 = buffer.getFloat32();
     const unknownK49 = buffer.getFloat32();
 
     const unknownK54 = buffer.getFloat32();
     const unknownK55 = buffer.getFloat32();
-    const unknownK56 = buffer.getFloat32();
 
+    const unknownK56 = buffer.getFloat32();
     const unknownK57 = buffer.getUInt16();
     const unknownK58 = buffer.getUInt16();
+
     const unknownK59 = buffer.getUInt16();
     const unknownK60 = buffer.getUInt16();
 
-    assert(buffer.offset === oldOffset + 220);
+    assert(this.isInSection(buffer, 5));
+    assert.equal(buffer.offset, oldOffset + 220);
 
     return {
       unknownK0, unknownK1, unknownK10, unknownK11, unknownK12, unknownK13, unknownK14,
@@ -201,7 +385,27 @@ class KDMSound extends KDM<IKDMSound> {
     };
   }
 
+  private buildGroupData(buffer: PM4Buffer, groupData: GroupData): number {
+    const offset = buffer.offset;
+
+    buffer.setUInt32(this.findOffsetOfString(groupData.unknownH0));
+    buffer.setUInt32(this.findOffsetOfString(groupData.unknownH1));
+
+    buffer.setUInt32(groupData.unknownH2);
+    buffer.setUInt32(groupData.unknownH3);
+
+    buffer.setUInt16(groupData.unknownH4);
+    buffer.setUInt16(groupData.unknownH5);
+    buffer.setUInt16(groupData.unknownH6);
+    buffer.setUInt16(groupData.unknownH7);
+
+    assert.equal(buffer.offset, offset + 24);
+    return offset;
+  }
+
   private parseGroupData(buffer: PM4Buffer): GroupData {
+    const oldOffset = buffer.offset;
+
     const unknownH0 = this.findStringAtOffset(buffer.getUInt32());
     const unknownH1 = this.findStringAtOffset(buffer.getUInt32());
 
@@ -213,13 +417,39 @@ class KDMSound extends KDM<IKDMSound> {
     const unknownH6 = buffer.getUInt16();
     const unknownH7 = buffer.getUInt16();
 
+    assert(this.isInSection(buffer, 5));
+    assert.equal(buffer.offset, oldOffset + 24);
+
     return {
       unknownH0, unknownH1, unknownH2, unknownH3, unknownH4,
       unknownH5, unknownH6, unknownH7
     };
   }
 
+  private buildSetup3Data(buffer: PM4Buffer, setup3Data: Setup3Data): number {
+    const offset = buffer.offset;
+
+    buffer.setUInt32(this.findOffsetOfString(setup3Data.unknownA0));
+    buffer.setUInt16(setup3Data.unknownA1);
+    buffer.setUInt16(setup3Data.unknownA2);
+
+    buffer.setUInt16(setup3Data.unknownA3);
+    buffer.setUInt16(setup3Data.unknownA4);
+    buffer.setUInt16(setup3Data.unknownA5);
+    buffer.setUInt16(setup3Data.unknownA6);
+
+    buffer.setUInt16(setup3Data.unknownA7);
+    buffer.setUInt16(setup3Data.unknownA8);
+    buffer.setUInt16(setup3Data.unknownA9);
+    buffer.setUInt16(setup3Data.unknownA10);
+
+    assert.equal(buffer.offset, offset + 24);
+    return offset;
+  }
+
   private parseSetup3Data(buffer: PM4Buffer): Setup3Data {
+    const oldOffset = buffer.offset;
+
     const unknownA0 = this.findStringAtOffset(buffer.getUInt32());
     const unknownA1 = buffer.getUInt16();
     const unknownA2 = buffer.getUInt16();
@@ -234,6 +464,9 @@ class KDMSound extends KDM<IKDMSound> {
     const unknownA9 = buffer.getUInt16();
     const unknownA10 = buffer.getUInt16();
 
+    assert(this.isInSection(buffer, 5));
+    assert.equal(buffer.offset, oldOffset + 24);
+
     return {
       unknownA0, unknownA1, unknownA10, unknownA2, unknownA3,
       unknownA4, unknownA5, unknownA6, unknownA7, unknownA8,
@@ -241,7 +474,48 @@ class KDMSound extends KDM<IKDMSound> {
     };
   }
 
+  private buildBattleBGMData(buffer: PM4Buffer, battleBGMData: BattleBGMData): number {
+    const offset = buffer.offset;
+
+    buffer.setUInt32(this.findOffsetOfString(battleBGMData.unknownB0));
+    buffer.setUInt32(this.findOffsetOfString(battleBGMData.unknownB1));
+
+    buffer.setUInt32(battleBGMData.unknownB2);
+    buffer.setUInt32(this.findOffsetOfString(battleBGMData.unknownB3));
+
+    buffer.setUInt32(battleBGMData.unknownB4);
+    buffer.setUInt32(this.findOffsetOfString(battleBGMData.unknownB5));
+
+    buffer.setUInt32(battleBGMData.unknownB6);
+    buffer.setUInt32(this.findOffsetOfString(battleBGMData.unknownB7));
+
+    buffer.setUInt32(battleBGMData.unknownB8);
+    buffer.setUInt32(this.findOffsetOfString(battleBGMData.unknownB9));
+
+    buffer.setUInt32(battleBGMData.unknownB10);
+    buffer.setUInt32(this.findOffsetOfString(battleBGMData.unknownB11));
+
+    buffer.setUInt32(battleBGMData.unknownB12);
+    buffer.setUInt32(this.findOffsetOfString(battleBGMData.unknownB13));
+
+    buffer.setUInt32(this.findOffsetOfString(battleBGMData.unknownB14));
+    buffer.setUInt32(battleBGMData.unknownB15);
+
+    buffer.setUInt32(battleBGMData.unknownB16);
+    buffer.setUInt32(battleBGMData.unknownB17);
+
+    buffer.setUInt16(battleBGMData.unknownB18);
+    buffer.setUInt16(battleBGMData.unknownB19);
+    buffer.setUInt16(battleBGMData.unknownB20);
+    buffer.setUInt16(battleBGMData.unknownB21);
+
+    assert.equal(buffer.offset, offset + 80);
+    return offset;
+  }
+
   private parseBattleBGMData(buffer: PM4Buffer): BattleBGMData {
+    const oldOffset = buffer.offset;
+
     const unknownB0 = this.findStringAtOffset(buffer.getUInt32());
     const unknownB1 = this.findStringAtOffset(buffer.getUInt32());
 
@@ -274,6 +548,9 @@ class KDMSound extends KDM<IKDMSound> {
     const unknownB20 = buffer.getUInt16();
     const unknownB21 = buffer.getUInt16();
 
+    assert(this.isInSection(buffer, 5));
+    assert.equal(buffer.offset, oldOffset + 80);
+
     return {
       unknownB0, unknownB1, unknownB10, unknownB11, unknownB12,
       unknownB13, unknownB14, unknownB15, unknownB16, unknownB17,
@@ -283,7 +560,46 @@ class KDMSound extends KDM<IKDMSound> {
     };
   }
 
+  private buildTrackVolumeDataSubEntry(buffer: PM4Buffer, trackVolumeDataSubEntry: TrackVolumeDataSubEntry): number {
+    const offset = buffer.offset;
+
+    buffer.setFloat32(trackVolumeDataSubEntry.unknownC0);
+    buffer.setFloat32(trackVolumeDataSubEntry.unknownC1);
+
+    buffer.setFloat32(trackVolumeDataSubEntry.unknownC2);
+    buffer.setFloat32(trackVolumeDataSubEntry.unknownC3);
+
+    buffer.setFloat32(trackVolumeDataSubEntry.unknownC4);
+    buffer.setFloat32(trackVolumeDataSubEntry.unknownC5);
+
+    buffer.setFloat32(trackVolumeDataSubEntry.unknownC6);
+    buffer.setFloat32(trackVolumeDataSubEntry.unknownC7);
+
+    buffer.setFloat32(trackVolumeDataSubEntry.unknownC8);
+    buffer.setFloat32(trackVolumeDataSubEntry.unknownC9);
+
+    buffer.setFloat32(trackVolumeDataSubEntry.unknownC10);
+    buffer.setFloat32(trackVolumeDataSubEntry.unknownC11);
+
+    buffer.setFloat32(trackVolumeDataSubEntry.unknownC12);
+    buffer.setFloat32(trackVolumeDataSubEntry.unknownC13);
+
+    buffer.setFloat32(trackVolumeDataSubEntry.unknownC14);
+    buffer.setFloat32(trackVolumeDataSubEntry.unknownC15);
+
+    buffer.setUInt16(trackVolumeDataSubEntry.unknownC16);
+    buffer.setUInt16(trackVolumeDataSubEntry.unknownC17);
+
+    buffer.setUInt16(trackVolumeDataSubEntry.unknownC18);
+    buffer.setUInt16(trackVolumeDataSubEntry.unknownC19);
+
+    assert.equal(buffer.offset, offset + 72);
+    return offset;
+  }
+
   private parseTrackVolumeDataSubEntry(buffer: PM4Buffer): TrackVolumeDataSubEntry {
+    const oldOffset = buffer.offset;
+
     const unknownC0 = buffer.getFloat32();
     const unknownC1 = buffer.getFloat32();
 
@@ -308,11 +624,14 @@ class KDMSound extends KDM<IKDMSound> {
     const unknownC14 = buffer.getFloat32();
     const unknownC15 = buffer.getFloat32();
 
-    const unknownC16 = buffer.getFloat32();
-    const unknownC17 = buffer.getFloat32();
+    const unknownC16 = buffer.getUInt16();
+    const unknownC17 = buffer.getUInt16();
 
-    const unknownC18 = buffer.getFloat32();
-    const unknownC19 = buffer.getFloat32();
+    const unknownC18 = buffer.getUInt16();
+    const unknownC19 = buffer.getUInt16();
+
+    assert(this.isInSection(buffer, 5));
+    assert.equal(buffer.offset, oldOffset + 72);
 
     return {
       unknownC0, unknownC1, unknownC10, unknownC11, unknownC12,
@@ -322,12 +641,115 @@ class KDMSound extends KDM<IKDMSound> {
     };
   }
 
+  private buildTrackVolumeData(buffer: PM4Buffer, trackVolumeData: TrackVolumeData): number {
+    const unknownD1Offset = this.buildTrackVolumeDataSubEntry(buffer, trackVolumeData.unknownD1);
+    const unknownD2Offset = this.buildTrackVolumeDataSubEntry(buffer, trackVolumeData.unknownD2);
+    assert.equal(unknownD1Offset + 72, unknownD2Offset);
+
+    const offset = buffer.offset;
+
+    buffer.setUInt32(this.findOffsetOfString(trackVolumeData.unknownD0));
+    buffer.setUInt32(unknownD1Offset);
+
+    buffer.setUInt32(unknownD2Offset);
+    buffer.setUInt32(trackVolumeData.unknownD3);
+
+    buffer.setFloat32(trackVolumeData.unknownD4);
+    buffer.setUInt32(trackVolumeData.unknownD5);
+
+    buffer.setFloat32(trackVolumeData.unknownD6);
+    buffer.setUInt32(trackVolumeData.unknownD7);
+
+    buffer.setUInt32(trackVolumeData.unknownD8);
+    buffer.setUInt32(trackVolumeData.unknownD9);
+
+    buffer.setFloat32(trackVolumeData.unknownD10);
+    buffer.setUInt32(trackVolumeData.unknownD11);
+
+    buffer.setFloat32(trackVolumeData.unknownD12);
+    buffer.setUInt32(trackVolumeData.unknownD13);
+
+    buffer.setUInt32(trackVolumeData.unknownD14);
+    buffer.setUInt16(trackVolumeData.unknownD15);
+    buffer.setUInt16(trackVolumeData.unknownD16);
+
+    buffer.setUInt16(trackVolumeData.unknownD17);
+    buffer.setUInt16(trackVolumeData.unknownD18);
+    buffer.setFloat32(trackVolumeData.unknownD19);
+
+    buffer.setFloat32(trackVolumeData.unknownD20);
+    buffer.setFloat32(trackVolumeData.unknownD21);
+
+    buffer.setFloat32(trackVolumeData.unknownD22);
+    buffer.setFloat32(trackVolumeData.unknownD23);
+
+    buffer.setFloat32(trackVolumeData.unknownD24);
+    buffer.setFloat32(trackVolumeData.unknownD25);
+
+    buffer.setFloat32(trackVolumeData.unknownD26);
+    buffer.setFloat32(trackVolumeData.unknownD27);
+
+    buffer.setFloat32(trackVolumeData.unknownD28);
+    buffer.setFloat32(trackVolumeData.unknownD29);
+
+    buffer.setFloat32(trackVolumeData.unknownD30);
+    buffer.setFloat32(trackVolumeData.unknownD31);
+
+    buffer.setFloat32(trackVolumeData.unknownD32);
+    buffer.setFloat32(trackVolumeData.unknownD33);
+
+    buffer.setFloat32(trackVolumeData.unknownD34);
+    buffer.setUInt16(trackVolumeData.unknownD35);
+    buffer.setUInt16(trackVolumeData.unknownD36);
+
+    buffer.setUInt16(trackVolumeData.unknownD37);
+    buffer.setUInt16(trackVolumeData.unknownD38);
+    buffer.setFloat32(trackVolumeData.unknownD39);
+
+    buffer.setFloat32(trackVolumeData.unknownD40);
+    buffer.setFloat32(trackVolumeData.unknownD41);
+
+    buffer.setFloat32(trackVolumeData.unknownD42);
+    buffer.setFloat32(trackVolumeData.unknownD43);
+
+    buffer.setFloat32(trackVolumeData.unknownD44);
+    buffer.setFloat32(trackVolumeData.unknownD45);
+
+    buffer.setFloat32(trackVolumeData.unknownD46);
+    buffer.setFloat32(trackVolumeData.unknownD47);
+
+    buffer.setFloat32(trackVolumeData.unknownD48);
+    buffer.setFloat32(trackVolumeData.unknownD49);
+
+    buffer.setFloat32(trackVolumeData.unknownD50);
+    buffer.setFloat32(trackVolumeData.unknownD51);
+
+    buffer.setFloat32(trackVolumeData.unknownD52);
+    buffer.setFloat32(trackVolumeData.unknownD53);
+
+    buffer.setFloat32(trackVolumeData.unknownD54);
+    buffer.setUInt16(trackVolumeData.unknownD55);
+    buffer.setUInt16(trackVolumeData.unknownD56);
+
+    buffer.setUInt16(trackVolumeData.unknownD57);
+    buffer.setUInt16(trackVolumeData.unknownD58);
+
+    assert.equal(buffer.offset, offset + 212);
+    return offset;
+  }
+
   private parseTrackVolumeData(buffer: PM4Buffer): TrackVolumeData {
+    const oldOffset = buffer.offset;
+
     const unknownD0 = this.findStringAtOffset(buffer.getUInt32());
     const unknownD1Offset = buffer.getUInt32();
 
     const unknownD2Offset = buffer.getUInt32();
     const unknownD3 = buffer.getUInt32();
+
+    assert(unknownD1Offset !== 0);
+    assert(unknownD2Offset !== 0);
+    assert.equal(unknownD2Offset - unknownD1Offset, 72);
 
     const unknownD4 = buffer.getFloat32();
     const unknownD5 = buffer.getUInt32();
@@ -409,6 +831,10 @@ class KDMSound extends KDM<IKDMSound> {
     const unknownD57 = buffer.getUInt16();
     const unknownD58 = buffer.getUInt16();
 
+    assert(this.isInSection(buffer, 5));
+
+    assert.equal(buffer.offset, oldOffset + 212);
+
     buffer.seek(unknownD1Offset);
     const unknownD1 = this.parseTrackVolumeDataSubEntry(buffer);
 
@@ -428,7 +854,35 @@ class KDMSound extends KDM<IKDMSound> {
     };
   }
 
+  private buildEffectData(buffer: PM4Buffer, effectData: EffectData): number {
+    const offset = buffer.offset;
+
+    buffer.setUInt32(this.findOffsetOfString(effectData.unknownM0));
+    buffer.setFloat32(effectData.unknownM1);
+
+    buffer.setFloat32(effectData.unknownM2);
+    buffer.setFloat32(effectData.unknownM3);
+
+    buffer.setFloat32(effectData.unknownM4);
+    buffer.setFloat32(effectData.unknownM5);
+
+    buffer.setFloat32(effectData.unknownM6);
+    buffer.setFloat32(effectData.unknownM7);
+
+    buffer.setFloat32(effectData.unknownM8);
+
+    buffer.setUInt16(effectData.unknownM9);
+    buffer.setUInt16(effectData.unknownM10);
+    buffer.setUInt16(effectData.unknownM11);
+    buffer.setUInt16(effectData.unknownM12);
+
+    assert.equal(buffer.offset, offset + 44);
+    return offset;
+  }
+
   private parseEffectData(buffer: PM4Buffer): EffectData {
+    const oldOffset = buffer.offset;
+
     const unknownM0 = this.findStringAtOffset(buffer.getUInt32());
     const unknownM1 = buffer.getFloat32();
 
@@ -442,12 +896,15 @@ class KDMSound extends KDM<IKDMSound> {
     const unknownM7 = buffer.getFloat32();
 
     const unknownM8 = buffer.getFloat32();
-    const unknownM9 = buffer.getFloat32();
 
-    const unknownM10 = buffer.getFloat32();
-    const unknownM11 = buffer.getFloat32();
+    const unknownM9 = buffer.getUInt16();
+    const unknownM10 = buffer.getUInt16();
 
-    const unknownM12 = buffer.getFloat32();
+    const unknownM11 = buffer.getUInt16();
+    const unknownM12 = buffer.getUInt16();
+
+    assert(this.isInSection(buffer, 5));
+    assert.equal(buffer.offset, oldOffset + 44);
 
     return {
       unknownM0, unknownM1, unknownM10, unknownM11, unknownM12, unknownM2,
@@ -457,7 +914,14 @@ class KDMSound extends KDM<IKDMSound> {
   }
 
   private buildGroupDataTable(buffer: PM4Buffer): void {
+    buffer.setUInt32(0x00130104);
+    buffer.setUInt32(0x0013000F);
 
+    this.groupDataTable.offsets.forEach((offset) => {
+      buffer.setUInt32(offset);
+    });
+
+    buffer.setUInt32(0x00000000);
   }
 
   private parseGroupDataTable(buffer: PM4Buffer): void {
@@ -473,7 +937,14 @@ class KDMSound extends KDM<IKDMSound> {
   }
 
   private buildEffectDataTable(buffer: PM4Buffer): void {
+    buffer.setUInt32(0x000A0114);
+    buffer.setUInt32(0x000A000F);
 
+    this.effectDataTable.offsets.forEach((offset) => {
+      buffer.setUInt32(offset);
+    });
+
+    buffer.setUInt32(0x00000000);
   }
 
   private parseEffectDataTable(buffer: PM4Buffer): void {
@@ -489,7 +960,14 @@ class KDMSound extends KDM<IKDMSound> {
   }
 
   private buildSetup3DataTable(buffer: PM4Buffer): void {
+    buffer.setUInt32(0x00030021);
+    buffer.setUInt32(0x0003000F);
 
+    this.setup3DataTable.offsets.forEach((offset) => {
+      buffer.setUInt32(offset);
+    });
+
+    buffer.setUInt32(0x00000000);
   }
 
   private parseSetup3DataTable(buffer: PM4Buffer): void {
@@ -505,7 +983,14 @@ class KDMSound extends KDM<IKDMSound> {
   }
 
   private buildBattleBGMDataTable(buffer: PM4Buffer): void {
+    buffer.setUInt32(0x00150036);
+    buffer.setUInt32(0x0015000F);
 
+    this.battleBGMDataTable.offsets.forEach((offset) => {
+      buffer.setUInt32(offset);
+    });
+
+    buffer.setUInt32(0x00000000);
   }
 
   private parseBattleBGMDataTable(buffer: PM4Buffer): void {
@@ -521,7 +1006,14 @@ class KDMSound extends KDM<IKDMSound> {
   }
 
   private buildChangeBGMDataTable(buffer: PM4Buffer): void {
+    buffer.setUInt32(0x00050119);
+    buffer.setUInt32(0x0005000F);
 
+    this.changeBGMDataTable.offsets.forEach((offset) => {
+      buffer.setUInt32(offset);
+    });
+
+    buffer.setUInt32(0x00000000);
   }
 
   private parseChangeBGMDataTable(buffer: PM4Buffer): void {
@@ -537,7 +1029,14 @@ class KDMSound extends KDM<IKDMSound> {
   }
 
   private buildTrackVolumeDataTable(buffer: PM4Buffer): void {
+    buffer.setUInt32(0x003F00F1);
+    buffer.setUInt32(0x003F000F);
 
+    this.trackVolumeDataTable.offsets.forEach((offset) => {
+      buffer.setUInt32(offset);
+    });
+
+    buffer.setUInt32(0x00000000);
   }
 
   private parseTrackVolumeDataTable(buffer: PM4Buffer): void {
@@ -553,7 +1052,14 @@ class KDMSound extends KDM<IKDMSound> {
   }
 
   private buildTownWorldMapDataTable(buffer: PM4Buffer): void {
+    buffer.setUInt32(0x0006010A);
+    buffer.setUInt32(0x0006000F);
 
+    this.townWorldMapDataTable.offsets.forEach((offset) => {
+      buffer.setUInt32(offset);
+    });
+
+    buffer.setUInt32(0x00000000);
   }
 
   private parseTownWorldMapDataTable(buffer: PM4Buffer): void {
@@ -569,11 +1075,103 @@ class KDMSound extends KDM<IKDMSound> {
   }
 
   protected override buildSection4(buffer: PM4Buffer): void {
-
+    buffer.setUInt8(...[
+      // Offset 0x000010BC to 0x00001323
+      0x0A, 0x00, 0x00, 0x00, 0x15, 0x00, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00,
+      0xFC, 0x10, 0x8E, 0x00, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x16, 0x00, 0x06, 0x00,
+      0x00, 0x00, 0x00, 0x00, 0x20, 0x11, 0x8E, 0x00, 0x00, 0x00, 0x00, 0x00,
+      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+      0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x17, 0x00, 0x08, 0x00,
+      0x00, 0x00, 0x00, 0x00, 0x4C, 0x11, 0x8E, 0x00, 0x03, 0x00, 0x00, 0x00,
+      0x03, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+      0x0F, 0x00, 0x00, 0x00, 0x18, 0x00, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00,
+      0x64, 0x11, 0x8E, 0x00, 0x03, 0x00, 0x00, 0x00, 0x0F, 0x00, 0x00, 0x00,
+      0x01, 0x00, 0x00, 0x00, 0x19, 0x00, 0x12, 0x00, 0x00, 0x00, 0x00, 0x00,
+      0xB8, 0x11, 0x8E, 0x00, 0x03, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00,
+      0x00, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+      0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00,
+      0x00, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+      0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00,
+      0x03, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00,
+      0x03, 0x00, 0x00, 0x00, 0x1A, 0x00, 0x0F, 0x00, 0x00, 0x00, 0x00, 0x00,
+      0x00, 0x12, 0x8E, 0x00, 0x03, 0x00, 0x00, 0x00, 0x0A, 0x00, 0x00, 0x00,
+      0x0A, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+      0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+      0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+      0x00, 0x00, 0x00, 0x00, 0x1B, 0x00, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00,
+      0x1C, 0x12, 0x8E, 0x00, 0x03, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00,
+      0x03, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00, 0x1C, 0x00, 0x35, 0x00,
+      0x00, 0x00, 0x00, 0x00, 0xFC, 0x12, 0x8E, 0x00, 0x03, 0x00, 0x00, 0x00,
+      0x03, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00,
+      0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+      0x00, 0x00, 0x00, 0x00, 0x1D, 0x00, 0x09, 0x00, 0x00, 0x00, 0x00, 0x00,
+      0x2C, 0x13, 0x8E, 0x00, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+      0x04, 0x00, 0x00, 0x00, 0x1E, 0x00, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00,
+      0x00, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00,
+      0x03, 0x00, 0x00, 0x00
+    ]);
   }
 
   protected override buildSection5(buffer: PM4Buffer): void {
+    buffer.setUInt32(this.objectCount);
 
+    buffer.setUInt32(0x0004001F);
+    buffer.setUInt32(0x00040015);
+
+    this.townWorldMapDataTable.entries.forEach((entry) => {
+      const offset = this.buildTownWorldMapData(buffer, entry);
+      this.townWorldMapDataTable.offsets.push(offset);
+    });
+
+    this.changeBGMDataTable.entries.forEach((entry) => {
+      const offset = this.buildChangeBGMData(buffer, entry);
+      this.changeBGMDataTable.offsets.push(offset);
+    });
+
+    this.effectDataTable.entries.forEach((entry) => {
+      const offset = this.buildEffectData(buffer, entry);
+      this.effectDataTable.offsets.push(offset);
+    });
+
+    this.trackVolumeDataTable.entries.forEach((entry) => {
+      const offset = this.buildTrackVolumeData(buffer, entry);
+      this.trackVolumeDataTable.offsets.push(offset);
+    });
+
+    this.groupDataTable.entries.forEach((entry) => {
+      const offset = this.buildGroupData(buffer, entry);
+      this.groupDataTable.offsets.push(offset);
+    });
+
+    this.setup3DataTable.entries.forEach((entry) => {
+      const offset = this.buildSetup3Data(buffer, entry);
+      this.setup3DataTable.offsets.push(offset);
+    });
+
+    this.battleBGMDataTable.entries.forEach((entry) => {
+      const offset = this.buildBattleBGMData(buffer, entry);
+      this.battleBGMDataTable.offsets.push(offset);
+    });
   }
 
   protected override parseSection4(buffer: PM4Buffer): void {
@@ -773,6 +1371,11 @@ class KDMSound extends KDM<IKDMSound> {
   }
 
   protected override parseSection5(buffer: PM4Buffer): void {
+    // townWorldMapData: 220
+    // trackVolumeData: 212
+    // battleBGMData: 80
+    // effectData: 44
+
     const count = buffer.getUInt32();
 
     assert.equal(buffer.getUInt32(), 0x0004001F);
@@ -1076,10 +1679,10 @@ const ChangeBGMData = z.object({
   unknownP0: z.string(),
   unknownP1: z.string(),
   unknownP2: z.string(),
-  unknownP3: z.number(),
-  unknownP4: z.number(),
-  unknownP5: z.number(),
-  unknownP6: z.number()
+  unknownP3: z.number().nullable(),
+  unknownP4: z.number().nullable(),
+  unknownP5: z.number().nullable(),
+  unknownP6: z.number().nullable()
 });
 
 type ChangeBGMData = z.infer<typeof ChangeBGMData>;
