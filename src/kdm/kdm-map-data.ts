@@ -93,6 +93,11 @@ class KDMMapData extends KDM<IKDMMapData> {
 
     for (let i = 0; i < limit; i += 1) {
       const offset = buffer.getUInt32();
+
+      if(offset === 0) {
+        break;
+      }
+    
       this.mapDataTable.offsets.push(offset);
     }
   }
