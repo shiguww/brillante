@@ -108,6 +108,12 @@ class PM4Buffer {
     return val;
   }
 
+  public getFloat32(): number {
+    const val = this._buffer.readFloatLE(this._offset);
+    this._offset += 4;
+    return val;
+  }
+
   public getCString(): string {
     let end = this._buffer
       .findIndex((ch, i) => i >= this._offset && ch === 0);
@@ -220,6 +226,20 @@ class PM4Buffer {
 
     val.forEach((val) => {
       this._buffer.writeUInt32LE(val, this._offset);
+      this._offset += ELEMENT_SIZE;
+    });
+
+    return this;
+  }
+
+  public setFloat32(...val: number[]): this {
+    assert.ok(this._params.writable);
+
+    const ELEMENT_SIZE = 4;
+    this.fit(this._offset + val.length * ELEMENT_SIZE);
+
+    val.forEach((val) => {
+      this._buffer.writeFloatLE(val, this._offset);
       this._offset += ELEMENT_SIZE;
     });
 
