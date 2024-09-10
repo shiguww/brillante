@@ -2,9 +2,9 @@
 **WIP**: Modding tools for `Paper Mario: Sticker Star`.
 
 Supported files:
+* `kdm_sound.bin` (`sound`)
 * `kdm_mapdata.bin` (`map-data`)
 * `kdm_link_data.bin` (`link-data`)
-* `kdm_sound.bin` (`sound`) **EXPERIMENTAL BUILDING**
 
 ## Installation
 First, begin by download the latest version of the tool [here](https://github.com/shiguww/brillante/releases) (or [here](https://github.com/shiguww/brillante/archive/refs/heads/develop.zip) for the `develop` branch).
