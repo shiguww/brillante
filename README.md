@@ -22,7 +22,7 @@ pnpm install
 ## Editing KDM files
 Below is the list of KDM files.
 
-The tool has two possible actions:
+The tool has three possible actions:
 * `build` - Create a KDM binary file from a JSON export
 * `parse` - Export a KDM binary file into an editable JSON format
 * `inspect` - Export a KDM binary file into a verbose, readonly JSON format
