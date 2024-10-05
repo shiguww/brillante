@@ -9,7 +9,7 @@ You will also need node.js v22. The preferred installation method may vary depen
 Additionally, you need to install pnpm which can be done via corepack (bundled with node.js):
 ```shell
 corepack enable
-corepack use pnpm@9.9.0
+corepack use pnpm@9.12.0
 ```
 
 If you're running into an "Operation Not Permitted" Error, run the shell as Administrator (Windows) or use `sudo` (Linux).
