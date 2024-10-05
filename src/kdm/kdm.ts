@@ -1,9 +1,11 @@
 import z from "zod";
 import RBuffer from "#buffer/r-buffer";
 import WBuffer from "#buffer/w-buffer";
+import Link from "#kdm/link-data/link";
 import assert from "node:assert/strict";
 import MapData from "#kdm/mapdata/mapdata";
 import KDMObject from "#kdm/common/kdm-object";
+import LinkData from "#kdm/link-data/link-data";
 import type KDMTable from "#kdm/common/kdm-table";
 import KDMString from "#kdm/common/global/kdm-string";
 import KDMPointerArray from "#kdm/common/global/kdm-pointer-array";
@@ -20,7 +22,7 @@ type KDMObjectConstructor = (new (kdm: KDM) => KDMObject) & {
 const IKDM = z.object({
   tables: z.union([
     z.tuple([z.literal("mapDataTable"), MapData.schema.array()]),
-    z.tuple([z.literal("mapDataTable"), MapData.schema.array()])
+    z.tuple([z.literal("link_data_all"), LinkData.schema.array()])
   ]).array()
 });
 
@@ -53,9 +55,17 @@ class KDM {
     data.tables.forEach(([name, data]) => {
       let table: null | KDMTable = null;
 
+      // kdm_mapdata.bin
       if (name === "mapDataTable") {
         table = new KDMPointerArray(this)
           .useNullTerminator(true)
+          .set(data);
+      }
+
+      // kdm_link_data.bin
+      if (name === "link_data_all") {
+        table = new KDMPointerArray(this)
+          .useNullTerminator(false)
           .set(data);
       }
 
@@ -68,12 +78,23 @@ class KDM {
 
   public createObject(data: unknown): KDMObject {
     if (data !== null && typeof data === "object" && "_structure" in data) {
+      // global
       if (data._structure === "KDMU32Parameter") {
         return new KDMU32Parameter(this).set(data);
       }
 
+      // kdm_mapdata.bin
       if (data._structure === "MapData") {
         return new MapData(this).set(data);
+      }
+
+      // kdm_link_data.bin
+      if (data._structure === "Link") {
+        return new Link(this).set(data);
+      }
+
+      if (data._structure === "LinkData") {
+        return new LinkData(this).set(data);
       }
     }
 
@@ -181,17 +202,51 @@ class KDM {
       const unknownValue0 = buffer.getU32();
       const unknownValue1 = buffer.getU32();
 
+      const fields: number[] = [];
+      const possibleTypes: KDMObjectConstructor[] = [];
+
+      for (let i = 0; i < size; i += 1) {
+        fields.push(buffer.getU32());
+      }
+
       if (
-        oid === MapData.OID &&
         size === MapData.SIZEOF &&
         unknownValue0 === MapData.UNKNOWN_SECTION4_VALUE_0 &&
         unknownValue1 === MapData.UNKNOWN_SECTION4_VALUE_1
       ) {
-        this.types.push(MapData);
-        continue;
+        possibleTypes.push(MapData);
       }
 
-      assert.fail();
+      if (
+        size === Link.SIZEOF &&
+        unknownValue0 === Link.UNKNOWN_SECTION4_VALUE_0 &&
+        unknownValue1 === Link.UNKNOWN_SECTION4_VALUE_1
+      ) {
+        possibleTypes.push(Link);
+      }
+
+      if (
+        size === LinkData.SIZEOF &&
+        unknownValue0 === LinkData.UNKNOWN_SECTION4_VALUE_0 &&
+        unknownValue1 === LinkData.UNKNOWN_SECTION4_VALUE_1
+      ) {
+        possibleTypes.push(LinkData);
+      }
+
+      const type = possibleTypes.find((type) => {
+        const inst = new type(this);
+
+        return inst.fields.filter((field) => !inst.heading.fields.includes(field))
+          .every((field, index) => {
+            assert.equal(field.description.length, 1);
+            return field.description.at(0) === fields.at(index);
+          });
+      });
+
+      assert(type !== undefined);
+
+      type.OID = oid;
+      this.types.push(type);
     }
   }
 
@@ -207,10 +262,20 @@ class KDM {
     }
 
     names.forEach((name) => {
-      const table = this.parseObject(buffer);
-      assert("entries" in table && Array.isArray(table.entries));
+      let table: null | KDMTable = null;
 
-      this.tables.push([name, table as KDMTable]);
+      if (name === "mapDataTable") {
+        table = new KDMPointerArray(this).useNullTerminator(true);
+      }
+
+      if (name === "link_data_all") {
+        table = new KDMPointerArray(this).useNullTerminator(false);
+      }
+
+      assert(table !== null);
+
+      table.parse(buffer);
+      this.tables.push([name, table]);
     });
   }
 
@@ -250,6 +315,11 @@ class KDM {
       if (name === "mapDataTable") {
         this.types.push(MapData);
       }
+
+      if(name === "link_data_all") {
+        this.types.push(Link);
+        this.types.push(LinkData);
+      }
     });
 
     // Setting parameters
@@ -260,10 +330,23 @@ class KDM {
           value: table.entries.length + 1
         }));
       }
+
+      if (name === "link_data_all") {
+        this.parameters.push(new KDMU32Parameter(this).set({
+          name: "link_data_all_len",
+          value: table.entries.length
+        }));
+      }
     });
 
     // Registering strings
     this.tables.forEach(([name, table]) => {
+      table.entries.filter((e) => e instanceof KDMObject)
+        .map((o) => o.objects).flat()
+        .map((o) => o.fields).flat()
+        .filter((f) => f instanceof KDMStringPointer)
+        .forEach((s) => this.registerStringIfNotExists(s));
+
       table.entries.map((e) => e.fields)
         .flat()
         .filter((f) => f instanceof KDMStringPointer)
@@ -279,8 +362,7 @@ class KDM {
 
     this.tables.map((t) => t[1]).forEach((t) => {
       t.entries.filter((e) => e instanceof KDMObject)
-        .map((o) => o.objects)
-        .flat()
+        .map((o) => o.objects).flat()
         .forEach((o) => o.heading.uid.set(this.id++));
 
       t.heading.uid.set(this.id++);
@@ -297,7 +379,14 @@ class KDM {
 
           if (a < b) return -1;
           if (a > b) return 1;
-          return 0;
+        }
+
+        if(A instanceof LinkData && B instanceof LinkData) {
+          const a = A.name.get()|| "";
+          const b = B.name.get()|| "";
+
+          if (a < b) return -1;
+          if (a > b) return 1;
         }
 
         return 0;

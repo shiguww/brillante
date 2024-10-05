@@ -53,6 +53,10 @@ class KDMPointerArray extends KDMObject<IKDMPointerArray> {
   public override readonly schema = IKDMPointerArray;
   public override readonly heading = new KDMPointerArrayHeading(this.kdm);
 
+  public override get objects(): KDMObject[] {
+    return [...this.entries, this];
+  }
+
   public override get sizeof(): number {
     return this.heading.sizeof + (this.nullTerminatorFlag
       ? (this.entries.length + 1) * WBuffer.U32_SIZE
