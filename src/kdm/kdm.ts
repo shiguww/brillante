@@ -4,23 +4,23 @@ import WBuffer from "#buffer/w-buffer";
 import Link from "#kdm/link-data/link";
 import assert from "node:assert/strict";
 import MapData from "#kdm/mapdata/mapdata";
+import GroupData from "#kdm/sound/group-data";
 import KDMObject from "#kdm/common/kdm-object";
 import LinkData from "#kdm/link-data/link-data";
+import EffectData from "#kdm/sound/effect-data";
 import Setup3Data from "#kdm/sound/setup3-data";
 import type KDMTable from "#kdm/common/kdm-table";
 import KDMString from "#kdm/common/global/kdm-string";
 import BattleBGMData from "#kdm/sound/battle-bgm-data";
+import ChangeBGMData from "#kdm/sound/change-bgm-data";
+import TrackVolumeData from "#kdm/sound/track-volume-data";
 import UnusedSoundData0 from "#kdm/sound/unused-sound-data0";
 import UnusedSoundData1 from "#kdm/sound/unused-sound-data1";
 import UnusedSoundData2 from "#kdm/sound/unused-sound-data2";
+import TownWorldMapData from "#kdm/sound/town-world-map-data";
 import KDMPointerArray from "#kdm/common/global/kdm-pointer-array";
 import KDMStringPointer from "#kdm/common/primitive/kdm-string-pointer";
 import KDMU32Parameter from "#kdm/common/global/parameter/kdm-u32-parameter";
-import TrackVolumeData from "./sound/track-volume-data";
-import GroupData from "./sound/group-data";
-import ChangeBGMData from "./sound/change-bgm-data";
-import EffectData from "./sound/effect-data";
-import TownWorldMapData from "./sound/town-world-map-data";
 
 type KDMObjectConstructor = (new (kdm: KDM) => KDMObject) & {
   OID: number;

@@ -4,11 +4,11 @@ import type RBuffer from "#buffer/r-buffer";
 import type WBuffer from "#buffer/w-buffer";
 import KDMObject from "#kdm/common/kdm-object";
 import KDMU16 from "#kdm/common/primitive/kdm-u16";
+import KDMF32 from "#kdm/common/primitive/kdm-f32";
 import KDMStructure from "#kdm/common/kdm-structure";
+import KDMBoolean from "#kdm/common/primitive/kdm-boolean";
 import KDMPrimitive from "#kdm/common/primitive/kdm-primitive";
 import KDMStringPointer from "#kdm/common/primitive/kdm-string-pointer";
-import KDMF32 from "#kdm/common/primitive/kdm-f32";
-import KDMBoolean from "#kdm/common/primitive/kdm-boolean";
 
 class EffectDataHeading extends KDMStructure<never> {
   public readonly uid = new KDMU16(this.kdm);

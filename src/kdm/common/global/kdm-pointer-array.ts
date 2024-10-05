@@ -1,7 +1,7 @@
 import z from "zod";
+import WBuffer from "#buffer/w-buffer";
 import assert from "node:assert/strict";
 import type RBuffer from "#buffer/r-buffer";
-import WBuffer from "#buffer/w-buffer";
 import KDMObject from "#kdm/common/kdm-object";
 import KDMU16 from "#kdm/common/primitive/kdm-u16";
 import KDMStructure from "#kdm/common/kdm-structure";
