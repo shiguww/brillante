@@ -12,7 +12,7 @@
     "moduleDetection": "force",
     "noUnusedParameters": true,
     "noImplicitOverride": true,
-    "paths": { "#/*": ["src/*"] },
+    "paths": { "#*": ["src/*"] },
     "moduleResolution": "bundler",
     "noUncheckedIndexedAccess": true,
     "noFallthroughCasesInSwitch": true,

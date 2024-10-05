@@ -1,11 +1,7 @@
 import path from "node:path";
 import fs from "node:fs/promises";
 import { Command } from "commander";
-import assert from "node:assert/strict";
-
-import KDMSound from "#/kdm/kdm-sound";
-import KDMMapData from "#/kdm/kdm-map-data";
-import KDMLinkData from "#/kdm/kdm-link-data";
+import KDM from "#kdm/kdm";
 
 const program = new Command()
   .version("v0.0.0");
@@ -15,74 +11,51 @@ const kdm = program
 
 kdm
   .command("build")
-  .requiredOption("-t, --type <TYPE>")
+  .option("-o, --output <PATH>")
   .requiredOption("-i, --input <PATH>")
-  .requiredOption("-o, --output <PATH>")
   .action(async (options) => {
-    const type = options.type as string;
     const input = path.resolve(options.input);
 
     const output = path.resolve(options.output || input
       .replace(".kdm.json", ".bin")
       .replace(".json", ".bin"));
 
-    let buffer: null | Buffer = null;
-
     const data = await fs.readFile(input, "utf8")
       .then((data) => JSON.parse(data));
 
-    if (type === "sound") {
-      buffer = new KDMSound(data)
-        .build();
-    }
-
-    if (type === "map-data") {
-      buffer = new KDMMapData(data)
-        .build();
-    }
-
-    if (type === "link-data") {
-      buffer = new KDMLinkData(data)
-        .build();
-    }
-
-    assert(buffer !== null, `Unsupported KDM file type: '${type}'.`);
-
-    await fs.writeFile(output, buffer);
+    await fs.writeFile(output, new KDM().set(data).build());
     console.log(`Wrote to ${output}. Done.`);
   });
 
 kdm
   .command("parse")
-  .requiredOption("-t, --type <TYPE>")
+  .option("-o, --output <PATH>")
   .requiredOption("-i, --input <PATH>")
-  .requiredOption("-o, --output <PATH>")
   .action(async (options) => {
-    const type = options.type as string;
     const input = path.resolve(options.input);
     const output = path.resolve(options.output || input.replace(".bin", ".kdm.json"));
 
-    let data: null | object = null;
     const buffer = await fs.readFile(input);
 
-    if (type === "sound") {
-      data = new KDMSound()
-        .parse(buffer);
-    }
+    await fs.writeFile(output, JSON.stringify(
+      new KDM().parse(buffer).get(), undefined, 4));
 
-    if (type === "map-data") {
-      data = new KDMMapData()
-        .parse(buffer);
-    }
+    console.log(`Wrote to ${output}. Done.`);
+  });
 
-    if (type === "link-data") {
-      data = new KDMLinkData()
-        .parse(buffer);
-    }
+kdm
+  .command("inspect")
+  .option("-o, --output <PATH>")
+  .requiredOption("-i, --input <PATH>")
+  .action(async (options) => {
+    const input = path.resolve(options.input);
+    const output = path.resolve(options.output || input.replace(".bin", ".kdm.json"));
 
-    assert(data !== null, `Unsupported KDM file type: '${type}'.`);
+    const buffer = await fs.readFile(input);
 
-    await fs.writeFile(output, JSON.stringify(data, undefined, 4));
+    await fs.writeFile(output, JSON.stringify(
+      new KDM().parse(buffer), undefined, 4));
+
     console.log(`Wrote to ${output}. Done.`);
   });
 
