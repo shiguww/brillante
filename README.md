@@ -12,7 +12,7 @@ corepack enable
 corepack use pnpm@9.9.0
 ```
 
-If you're running into an "Operation Not Permitted Error", run the shell as Administrator (Windows) or use `sudo` (Linux).
+If you're running into an "Operation Not Permitted" Error, run the shell as Administrator (Windows) or use `sudo` (Linux).
 
 Finally, install the dependencies by running:
 ```shell
@@ -23,13 +23,15 @@ pnpm install
 Below is the list of KDM files.
 
 The tool has two possible actions:
-* `build` - Build back a KDM file from a JSON export
-* `parse` - Export a KDM file to a readable JSON format
+* `build` - Create a KDM binary file from a JSON export
+* `parse` - Export a KDM binary file into an editable JSON format
+* `inspect` - Export a KDM binary file into a verbose, readonly JSON format
 
 Usage:
 
 ``` shell
 pnpm brillante kdm parse -i kdm_mapdata.bin # Exports to kdm_mapdata.kdm.json
+pnpm brillante kdm inspect -i kdm_mapdata.bin # Inspects to kdm_mapdata.kdm.json
 pnpm brillante kdm build -i kdm_mapdata.kdm.json -o file.bin # Builds to file.bin
 ```
 
@@ -67,3 +69,7 @@ pnpm brillante kdm build -i kdm_mapdata.kdm.json -o file.bin # Builds to file.bi
 * `🧪`: fully supported, parsing and building loses unused data
 * `🚧`: partially supported
 * `❌`: not supported
+
+## Other tools
+- [`kdm_battle_set_*.bin` editor (by Longboost)](https://github.com/Longboost/battle-set-exporter/releases)
+- [`Lang/*.bin` & `NWTexture/*.bin` editor (by Darxoon)](https://github.com/Darxoon/nw-tex)

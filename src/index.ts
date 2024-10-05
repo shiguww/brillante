@@ -39,7 +39,23 @@ kdm
 
     await fs.writeFile(output, JSON.stringify(
       new KDM().parse(buffer).get(), undefined, 4));
-      
+
+    console.log(`Wrote to ${output}. Done.`);
+  });
+
+kdm
+  .command("inspect")
+  .option("-o, --output <PATH>")
+  .requiredOption("-i, --input <PATH>")
+  .action(async (options) => {
+    const input = path.resolve(options.input);
+    const output = path.resolve(options.output || input.replace(".bin", ".kdm.json"));
+
+    const buffer = await fs.readFile(input);
+
+    await fs.writeFile(output, JSON.stringify(
+      new KDM().parse(buffer), undefined, 4));
+
     console.log(`Wrote to ${output}. Done.`);
   });
 

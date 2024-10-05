@@ -542,6 +542,16 @@ class KDM {
 
     return buffer.buffer;
   }
+
+  public toJSON(): object {
+    return {
+      ...this,
+      types: this.types.map((type) => ({
+        name: type.name,
+        fields: new type(this).fields.map((f) => f.constructor.name)
+      }))
+    };
+  }
 }
 
 export default KDM;

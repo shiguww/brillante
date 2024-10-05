@@ -26,6 +26,10 @@ abstract class KDMStructure<T = unknown> {
       .reduce((prev, curr) => prev + curr);
   }
 
+  public toJSON(): object {
+    return { ...this, kdm: undefined, schema: undefined, _structure: this.constructor.name };
+  }
+
   protected abstract _get(): T;
   protected abstract _set(data: T): void;
 
@@ -66,4 +70,3 @@ abstract class KDMStructure<T = unknown> {
 }
 
 export default KDMStructure;
- 
