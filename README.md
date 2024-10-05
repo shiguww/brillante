@@ -22,45 +22,48 @@ pnpm install
 ## Editing KDM files
 Below is the list of KDM files.
 
-Files starting with `kdm_battle_set` are not listed because these can already be edited using Longboost's battle set exporter, which you can get [here](https://github.com/Longboost/battle-set-exporter). Additionally, `kdm_sample.bin` is also not listed as it is believed to be a test file for the KDM parser.
-
-| File                      | Support | Type              |
-| ------------------------- | ------- | ----------------- |
-| `kdm_shop.bin`            | No      | `shop`            |
-| `kdm_lucie.bin`           | No      | `lucie`           |
-| `kdm_sound.bin`           | Full    | `sound`           |
-| `kdm_battle.bin`          | No      | `battle`          |
-| `kdm_switch.bin`          | No      | `switch`          |
-| `kdm_mapdata.bin`         | Full    | `map-data`        |
-| `kdm_texture.bin`         | No      | `texture`         |
-| `kdm_pepalyze.bin`        | No      | `pepalyze`        |
-| `kdm_char_data.bin`       | No      | `char-data`       |
-| `kdm_item_data.bin`       | No      | `item-data`       |
-| `kdm_link_data.bin`       | Full    | `link-data`       |
-| `kdm_mapobject.bin`       | No      | `map-object`      |
-| `kdm_sound_env.bin`       | No      | `sound-env`       |
-| `kdm_battle_map.bin`      | No      | `battle-map`      |
-| `kdm_map_viewer.bin`      | No      | `map-viewer`      |
-| `kdm_paper_data.bin`      | No      | `paper-data`      |
-| `kdm_char_viewer.bin`     | No      | `char-viewer`     |
-| `kdm_dispos_data.bin`     | No      | `dispos-data`     |
-| `kdm_sound_anime.bin`     | No      | `sound-anime`     |
-| `kdm_battle_model.bin`    | No      | `battle-model`    |
-| `kdm_battle_camera.bin`   | No      | `battle-camera`   |
-| `kdm_battle_common.bin`   | No      | `battle-common`   |
-| `kdm_worldmap_data.bin`   | No      | `world-map-data`  |
-| `kdm_pepalyze_museum.bin` | No      | `pepalyze-museum` |
-
 The tool has two possible actions:
-* `build` - Build back a file from a JSON export.
-* `parse` - Export a file to a editable/readable JSON format.
-  
-For example, to export `kdm_mapdata.bin` to `kdm_mapdata.json`, you'd run:
-```shell
-pnpm brillante kdm parse -t map-data -i kdm_mapdata.bin -o kdm_mapdata.json
+* `build` - Build back a KDM file from a JSON export
+* `parse` - Export a KDM file to a readable JSON format
+
+Usage:
+
+``` shell
+pnpm brillante kdm parse -i kdm_mapdata.bin # Exports to kdm_mapdata.kdm.json
+pnpm brillante kdm build -i kdm_mapdata.kdm.json -o file.bin # Builds to file.bin
 ```
 
-After editing `kdm_mapdata.json`, you can build a `kdm_mapdata.bin` file which can be loaded into the game:
-```shell
-pnpm brillante kdm build -t map-data -i kdm_mapdata.json -o kdm_mapdata.bin
-```
+**KDM file support table**
+| File                      | Support |
+| ------------------------- | ------- |
+| `kdm_shop.bin`            | ❌       |
+| `kdm_lucie.bin`           | ❌       |
+| `kdm_sound.bin`           | ✅       |
+| `kdm_battle.bin`          | ❌       |
+| `kdm_sample.bin`          | ❌       |
+| `kdm_switch.bin`          | ❌       |
+| `kdm_mapdata.bin`         | ✅       |
+| `kdm_texture.bin`         | ❌       |
+| `kdm_pepalyze.bin`        | ❌       |
+| `kdm_char_data.bin`       | ❌       |
+| `kdm_item_data.bin`       | ❌       |
+| `kdm_link_data.bin`       | ✅       |
+| `kdm_mapobject.bin`       | ❌       |
+| `kdm_sound_env.bin`       | ❌       |
+| `kdm_battle_map.bin`      | ❌       |
+| `kdm_map_viewer.bin`      | ❌       |
+| `kdm_paper_data.bin`      | ❌       |
+| `kdm_char_viewer.bin`     | ❌       |
+| `kdm_dispos_data.bin`     | ❌       |
+| `kdm_sound_anime.bin`     | ❌       |
+| `kdm_battle_model.bin`    | ❌       |
+| `kdm_battle_set_*.bin`    | ❌       |
+| `kdm_battle_camera.bin`   | ❌       |
+| `kdm_battle_common.bin`   | ❌       |
+| `kdm_worldmap_data.bin`   | ❌       |
+| `kdm_pepalyze_museum.bin` | ❌       |
+
+* `✅`: fully supported, parsing and building loses no data
+* `🧪`: fully supported, parsing and building loses unused data
+* `🚧`: partially supported
+* `❌`: not supported
