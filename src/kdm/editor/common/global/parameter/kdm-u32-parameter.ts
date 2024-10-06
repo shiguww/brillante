@@ -1,12 +1,10 @@
 import z from "zod";
 import assert from "node:assert";
-import KDMObject from "#kdm/editor/common/kdm-object";
+import KDMU16 from "#kdm/editor/common/primitive/kdm-u16";
 import KDMU32 from "#kdm/editor/common/primitive/kdm-u32";
+import KDMStructure from "#kdm/editor/common/kdm-structure";
 import KDMPrimitive from "#kdm/editor/common/primitive/kdm-primitive";
 import KDMStringPointer from "#kdm/editor/common/primitive/kdm-string-pointer";
-import KDMObjectHeading from "../../kdm-object-heading";
-import KDMStructure from "../../kdm-structure";
-import KDMU16 from "../../primitive/kdm-u16";
 
 class KDMU32ParameterHeading extends KDMStructure<never> {
   public readonly uid = new KDMU16(this.kdm);

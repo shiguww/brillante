@@ -6,9 +6,9 @@ import KDMObject from "#kdm/editor/common/kdm-object";
 import KDMU16 from "#kdm/editor/common/primitive/kdm-u16";
 import KDMU32 from "#kdm/editor/common/primitive/kdm-u32";
 import KDMStructure from "#kdm/editor/common/kdm-structure";
+import KDMObjectHeading from "#kdm/editor/common/kdm-object-heading";
 import KDMPrimitive from "#kdm/editor/common/primitive/kdm-primitive";
 import KDMStringPointer from "#kdm/editor/common/primitive/kdm-string-pointer";
-import KDMObjectHeading from "../common/kdm-object-heading";
 
 const ILinkType = z.enum([
   "DOOR", "GOAL", "PIPE",

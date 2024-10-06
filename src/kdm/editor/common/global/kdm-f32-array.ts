@@ -5,8 +5,8 @@ import type RBuffer from "#buffer/r-buffer";
 import KDMObject from "#kdm/editor/common/kdm-object";
 import KDMF32 from "#kdm/editor/common/primitive/kdm-f32";
 import KDMU16 from "#kdm/editor/common/primitive/kdm-u16";
+import KDMObjectHeading from "#kdm/editor/common/kdm-object-heading";
 import KDMPrimitive from "#kdm/editor/common/primitive/kdm-primitive";
-import KDMObjectHeading from "../kdm-object-heading";
 
 class KDMF32ArrayHeading extends KDMObjectHeading<KDMF32Array> {
   public readonly size0 = new KDMU16(this.kdm);

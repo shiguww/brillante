@@ -4,8 +4,8 @@ import assert from "node:assert/strict";
 import type RBuffer from "#buffer/r-buffer";
 import KDMObject from "#kdm/editor/common/kdm-object";
 import KDMU16 from "#kdm/editor/common/primitive/kdm-u16";
+import KDMObjectHeading from "#kdm/editor/common/kdm-object-heading";
 import KDMPrimitive from "#kdm/editor/common/primitive/kdm-primitive";
-import KDMObjectHeading from "../kdm-object-heading";
 
 class KDMPointerArrayHeading extends KDMObjectHeading<KDMPointerArray> {
   public readonly size0 = new KDMU16(this.kdm);

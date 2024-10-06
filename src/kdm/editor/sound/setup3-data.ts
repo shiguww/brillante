@@ -5,10 +5,9 @@ import type WBuffer from "#buffer/w-buffer";
 import KDMObject from "#kdm/editor/common/kdm-object";
 import KDMF32 from "#kdm/editor/common/primitive/kdm-f32";
 import KDMU16 from "#kdm/editor/common/primitive/kdm-u16";
-import KDMStructure from "#kdm/editor/common/kdm-structure";
+import KDMObjectHeading from "#kdm/editor/common/kdm-object-heading";
 import KDMPrimitive from "#kdm/editor/common/primitive/kdm-primitive";
 import KDMStringPointer from "#kdm/editor/common/primitive/kdm-string-pointer";
-import KDMObjectHeading from "../common/kdm-object-heading";
 
 class Setup3DataHeading extends KDMObjectHeading<Setup3Data> {
   public readonly size0 = new KDMU16(this.kdm);

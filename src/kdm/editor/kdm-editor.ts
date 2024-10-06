@@ -15,6 +15,7 @@ import KDMString from "#kdm/editor/common/global/kdm-string";
 import BattleBGMData from "#kdm/editor/sound/battle-bgm-data";
 import ChangeBGMData from "#kdm/editor/sound/change-bgm-data";
 import TrackVolumeData from "#kdm/editor/sound/track-volume-data";
+import KDMF32Array from "#kdm/editor/common/global/kdm-f32-array";
 import UnusedSoundData0 from "#kdm/editor/sound/unused-sound-data0";
 import UnusedSoundData1 from "#kdm/editor/sound/unused-sound-data1";
 import UnusedSoundData2 from "#kdm/editor/sound/unused-sound-data2";
@@ -22,8 +23,6 @@ import TownWorldMapData from "#kdm/editor/sound/town-world-map-data";
 import KDMPointerArray from "#kdm/editor/common/global/kdm-pointer-array";
 import KDMStringPointer from "#kdm/editor/common/primitive/kdm-string-pointer";
 import KDMU32Parameter from "#kdm/editor/common/global/parameter/kdm-u32-parameter";
-import KDMPadding from "./common/primitive/kdm-padding";
-import KDMF32Array from "./common/global/kdm-f32-array";
 
 type KDMObjectConstructor = (new (kdm: KDMEditor) => KDMObject);
 
