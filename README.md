@@ -38,7 +38,7 @@ pnpm brillante kdm build -i kdm_mapdata.kdm.json -o file.bin # Builds to file.bi
 **KDM file support table**
 | File                      | Support |
 | ------------------------- | ------- |
-| `kdm_shop.bin`            | ❌       |
+| `kdm_shop.bin`            | ✅       |
 | `kdm_lucie.bin`           | ❌       |
 | `kdm_sound.bin`           | ✅       |
 | `kdm_battle.bin`          | ❌       |
