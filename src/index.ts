@@ -1,77 +1,16 @@
-import path from "node:path";
-import fs from "node:fs/promises";
-import { Command } from "commander";
-import KDMEditor from "#kdm/editor/kdm-editor";
-import KDMDisassembler from "#kdm/disassembler/kdm-disassembler";
+import KDM from "#kdm/kdm";
+import fs from "node:fs";
 
-const program = new Command()
-  .version("v0.0.0");
+(() => {
+  const kdm = new KDM();
+  const buffer = fs.readFileSync("data/ORIG/kdm_mapdata.bin");
 
-program
-  .command("kdm-build")
-  .option("-o, --output <PATH>")
-  .requiredOption("-i, --input <PATH>")
-  .action(async (options) => {
-    const input = path.resolve(options.input);
+  fs.writeFileSync("data/out.json", JSON.stringify(kdm.parse(buffer).get(), undefined, 2));
+})();
 
-    const output = path.resolve(options.output || input
-      .replace(".kdm.json", ".bin")
-      .replace(".json", ".bin"));
+(() => {
+  const kdm = new KDM();
+  const data = JSON.parse(fs.readFileSync("data/out.json").toString());
 
-    const data = await fs.readFile(input, "utf8")
-      .then((data) => JSON.parse(data));
-
-    await fs.writeFile(output, new KDMEditor().set(data).build());
-    console.log(`Wrote to ${output}. Done.`);
-  });
-
-program
-  .command("kdm-parse")
-  .option("-o, --output <PATH>")
-  .requiredOption("-i, --input <PATH>")
-  .action(async (options) => {
-    const input = path.resolve(options.input);
-    const output = path.resolve(options.output || input.replace(".bin", ".kdm.json"));
-
-    const buffer = await fs.readFile(input);
-
-    await fs.writeFile(output, JSON.stringify(
-      new KDMEditor().parse(buffer).get(), undefined, 4));
-
-    console.log(`Wrote to ${output}. Done.`);
-  });
-
-
-program
-  .command("kdm-inspect")
-  .option("-o, --output <PATH>")
-  .requiredOption("-i, --input <PATH>")
-  .action(async (options) => {
-    const input = path.resolve(options.input);
-    const output = path.resolve(options.output || input.replace(".bin", ".kdm.json"));
-
-    const buffer = await fs.readFile(input);
-
-    await fs.writeFile(output, JSON.stringify(
-      new KDMEditor().parse(buffer), undefined, 4));
-
-    console.log(`Wrote to ${output}. Done.`);
-  });
-
-program
-  .command("kdm-disassemble")
-  .option("-o, --output <PATH>")
-  .requiredOption("-i, --input <PATH>")
-  .action(async (options) => {
-    const input = path.resolve(options.input);
-    const output = path.resolve(options.output || input.replace(".bin", ".kdm.json"));
-
-    const buffer = await fs.readFile(input);
-
-    await fs.writeFile(output, JSON.stringify(
-      new KDMDisassembler().parse(buffer), undefined, 4));
-
-    console.log(`Wrote to ${output}. Done.`);
-  });
-
-program.parse(process.argv);
+  fs.writeFileSync("data/out.bin", kdm.set(data).build());
+})();

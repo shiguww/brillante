@@ -1,89 +1,7 @@
 import z from "zod";
-import RBuffer from "#buffer/r-buffer";
-import WBuffer from "#buffer/w-buffer";
-import assert from "node:assert/strict";
-import KDMObject from "#kdm/editor/common/kdm-object";
-import KDMU16 from "#kdm/editor/common/primitive/kdm-u16";
-import KDMU32 from "#kdm/editor/common/primitive/kdm-u32";
-import KDMStructure from "#kdm/editor/common/kdm-structure";
-import KDMObjectHeading from "#kdm/editor/common/kdm-object-heading";
-import KDMPrimitive from "#kdm/editor/common/primitive/kdm-primitive";
-import KDMStringPointer from "#kdm/editor/common/primitive/kdm-string-pointer";
-
-const IMapDataBackground = z.union([
-  z.null(),
-  z.string(),
-  z.tuple([z.string(), z.string()])
-])
-
-type IMapDataBackground = z.infer<typeof IMapDataBackground>;
-
-class MapDataBackground extends KDMStructure<IMapDataBackground> {
-  private static readonly COLOR_TEXTURE = "<color>";
-  public static readonly schema = IMapDataBackground;
-
-  private readonly bg1 = new KDMStringPointer(this.kdm);
-  private readonly bg2 = new KDMStringPointer(this.kdm);
-
-  public override readonly schema = IMapDataBackground;
-
-  public override get fields(): Array<KDMPrimitive> {
-    return [this.bg1, this.bg2];
-  }
-
-  protected override _get(): IMapDataBackground {
-    const bg1 = this.bg1.get() || "";
-    const bg2 = this.bg2.get() || "";
-
-    if (bg1 === "" && bg2 === "") {
-      return null;
-    }
-
-    if (bg1 === MapDataBackground.COLOR_TEXTURE) {
-      return bg2;
-    }
-
-    return [bg1, bg2];
-  }
-
-  protected override _set(data: IMapDataBackground): void {
-    if(data === null) {
-      this.bg1.set(null);
-      this.bg2.set(null);
-      return;
-    }
-
-    if(typeof data === "string") {
-      this.bg2.set(data);
-      this.bg1.set(MapDataBackground.COLOR_TEXTURE);
-      return;
-    }
-
-    this.bg1.set(data[0]);
-    this.bg2.set(data[1]);
-  }
-}
-
-class MapDataHeading extends KDMObjectHeading<MapData> {
-  public readonly size0 = new KDMU16(this.kdm);
-  public readonly size1 = new KDMU16(this.kdm);
-
-  public override get fields(): Array<KDMPrimitive> {
-    return [this.ouid, this.size0, this.otid, this.size1];
-  }
-
-  protected override _build(buffer: WBuffer): void {
-    this.size0.set((this.object.sizeof - this.sizeof) / 4);
-    this.size1.set((this.object.sizeof - this.sizeof) / 4);
-    super._build(buffer);
-  }
-
-  protected override _parse(buffer: RBuffer): void {
-    super._parse(buffer);
-    assert.equal(this.size0.get(), (this.object.sizeof - this.sizeof) / 4);
-    assert.equal(this.size1.get(), (this.object.sizeof - this.sizeof) / 4);
-  }
-}
+import KDMU32 from "#kdm/common/kdm-u32";
+import KDMStructure from "#kdm/common/kdm-structure";
+import KDMStringPointer from "#kdm/common/kdm-string-pointer";
 
 const IMapData = z.object({
   unknown2: KDMU32.schema,
@@ -102,15 +20,20 @@ const IMapData = z.object({
   unknown7: KDMStringPointer.schema,
   unknown8: KDMStringPointer.schema,
   unknown9: KDMStringPointer.schema,
-  background: MapDataBackground.schema,
+  background1: KDMStringPointer.schema,
+  background2: KDMStringPointer.schema,
   _structure: z.literal("MapData").default("MapData")
 });
 
 type IMapData = z.infer<typeof IMapData>;
 
-class MapData extends KDMObject {
+class MapData extends KDMStructure<IMapData> {
   public static readonly schema = IMapData;
 
+  public override readonly unknownSection4Value0 = 0x000000000;
+  public override readonly unknownSection4Value1 = 0x000000000;
+
+  public override readonly schema = IMapData;
   public readonly unknown2 = new KDMU32(this.kdm);
   public readonly unknown3 = new KDMU32(this.kdm);
   public readonly unknown10 = new KDMU32(this.kdm);
@@ -127,24 +50,19 @@ class MapData extends KDMObject {
   public readonly unknown7 = new KDMStringPointer(this.kdm);
   public readonly unknown8 = new KDMStringPointer(this.kdm);
   public readonly unknown9 = new KDMStringPointer(this.kdm);
-  public readonly background = new MapDataBackground(this.kdm);
+  public readonly background1 = new KDMStringPointer(this.kdm);
+  public readonly background2 = new KDMStringPointer(this.kdm);
 
-  public override readonly unknownSection4Value0 = 0x00000000;
-  public override readonly unknownSection4Value1 = 0x00000000;
-
-  public override readonly schema = IMapData;
-  public override readonly heading = new MapDataHeading(this);
-
-  public override get fields(): Array<KDMPrimitive> {
+  public override get fields(): Array<KDMStructure> {
     return [
-      ...super.fields,
       this.name,
       this.level,
       this.model,
       this.unknown0,
       this.unknown1,
       this.unknown2,
-      ...this.background.fields,
+      this.background1,
+      this.background2,
       this.script,
       this.unknown3,
       this.music,
@@ -158,7 +76,7 @@ class MapData extends KDMObject {
     ];
   }
 
-  protected override _get(): IMapData {
+  public override get(): IMapData {
     return IMapData.parse({
       name: this.name.get(),
       level: this.level.get(),
@@ -176,11 +94,14 @@ class MapData extends KDMObject {
       unknown8: this.unknown8.get(),
       unknown9: this.unknown9.get(),
       unknown10: this.unknown10.get(),
-      background: this.background.get()
+      background1: this.background1.get(),
+      background2: this.background2.get()
     });
   }
 
-  protected override _set(mapdata: IMapData): void {
+  public override set(data: unknown): this {
+    const mapdata = IMapData.parse(data);
+
     this.name.set(mapdata.name);
     this.level.set(mapdata.level);
     this.model.set(mapdata.model);
@@ -197,7 +118,10 @@ class MapData extends KDMObject {
     this.unknown8.set(mapdata.unknown8);
     this.unknown9.set(mapdata.unknown9);
     this.unknown10.set(mapdata.unknown10);
-    this.background.set(mapdata.background);
+    this.background1.set(mapdata.background1);
+    this.background2.set(mapdata.background2);
+
+    return this;
   }
 }
 
