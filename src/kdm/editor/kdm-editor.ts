@@ -22,6 +22,7 @@ import TownWorldMapData from "#kdm/editor/sound/town-world-map-data";
 import KDMPointerArray from "#kdm/editor/common/global/kdm-pointer-array";
 import KDMStringPointer from "#kdm/editor/common/primitive/kdm-string-pointer";
 import KDMU32Parameter from "#kdm/editor/common/global/parameter/kdm-u32-parameter";
+import KDMPadding from "./common/primitive/kdm-padding";
 
 type KDMObjectConstructor = (new (kdm: KDMEditor) => KDMObject) & {
   OID: number;
@@ -341,7 +342,10 @@ class KDMEditor {
         }
 
         const inst = new type(this);
-        const bodyfields = inst.fields.filter((field) => !inst.heading.fields.includes(field));
+
+        const bodyfields = inst.fields
+          .filter((field) => !(field instanceof KDMPadding))
+          .filter((field) => !inst.heading.fields.includes(field));
 
         if (bodyfields.length !== size) {
           return false;

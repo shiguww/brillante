@@ -1,13 +1,13 @@
 import z from "zod";
 import assert from "node:assert/strict";
 import type RBuffer from "#buffer/r-buffer";
-import type WBuffer from "#buffer/w-buffer";
+import WBuffer from "#buffer/w-buffer";
 import KDMObject from "#kdm/editor/common/kdm-object";
 import KDMU16 from "#kdm/editor/common/primitive/kdm-u16";
 import KDMStructure from "#kdm/editor/common/kdm-structure";
+import KDMPadding from "#kdm/editor/common/primitive/kdm-padding";
 import KDMPrimitive from "#kdm/editor/common/primitive/kdm-primitive";
 import KDMStringPointer from "#kdm/editor/common/primitive/kdm-string-pointer";
-import KDMUnknownPrimitive0 from "#kdm/editor/common/primitive/kdm-unknown-primitive0";
 import KDMUnknownPrimitive1 from "#kdm/editor/common/primitive/kdm-unknown-primitive1";
 
 class ShopEntryHeading extends KDMStructure<never> {
@@ -32,10 +32,10 @@ class ShopEntryHeading extends KDMStructure<never> {
 }
 
 const IShopEntry = z.object({
+  unknown2: KDMU16.schema,
   unknown0: KDMStringPointer.schema,
   unknown1: KDMStringPointer.schema,
   unknown3: KDMStringPointer.schema,
-  unknown2: KDMUnknownPrimitive0.schema,
   unknown4: KDMUnknownPrimitive1.schema,
   _structure: z.literal("ShopEntry").default("ShopEntry")
 });
@@ -52,10 +52,10 @@ class ShopEntry extends KDMObject<IShopEntry> {
   public override readonly schema = IShopEntry;
   public override readonly heading = new ShopEntryHeading(this.kdm);
 
+  public readonly unknown2 = new KDMU16(this.kdm);
   public readonly unknown0 = new KDMStringPointer(this.kdm);
   public readonly unknown1 = new KDMStringPointer(this.kdm);
   public readonly unknown3 = new KDMStringPointer(this.kdm);
-  public readonly unknown2 = new KDMUnknownPrimitive0(this.kdm);
   public readonly unknown4 = new KDMUnknownPrimitive1(this.kdm);
 
   public override get fields(): Array<KDMPrimitive> {
@@ -64,6 +64,7 @@ class ShopEntry extends KDMObject<IShopEntry> {
       this.unknown0,
       this.unknown1,
       this.unknown2,
+      new KDMPadding(this.kdm, WBuffer.U16_SIZE),
       this.unknown3,
       this.unknown4
     ];

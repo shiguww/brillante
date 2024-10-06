@@ -1,6 +1,5 @@
 import z from "zod";
 import WBuffer from "#buffer/w-buffer";
-import assert from "node:assert/strict";
 import type RBuffer from "#buffer/r-buffer";
 import KDMPrimitive from "#kdm/editor/common/primitive/kdm-primitive";
 
@@ -18,7 +17,7 @@ class KDMU16 extends KDMPrimitive<IKDMU16> {
   }
 
   public override get description(): Array<number> {
-    return assert.fail("idk");
+    return [0x00000008];
   }
 
   protected override _get(): IKDMU16 {
