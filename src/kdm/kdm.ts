@@ -21,6 +21,7 @@ import TownWorldMapData from "#kdm/sound/town-world-map-data";
 import KDMPointerArray from "#kdm/common/global/kdm-pointer-array";
 import KDMStringPointer from "#kdm/common/primitive/kdm-string-pointer";
 import KDMU32Parameter from "#kdm/common/global/parameter/kdm-u32-parameter";
+import ShopEntry from "./shop/shop-entry";
 
 type KDMObjectConstructor = (new (kdm: KDM) => KDMObject) & {
   OID: number;
@@ -31,7 +32,14 @@ type KDMObjectConstructor = (new (kdm: KDM) => KDMObject) & {
 
 const IKDM = z.object({
   tables: z.union([
+    z.tuple([z.literal("SHOP_IWA"), ShopEntry.schema.array()]),
+    z.tuple([z.literal("SHOP_DOR"), ShopEntry.schema.array()]),
+    z.tuple([z.literal("SHOP_SNOW"), ShopEntry.schema.array()]),
+    z.tuple([z.literal("SHOP_MONO"), ShopEntry.schema.array()]),
+    z.tuple([z.literal("SHOP_TOWN"), ShopEntry.schema.array()]),
     z.tuple([z.literal("mapDataTable"), MapData.schema.array()]),
+    z.tuple([z.literal("SHOP_KAZAN"), ShopEntry.schema.array()]),
+    z.tuple([z.literal("SHOP_KOOPA"), ShopEntry.schema.array()]),
     z.tuple([z.literal("link_data_all"), LinkData.schema.array()]),
     z.tuple([z.literal("groupDataTable"), GroupData.schema.array()]),
     z.tuple([z.literal("effectDataTable"), EffectData.schema.array()]),
@@ -65,7 +73,9 @@ class KDM {
     GroupData,
     TownWorldMapData,
     EffectData,
-    ChangeBGMData
+    ChangeBGMData,
+    // kdm_shop.bin
+    ShopEntry
   ] as const;
 
   private static readonly SECTION_COUNT = 8;
@@ -126,6 +136,11 @@ class KDM {
           ChangeBGMData
         );
       }
+
+      // kdm_shop.bin
+      if (name === "SHOP_TOWN") {
+        this.types.push(ShopEntry);
+      }
     });
   }
 
@@ -142,7 +157,15 @@ class KDM {
       ["battleBgmDataTable", new KDMPointerArray(this).useNullTerminator(true)],
       ["changeBGMDataTable", new KDMPointerArray(this).useNullTerminator(true)],
       ["trackVolumeDataTable", new KDMPointerArray(this).useNullTerminator(true)],
-      ["townWorldMapDataTable", new KDMPointerArray(this).useNullTerminator(true)]
+      ["townWorldMapDataTable", new KDMPointerArray(this).useNullTerminator(true)],
+      // kdm_shop.bin
+      ["SHOP_DOR", new KDMPointerArray(this).useNullTerminator(true)],
+      ["SHOP_IWA", new KDMPointerArray(this).useNullTerminator(true)],
+      ["SHOP_MONO", new KDMPointerArray(this).useNullTerminator(true)],
+      ["SHOP_SNOW", new KDMPointerArray(this).useNullTerminator(true)],
+      ["SHOP_TOWN", new KDMPointerArray(this).useNullTerminator(true)],
+      ["SHOP_KAZAN", new KDMPointerArray(this).useNullTerminator(true)],
+      ["SHOP_KOOPA", new KDMPointerArray(this).useNullTerminator(true)]
     ]);
 
     const table = map.get(name as IKDMTableName);
@@ -172,7 +195,9 @@ class KDM {
       ["ChangeBGMData", new ChangeBGMData(this)],
       ["BattleBGMData", new BattleBGMData(this)],
       ["TrackVolumeData", new TrackVolumeData(this)],
-      ["TownWorldMapData", new TownWorldMapData(this)]
+      ["TownWorldMapData", new TownWorldMapData(this)],
+      // kdm_shop.bin
+      ["ShopEntry", new ShopEntry(this)]
     ]);
 
     const object = map.get(data._structure);
@@ -385,20 +410,39 @@ class KDM {
       }
     });
 
-    this.tables.forEach(([name, table]) => {
-      table.entries.filter((e) => e instanceof KDMObject)
-        .map((o) => o.objects).flat()
-        .map((o) => o.fields).flat()
-        .filter((f) => f instanceof KDMStringPointer)
-        .forEach((s) => registerStringIfNotExists(s));
+    if (this.tables.find(([name]) => name === "SHOP_TOWN")) {
+      this.tables.forEach(([_, table]) => {
+        table.entries.filter((e) => e instanceof KDMObject)
+          .map((o) => o.objects).flat()
+          .map((o) => o.fields).flat()
+          .filter((f) => f instanceof KDMStringPointer)
+          .forEach((s) => registerStringIfNotExists(s));
 
-      table.entries.map((e) => e.fields)
-        .flat()
-        .filter((f) => f instanceof KDMStringPointer)
-        .forEach((s) => registerStringIfNotExists(s));
+        table.entries.map((e) => e.fields)
+          .flat()
+          .filter((f) => f instanceof KDMStringPointer)
+          .forEach((s) => registerStringIfNotExists(s));
+      });
 
-      registerStringIfNotExists(name);
-    });
+      this.tables.forEach(([name]) => {
+        registerStringIfNotExists(name);
+      });
+    } else {
+      this.tables.forEach(([name, table]) => {
+        table.entries.filter((e) => e instanceof KDMObject)
+          .map((o) => o.objects).flat()
+          .map((o) => o.fields).flat()
+          .filter((f) => f instanceof KDMStringPointer)
+          .forEach((s) => registerStringIfNotExists(s));
+
+        table.entries.map((e) => e.fields)
+          .flat()
+          .filter((f) => f instanceof KDMStringPointer)
+          .forEach((s) => registerStringIfNotExists(s));
+
+        registerStringIfNotExists(name);
+      });
+    }
 
     this.parameters.forEach((p) => registerStringIfNotExists(p.name));
   }
@@ -408,13 +452,25 @@ class KDM {
 
     this.types.forEach((t) => t.OID = id++);
 
-    this.tables.map((t) => t[1]).forEach((t) => {
-      t.entries.filter((e) => e instanceof KDMObject)
-        .map((o) => o.objects).flat()
-        .forEach((o) => o.heading.uid.set(id++));
+    if (this.tables.find(([name]) => name === "SHOP_TOWN")) {
+      this.tables.map((t) => t[1]).forEach((t) => {
+        t.entries.filter((e) => e instanceof KDMObject)
+          .map((o) => o.objects).flat()
+          .forEach((o) => o.heading.uid.set(id++));
+      });
 
-      t.heading.uid.set(id++);
-    });
+      this.tables.map((t) => t[1]).forEach((t) => {
+        t.heading.uid.set(id++);
+      });
+    } else {
+      this.tables.map((t) => t[1]).forEach((t) => {
+        t.entries.filter((e) => e instanceof KDMObject)
+          .map((o) => o.objects).flat()
+          .forEach((o) => o.heading.uid.set(id++));
+
+        t.heading.uid.set(id++);
+      });
+    }
 
     this.parameters.forEach((p) => p.heading.uid.set(id++));
   }
