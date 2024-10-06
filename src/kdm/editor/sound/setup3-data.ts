@@ -8,25 +8,26 @@ import KDMU16 from "#kdm/editor/common/primitive/kdm-u16";
 import KDMStructure from "#kdm/editor/common/kdm-structure";
 import KDMPrimitive from "#kdm/editor/common/primitive/kdm-primitive";
 import KDMStringPointer from "#kdm/editor/common/primitive/kdm-string-pointer";
+import KDMObjectHeading from "../common/kdm-object-heading";
 
-class Setup3DataHeading extends KDMStructure<never> {
-  public readonly uid = new KDMU16(this.kdm);
-  public readonly oid = new KDMU16(this.kdm);
+class Setup3DataHeading extends KDMObjectHeading<Setup3Data> {
   public readonly size0 = new KDMU16(this.kdm);
   public readonly size1 = new KDMU16(this.kdm);
 
-  public override readonly schema = z.never();
-
   public override get fields(): Array<KDMPrimitive> {
-    return [this.uid, this.size0, this.oid, this.size1];
+    return [this.ouid, this.size0, this.otid, this.size1];
   }
 
-  protected override _get(): never {
-    assert.fail();
+  protected override _build(buffer: WBuffer): void {
+    this.size0.set((this.object.sizeof - this.sizeof) / 4);
+    this.size1.set((this.object.sizeof - this.sizeof) / 4);
+    super._build(buffer);
   }
 
-  protected override _set(): never {
-    assert.fail();
+  protected override _parse(buffer: RBuffer): void {
+    super._parse(buffer);
+    assert.equal(this.size0.get(), (this.object.sizeof - this.sizeof) / 4);
+    assert.equal(this.size1.get(), (this.object.sizeof - this.sizeof) / 4);
   }
 }
 
@@ -41,14 +42,13 @@ const ISetup3Data = z.object({
 type ISetup3Data = z.infer<typeof ISetup3Data>;
 
 class Setup3Data extends KDMObject<ISetup3Data> {
-  public static OID = 0x0015;
-  public static readonly SIZEOF = 0x0004;
   public static readonly schema = ISetup3Data;
-  public static readonly UNKNOWN_SECTION4_VALUE_0 = 0x00000000;
-  public static readonly UNKNOWN_SECTION4_VALUE_1 = 0x008E10FC;
 
   public override readonly schema = ISetup3Data;
-  public override readonly heading = new Setup3DataHeading(this.kdm);
+  public override readonly heading = new Setup3DataHeading(this);
+
+  public override readonly unknownSection4Value0 = 0x00000000;
+  public override readonly unknownSection4Value1 = 0x008E10FC;
 
   public readonly unknown1 = new KDMF32(this.kdm);
   public readonly unknown2 = new KDMF32(this.kdm);
@@ -79,22 +79,6 @@ class Setup3Data extends KDMObject<ISetup3Data> {
     this.unknown1.set(setup3data.unknown1);
     this.unknown2.set(setup3data.unknown2);
     this.unknown3.set(setup3data.unknown3);
-  }
-
-  protected override _build(buffer: WBuffer): void {
-    this.heading.oid.set(Setup3Data.OID);
-    this.heading.size0.set(Setup3Data.SIZEOF);
-    this.heading.size1.set(Setup3Data.SIZEOF);
-
-    super._build(buffer);
-  }
-
-  protected override _parse(buffer: RBuffer): void {
-    super._parse(buffer);
-
-    assert.equal(this.heading.oid.get(), Setup3Data.OID);
-    assert.equal(this.heading.size0.get(), Setup3Data.SIZEOF);
-    assert.equal(this.heading.size1.get(), Setup3Data.SIZEOF);
   }
 }
 

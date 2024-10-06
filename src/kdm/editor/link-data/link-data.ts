@@ -10,25 +10,26 @@ import KDMStructure from "#kdm/editor/common/kdm-structure";
 import KDMPrimitive from "#kdm/editor/common/primitive/kdm-primitive";
 import KDMStringPointer from "#kdm/editor/common/primitive/kdm-string-pointer";
 import KDMPointerArrayPointer from "#kdm/editor/common/primitive/kdm-pointer-array-pointer";
+import KDMObjectHeading from "../common/kdm-object-heading";
 
-class LinkDataHeading extends KDMStructure<never> {
-  public readonly uid = new KDMU16(this.kdm);
-  public readonly oid = new KDMU16(this.kdm);
+class LinkDataHeading extends KDMObjectHeading<LinkData> {
   public readonly size0 = new KDMU16(this.kdm);
   public readonly size1 = new KDMU16(this.kdm);
 
-  public override readonly schema = z.never();
-
   public override get fields(): Array<KDMPrimitive> {
-    return [this.uid, this.size0, this.oid, this.size1];
+    return [this.ouid, this.size0, this.otid, this.size1];
   }
 
-  protected override _get(): never {
-    assert.fail();
+  protected override _build(buffer: WBuffer): void {
+    this.size0.set((this.object.sizeof - this.sizeof) / 4);
+    this.size1.set((this.object.sizeof - this.sizeof) / 4);
+    super._build(buffer);
   }
 
-  protected override _set(): never {
-    assert.fail();
+  protected override _parse(buffer: RBuffer): void {
+    super._parse(buffer);
+    assert.equal(this.size0.get(), (this.object.sizeof - this.sizeof) / 4);
+    assert.equal(this.size1.get(), (this.object.sizeof - this.sizeof) / 4);
   }
 }
 
@@ -41,14 +42,12 @@ const ILinkData = z.object({
 type ILinkData = z.infer<typeof ILinkData>;
 
 class LinkData extends KDMObject<ILinkData> {
-  public static OID = 0x0016;
-  public static readonly SIZEOF = 0x0003;
   public static readonly schema = ILinkData;
-  public static readonly UNKNOWN_SECTION4_VALUE_0 = 0x00000000;
-  public static readonly UNKNOWN_SECTION4_VALUE_1 = 0x00000000;
-
   public override readonly schema = ILinkData;
-  public override readonly heading = new LinkDataHeading(this.kdm);
+  public override readonly heading = new LinkDataHeading(this);
+
+  public override readonly unknownSection4Value0 = 0x00000000;
+  public override readonly unknownSection4Value1 = 0x00000000;
 
   public readonly linksCount = new KDMU32(this.kdm);
   public readonly name = new KDMStringPointer(this.kdm);
@@ -80,22 +79,6 @@ class LinkData extends KDMObject<ILinkData> {
     this.name.set(linkdata.name);
     this.links.set(linkdata.links);
     this.linksCount.set(linkdata.links.length);
-  }
-
-  protected override _build(buffer: WBuffer): void {
-    this.heading.oid.set(LinkData.OID);
-    this.heading.size0.set(LinkData.SIZEOF);
-    this.heading.size1.set(LinkData.SIZEOF);
-
-    super._build(buffer);
-  }
-
-  protected override _parse(buffer: RBuffer): void {
-    super._parse(buffer);
-
-    assert.equal(this.heading.oid.get(), LinkData.OID);
-    assert.equal(this.heading.size0.get(), LinkData.SIZEOF);
-    assert.equal(this.heading.size1.get(), LinkData.SIZEOF);
   }
 }
 

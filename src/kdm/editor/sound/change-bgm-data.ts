@@ -7,25 +7,26 @@ import KDMU16 from "#kdm/editor/common/primitive/kdm-u16";
 import KDMStructure from "#kdm/editor/common/kdm-structure";
 import KDMPrimitive from "#kdm/editor/common/primitive/kdm-primitive";
 import KDMStringPointer from "#kdm/editor/common/primitive/kdm-string-pointer";
+import KDMObjectHeading from "../common/kdm-object-heading";
 
-class ChangeBGMDataHeading extends KDMStructure<never> {
-  public readonly uid = new KDMU16(this.kdm);
-  public readonly oid = new KDMU16(this.kdm);
+class ChangeBGMDataHeading extends KDMObjectHeading<ChangeBGMData> {
   public readonly size0 = new KDMU16(this.kdm);
   public readonly size1 = new KDMU16(this.kdm);
 
-  public override readonly schema = z.never();
-
   public override get fields(): Array<KDMPrimitive> {
-    return [this.uid, this.size0, this.oid, this.size1];
+    return [this.ouid, this.size0, this.otid, this.size1];
   }
 
-  protected override _get(): never {
-    assert.fail();
+  protected override _build(buffer: WBuffer): void {
+    this.size0.set((this.object.sizeof - this.sizeof) / 4);
+    this.size1.set((this.object.sizeof - this.sizeof) / 4);
+    super._build(buffer);
   }
 
-  protected override _set(): never {
-    assert.fail();
+  protected override _parse(buffer: RBuffer): void {
+    super._parse(buffer);
+    assert.equal(this.size0.get(), (this.object.sizeof - this.sizeof) / 4);
+    assert.equal(this.size1.get(), (this.object.sizeof - this.sizeof) / 4);
   }
 }
 
@@ -39,14 +40,13 @@ const IChangeBGMData = z.object({
 type IChangeBGMData = z.infer<typeof IChangeBGMData>;
 
 class ChangeBGMData extends KDMObject<IChangeBGMData> {
-  public static OID = 0x001E;
-  public static readonly SIZEOF = 0x0003;
   public static readonly schema = IChangeBGMData;
-  public static readonly UNKNOWN_SECTION4_VALUE_0 = 0x00000000;
-  public static readonly UNKNOWN_SECTION4_VALUE_1 = 0x00000000;
+
+  public override readonly unknownSection4Value0 = 0x00000000;
+  public override readonly unknownSection4Value1 = 0x00000000;
 
   public override readonly schema = IChangeBGMData;
-  public override readonly heading = new ChangeBGMDataHeading(this.kdm);
+  public override readonly heading = new ChangeBGMDataHeading(this);
 
   public readonly unknown0 = new KDMStringPointer(this.kdm);
   public readonly unknown1 = new KDMStringPointer(this.kdm);
@@ -73,22 +73,6 @@ class ChangeBGMData extends KDMObject<IChangeBGMData> {
     this.unknown0.set(changebgmdata.unknown0);
     this.unknown1.set(changebgmdata.unknown1);
     this.unknown2.set(changebgmdata.unknown2);
-  }
-
-  protected override _build(buffer: WBuffer): void {
-    this.heading.oid.set(ChangeBGMData.OID);
-    this.heading.size0.set(ChangeBGMData.SIZEOF);
-    this.heading.size1.set(ChangeBGMData.SIZEOF);
-
-    super._build(buffer);
-  }
-
-  protected override _parse(buffer: RBuffer): void {
-    super._parse(buffer);
-
-    assert.equal(this.heading.oid.get(), ChangeBGMData.OID);
-    assert.equal(this.heading.size0.get(), ChangeBGMData.SIZEOF);
-    assert.equal(this.heading.size1.get(), ChangeBGMData.SIZEOF);
   }
 }
 

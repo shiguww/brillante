@@ -10,15 +10,12 @@ type IKDMPointerArrayPointer = z.infer<typeof IKDMPointerArrayPointer>;
 class KDMPointerArrayPointer extends KDMPrimitive<IKDMPointerArrayPointer> {
   public static readonly schema = IKDMPointerArrayPointer;
 
+  public override readonly ptid = 0x00000014;
   public readonly array = new KDMPointerArray(this.kdm);
   public override readonly schema = IKDMPointerArrayPointer;
 
   public override get sizeof(): number {
     return WBuffer.U32_SIZE;
-  }
-
-  public override get description(): Array<number> {
-    return [0x00000014];
   }
 
   protected override _get(): IKDMPointerArrayPointer {

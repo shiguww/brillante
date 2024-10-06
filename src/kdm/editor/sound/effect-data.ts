@@ -9,25 +9,26 @@ import KDMStructure from "#kdm/editor/common/kdm-structure";
 import KDMBoolean from "#kdm/editor/common/primitive/kdm-boolean";
 import KDMPrimitive from "#kdm/editor/common/primitive/kdm-primitive";
 import KDMStringPointer from "#kdm/editor/common/primitive/kdm-string-pointer";
+import KDMObjectHeading from "../common/kdm-object-heading";
 
-class EffectDataHeading extends KDMStructure<never> {
-  public readonly uid = new KDMU16(this.kdm);
-  public readonly oid = new KDMU16(this.kdm);
+class EffectDataHeading extends KDMObjectHeading<EffectData> {
   public readonly size0 = new KDMU16(this.kdm);
   public readonly size1 = new KDMU16(this.kdm);
 
-  public override readonly schema = z.never();
-
   public override get fields(): Array<KDMPrimitive> {
-    return [this.uid, this.size0, this.oid, this.size1];
+    return [this.ouid, this.size0, this.otid, this.size1];
   }
 
-  protected override _get(): never {
-    assert.fail();
+  protected override _build(buffer: WBuffer): void {
+    this.size0.set((this.object.sizeof - this.sizeof) / 4);
+    this.size1.set((this.object.sizeof - this.sizeof) / 4);
+    super._build(buffer);
   }
 
-  protected override _set(): never {
-    assert.fail();
+  protected override _parse(buffer: RBuffer): void {
+    super._parse(buffer);
+    assert.equal(this.size0.get(), (this.object.sizeof - this.sizeof) / 4);
+    assert.equal(this.size1.get(), (this.object.sizeof - this.sizeof) / 4);
   }
 }
 
@@ -47,14 +48,13 @@ const IEffectData = z.object({
 type IEffectData = z.infer<typeof IEffectData>;
 
 class EffectData extends KDMObject<IEffectData> {
-  public static OID = 0x001D;
-  public static readonly SIZEOF = 0x0009;
   public static readonly schema = IEffectData;
-  public static readonly UNKNOWN_SECTION4_VALUE_0 = 0x00000000;
-  public static readonly UNKNOWN_SECTION4_VALUE_1 = 0x008E132C;
 
   public override readonly schema = IEffectData;
-  public override readonly heading = new EffectDataHeading(this.kdm);
+  public override readonly heading = new EffectDataHeading(this);
+
+  public override readonly unknownSection4Value0 = 0x00000000;
+  public override readonly unknownSection4Value1 = 0x008E132C;
 
   public readonly unknown1 = new KDMF32(this.kdm);
   public readonly unknown2 = new KDMF32(this.kdm);
@@ -105,22 +105,6 @@ class EffectData extends KDMObject<IEffectData> {
     this.unknown6.set(effectdata.unknown6);
     this.unknown7.set(effectdata.unknown7);
     this.unknown8.set(effectdata.unknown8);
-  }
-
-  protected override _build(buffer: WBuffer): void {
-    this.heading.oid.set(EffectData.OID);
-    this.heading.size0.set(EffectData.SIZEOF);
-    this.heading.size1.set(EffectData.SIZEOF);
-
-    super._build(buffer);
-  }
-
-  protected override _parse(buffer: RBuffer): void {
-    super._parse(buffer);
-
-    assert.equal(this.heading.oid.get(), EffectData.OID);
-    assert.equal(this.heading.size0.get(), EffectData.SIZEOF);
-    assert.equal(this.heading.size1.get(), EffectData.SIZEOF);
   }
 }
 

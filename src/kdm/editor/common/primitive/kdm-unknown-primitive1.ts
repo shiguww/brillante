@@ -10,14 +10,11 @@ class KDMUnknownPrimitive1 extends KDMPrimitive<IKDMUnknownPrimitive1> {
   public static readonly schema = IKDMUnknownPrimitive1;
 
   private number = -1;
+  public override readonly ptid = 0x0000000D;
   public override readonly schema = IKDMUnknownPrimitive1;
 
   public override get sizeof(): number {
     return WBuffer.U32_SIZE;
-  }
-
-  public override get description(): Array<number> {
-    return [0x0000000D];
   }
 
   protected override _get(): IKDMUnknownPrimitive1 {

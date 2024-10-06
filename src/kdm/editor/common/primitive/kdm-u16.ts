@@ -11,13 +11,10 @@ class KDMU16 extends KDMPrimitive<IKDMU16> {
 
   private number = -1;
   public override readonly schema = IKDMU16;
+  public override readonly ptid = 0x00000008;
 
   public override get sizeof(): number {
     return WBuffer.U16_SIZE;
-  }
-
-  public override get description(): Array<number> {
-    return [0x00000008];
   }
 
   protected override _get(): IKDMU16 {

@@ -7,6 +7,7 @@ import KDMPrimitive from "#kdm/editor/common/primitive/kdm-primitive";
 
 class KDMPadding extends KDMPrimitive<never> {
   private readonly size: number = 0;
+  public override readonly ptid = 0;
   public override readonly schema = z.never();
 
   public constructor(kdm: KDMEditor, size: number) {
@@ -16,10 +17,6 @@ class KDMPadding extends KDMPrimitive<never> {
 
   public override get sizeof(): number {
     return this.size;
-  }
-
-  public override get description(): Array<number> {
-    return [];
   }
 
   protected override _get(): never {

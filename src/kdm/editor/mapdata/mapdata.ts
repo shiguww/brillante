@@ -8,6 +8,7 @@ import KDMU32 from "#kdm/editor/common/primitive/kdm-u32";
 import KDMStructure from "#kdm/editor/common/kdm-structure";
 import KDMPrimitive from "#kdm/editor/common/primitive/kdm-primitive";
 import KDMStringPointer from "#kdm/editor/common/primitive/kdm-string-pointer";
+import KDMObjectHeading from "../common/kdm-object-heading";
 
 const IMapDataBackground = z.union([
   z.null(),
@@ -63,24 +64,24 @@ class MapDataBackground extends KDMStructure<IMapDataBackground> {
   }
 }
 
-class MapDataHeading extends KDMStructure<never> {
-  public readonly uid = new KDMU16(this.kdm);
-  public readonly oid = new KDMU16(this.kdm);
+class MapDataHeading extends KDMObjectHeading<MapData> {
   public readonly size0 = new KDMU16(this.kdm);
   public readonly size1 = new KDMU16(this.kdm);
 
-  public override readonly schema = z.never();
-
   public override get fields(): Array<KDMPrimitive> {
-    return [this.uid, this.size0, this.oid, this.size1];
+    return [this.ouid, this.size0, this.otid, this.size1];
   }
 
-  protected override _get(): never {
-    assert.fail();
+  protected override _build(buffer: WBuffer): void {
+    this.size0.set((this.object.sizeof - this.sizeof) / 4);
+    this.size1.set((this.object.sizeof - this.sizeof) / 4);
+    super._build(buffer);
   }
 
-  protected override _set(): never {
-    assert.fail();
+  protected override _parse(buffer: RBuffer): void {
+    super._parse(buffer);
+    assert.equal(this.size0.get(), (this.object.sizeof - this.sizeof) / 4);
+    assert.equal(this.size1.get(), (this.object.sizeof - this.sizeof) / 4);
   }
 }
 
@@ -108,11 +109,7 @@ const IMapData = z.object({
 type IMapData = z.infer<typeof IMapData>;
 
 class MapData extends KDMObject {
-  public static OID = 0x0015;
-  public static readonly SIZEOF = 0x0012;
   public static readonly schema = IMapData;
-  public static readonly UNKNOWN_SECTION4_VALUE_0 = 0x00000000;
-  public static readonly UNKNOWN_SECTION4_VALUE_1 = 0x00000000;
 
   public readonly unknown2 = new KDMU32(this.kdm);
   public readonly unknown3 = new KDMU32(this.kdm);
@@ -132,8 +129,11 @@ class MapData extends KDMObject {
   public readonly unknown9 = new KDMStringPointer(this.kdm);
   public readonly background = new MapDataBackground(this.kdm);
 
+  public override readonly unknownSection4Value0 = 0x00000000;
+  public override readonly unknownSection4Value1 = 0x00000000;
+
   public override readonly schema = IMapData;
-  public override readonly heading = new MapDataHeading(this.kdm);
+  public override readonly heading = new MapDataHeading(this);
 
   public override get fields(): Array<KDMPrimitive> {
     return [
@@ -198,22 +198,6 @@ class MapData extends KDMObject {
     this.unknown9.set(mapdata.unknown9);
     this.unknown10.set(mapdata.unknown10);
     this.background.set(mapdata.background);
-  }
-
-  protected override _build(buffer: WBuffer): void {
-    this.heading.oid.set(MapData.OID);
-    this.heading.size0.set(MapData.SIZEOF);
-    this.heading.size1.set(MapData.SIZEOF);
-
-    super._build(buffer);
-  }
-
-  protected override _parse(buffer: RBuffer): void {
-    super._parse(buffer);
-
-    assert.equal(this.heading.oid.get(), MapData.OID);
-    assert.equal(this.heading.size0.get(), MapData.SIZEOF);
-    assert.equal(this.heading.size1.get(), MapData.SIZEOF);
   }
 }
 

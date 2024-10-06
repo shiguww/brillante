@@ -4,19 +4,17 @@ import assert from "node:assert/strict";
 import type RBuffer from "#buffer/r-buffer";
 import KDMObject from "#kdm/editor/common/kdm-object";
 import KDMU16 from "#kdm/editor/common/primitive/kdm-u16";
-import KDMStructure from "#kdm/editor/common/kdm-structure";
 import KDMPrimitive from "#kdm/editor/common/primitive/kdm-primitive";
+import KDMObjectHeading from "../kdm-object-heading";
 
-class KDMPointerArrayHeading extends KDMStructure<never> {
-  public readonly uid = new KDMU16(this.kdm);
-  public readonly oid = new KDMU16(this.kdm);
+class KDMPointerArrayHeading extends KDMObjectHeading<KDMPointerArray> {
   public readonly size0 = new KDMU16(this.kdm);
   public readonly size1 = new KDMU16(this.kdm);
 
   public override readonly schema = z.never();
 
   public override get fields(): Array<KDMPrimitive> {
-    return [this.uid, this.size0, this.oid, this.size1];
+    return [this.ouid, this.size0, this.otid, this.size1];
   }
 
   protected override _get(): never {
@@ -26,32 +24,22 @@ class KDMPointerArrayHeading extends KDMStructure<never> {
   protected override _set(): never {
     assert.fail();
   }
-
-  protected override _build(buffer: WBuffer): void {
-    this.oid.set(KDMPointerArray.OID);
-    super._build(buffer);
-  }
-
-  protected override _parse(buffer: RBuffer): void {
-    super._parse(buffer);
-
-    assert.equal(this.size0.get(), this.size1.get());
-    assert.equal(this.oid.get(), KDMPointerArray.OID);
-  }
 }
 
 const IKDMPointerArray = z.unknown().array();
 type IKDMPointerArray = z.infer<typeof IKDMPointerArray>;
 
 class KDMPointerArray extends KDMObject<IKDMPointerArray> {
-  public static readonly OID = 0x000F;
   public static readonly schema = IKDMPointerArray;
 
   private nullTerminatorFlag = true;
   public readonly entries: KDMObject[] = [];
 
   public override readonly schema = IKDMPointerArray;
-  public override readonly heading = new KDMPointerArrayHeading(this.kdm);
+  public override readonly heading = new KDMPointerArrayHeading(this);
+
+  public override readonly unknownSection4Value0 = null;
+  public override readonly unknownSection4Value1 = null;
 
   public override get objects(): KDMObject[] {
     return [...this.entries, this];

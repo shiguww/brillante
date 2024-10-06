@@ -23,13 +23,9 @@ import KDMPointerArray from "#kdm/editor/common/global/kdm-pointer-array";
 import KDMStringPointer from "#kdm/editor/common/primitive/kdm-string-pointer";
 import KDMU32Parameter from "#kdm/editor/common/global/parameter/kdm-u32-parameter";
 import KDMPadding from "./common/primitive/kdm-padding";
+import KDMF32Array from "./common/global/kdm-f32-array";
 
-type KDMObjectConstructor = (new (kdm: KDMEditor) => KDMObject) & {
-  OID: number;
-  SIZEOF: number;
-  UNKNOWN_SECTION4_VALUE_0: number;
-  UNKNOWN_SECTION4_VALUE_1: number;
-};
+type KDMObjectConstructor = (new (kdm: KDMEditor) => KDMObject);
 
 const IKDM = z.object({
   tables: z.union([
@@ -58,7 +54,7 @@ type IKDMTableName = IKDM["tables"][number][0];
 type KDMParameter = KDMU32Parameter;
 
 class KDMEditor {
-  private static readonly TYPES = [
+  private static readonly TYPES: KDMObjectConstructor[] = [
     // kdm_mapdata.bin
     MapData,
     // kdm_link_data.bin
@@ -77,7 +73,7 @@ class KDMEditor {
     ChangeBGMData,
     // kdm_shop.bin
     ShopEntry
-  ] as const;
+  ];
 
   private static readonly SECTION_COUNT = 8;
   private static readonly HEADING_SIZE = 40;
@@ -88,7 +84,10 @@ class KDMEditor {
   public readonly strings: Array<KDMString> = [];
   public readonly parameters: Array<KDMParameter> = [];
   public readonly tables: Array<[string, KDMTable]> = [];
-  public readonly types: Array<KDMObjectConstructor> = [];
+  public readonly types: Array<[number, KDMObjectConstructor]> = [
+    [0x0000, KDMF32Array],
+    [0x000F, KDMPointerArray]
+  ];
 
   private setParameters(): void {
     this.tables.forEach(([name, table]) => {
@@ -114,33 +113,33 @@ class KDMEditor {
 
       // kdm_mapdata.bin
       if (name === "mapDataTable") {
-        this.types.push(MapData);
+        this.types.push([-1, MapData]);
       }
 
       // kdm_link_data.bin
       if (name === "link_data_all") {
-        this.types.push(Link, LinkData);
+        this.types.push([-1, Link], [-1, LinkData]);
       }
 
       // kdm_sound.bin
       if (name === "setup3DDataTable") {
         this.types.push(
-          Setup3Data,
-          UnusedSoundData0,
-          UnusedSoundData1,
-          UnusedSoundData2,
-          BattleBGMData,
-          TrackVolumeData,
-          GroupData,
-          TownWorldMapData,
-          EffectData,
-          ChangeBGMData
+          [-1, Setup3Data],
+          [-1, UnusedSoundData0],
+          [-1, UnusedSoundData1],
+          [-1, UnusedSoundData2],
+          [-1, BattleBGMData],
+          [-1, TrackVolumeData],
+          [-1, GroupData],
+          [-1, TownWorldMapData],
+          [-1, EffectData],
+          [-1, ChangeBGMData]
         );
       }
 
       // kdm_shop.bin
       if (name === "SHOP_TOWN") {
-        this.types.push(ShopEntry);
+        this.types.push([-1, ShopEntry]);
       }
     });
   }
@@ -182,8 +181,6 @@ class KDMEditor {
     );
 
     const map = new Map<string, KDMObject>([
-      // global
-      ["KDMU32Parameter", new KDMU32Parameter(this)],
       // kdm_mapdata.bin
       ["MapData", new MapData(this)],
       // kdm_link_data.bin
@@ -209,31 +206,20 @@ class KDMEditor {
   }
 
   public parseObject(buffer: RBuffer): KDMObject {
-    let object: null | KDMObject = null;
+    const ouid = buffer.getU16();
+    buffer.getU16(); // size0
+    const otid = buffer.getU16();
+    buffer.getU16(); // size1
 
-    const uid = buffer.getU16();
-    buffer.getU16(); // heading value 0
-    const oid = buffer.getU16();
-    buffer.getU16(); // heading value 1
+    const type = this.types.find((t) => t[0] === otid)?.[1];
+    assert(type !== undefined);
 
-    if (oid === KDMPointerArray.OID) {
-      object = new KDMPointerArray(this);
-    }
-
-    if (object === null) {
-      const type = this.types.find((t) => t.OID === oid);
-
-      if (type !== undefined) {
-        object = new type(this);
-      }
-    }
-
-    assert(object !== null);
+    const object = new type(this);
 
     buffer.offset -= object.heading.sizeof;
     object.parse(buffer);
 
-    assert.equal(object.heading.uid.get(), uid);
+    assert.equal(object.heading.ouid.get(), ouid);
     return object;
   }
 
@@ -298,10 +284,10 @@ class KDMEditor {
 
     for (let i = 0; i < count; i += 1) {
       const uid = buffer.getU16();
-      const oid = buffer.getU16();
+      const type = buffer.getU16();
       let parameter: null | KDMParameter = null;
 
-      if (oid === KDMU32Parameter.OID) {
+      if (type === KDMU32Parameter.TYPE) {
         parameter = new KDMU32Parameter(this);
       }
 
@@ -320,7 +306,7 @@ class KDMEditor {
     const count = buffer.getU32();
 
     for (let i = 0; i < count; i += 1) {
-      const oid = buffer.getU16();
+      const otid = buffer.getU16();
       const size = buffer.getU16();
 
       const unknownValue0 = buffer.getU32();
@@ -333,34 +319,21 @@ class KDMEditor {
       }
 
       const type = KDMEditor.TYPES.find((type) => {
+        const inst = new type(this);
+
         if (
-          size !== type.SIZEOF ||
-          unknownValue0 !== type.UNKNOWN_SECTION4_VALUE_0 ||
-          unknownValue1 !== type.UNKNOWN_SECTION4_VALUE_1
+          inst.bodyfields.length !== size ||
+          inst.unknownSection4Value0 !== unknownValue0 ||
+          inst.unknownSection4Value1 !== unknownValue1
         ) {
           return false;
         }
 
-        const inst = new type(this);
-
-        const bodyfields = inst.fields
-          .filter((field) => !(field instanceof KDMPadding))
-          .filter((field) => !inst.heading.fields.includes(field));
-
-        if (bodyfields.length !== size) {
-          return false;
-        }
-
-        return bodyfields.every((field, index) => {
-          assert.equal(field.description.length, 1);
-          return field.description.at(0) === fields.at(index);
-        });
+        return inst.bodyfields.every((field, index) => field.ptid === fields.at(index));
       });
 
       assert(type !== undefined);
-
-      type.OID = oid;
-      this.types.push(type);
+      this.types.push([otid, type]);
     }
   }
 
@@ -454,25 +427,32 @@ class KDMEditor {
   private assignIDs(): void {
     let id = 0x015;
 
-    this.types.forEach((t) => t.OID = id++);
+    this.types.forEach((t) => {
+      // If the ID is already assigned (ie, globally defined types)
+      if (t[0] !== -1) {
+        return;
+      }
+
+      t[0] = id++;
+    });
 
     if (this.tables.find(([name]) => name === "SHOP_TOWN")) {
       this.tables.map((t) => t[1]).forEach((t) => {
         t.entries.filter((e) => e instanceof KDMObject)
           .map((o) => o.objects).flat()
-          .forEach((o) => o.heading.uid.set(id++));
+          .forEach((o) => o.heading.ouid.set(id++));
       });
 
       this.tables.map((t) => t[1]).forEach((t) => {
-        t.heading.uid.set(id++);
+        t.heading.ouid.set(id++);
       });
     } else {
       this.tables.map((t) => t[1]).forEach((t) => {
         t.entries.filter((e) => e instanceof KDMObject)
           .map((o) => o.objects).flat()
-          .forEach((o) => o.heading.uid.set(id++));
+          .forEach((o) => o.heading.ouid.set(id++));
 
-        t.heading.uid.set(id++);
+        t.heading.ouid.set(id++);
       });
     }
 
@@ -538,19 +518,28 @@ class KDMEditor {
   }
 
   private buildSection4(buffer: WBuffer): void {
-    this.sections.push(buffer.offset);
-    buffer.setU32(this.types.length);
+    const types = this.types.filter((t) => t[0] >= 0x0015);
 
-    this.types.forEach((type) => {
+    this.sections.push(buffer.offset);
+    buffer.setU32(types.length);
+
+    types.forEach(([otid, type]) => {
       const inst = new type(this);
 
-      buffer.setU16(type.OID);
-      buffer.setU16(type.SIZEOF);
+      if (
+        inst.unknownSection4Value0 === null ||
+        inst.unknownSection4Value1 === null
+      ) {
+        return;
+      }
 
-      buffer.setU32(type.UNKNOWN_SECTION4_VALUE_0);
-      buffer.setU32(type.UNKNOWN_SECTION4_VALUE_1);
+      buffer.setU16(otid);
+      buffer.setU16(inst.bodyfields.length);
 
-      inst.description.forEach((d) => buffer.setU32(d));
+      buffer.setU32(inst.unknownSection4Value0);
+      buffer.setU32(inst.unknownSection4Value1);
+
+      inst.bodyfields.forEach((f) => buffer.setU32(f.ptid));
     });
   }
 
@@ -559,7 +548,7 @@ class KDMEditor {
 
     const objects = this.tables.map((t) => t[1].entries).flat()
       .filter((e) => e instanceof KDMObject)
-      .sort((a, b) => a.heading.uid.get() - b.heading.uid.get())
+      .sort((a, b) => a.heading.ouid.get() - b.heading.ouid.get())
       .map((o) => o.objects).flat();
 
     buffer.setU32(objects.length);
@@ -606,7 +595,8 @@ class KDMEditor {
   public toJSON(): object {
     return {
       ...this,
-      types: this.types.map((type) => ({
+      types: this.types.map(([otid, type]) => ({
+        otid,
         name: type.name,
         fields: new type(this).fields.map((f) => f.constructor.name)
       }))

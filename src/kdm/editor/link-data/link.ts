@@ -8,6 +8,7 @@ import KDMU32 from "#kdm/editor/common/primitive/kdm-u32";
 import KDMStructure from "#kdm/editor/common/kdm-structure";
 import KDMPrimitive from "#kdm/editor/common/primitive/kdm-primitive";
 import KDMStringPointer from "#kdm/editor/common/primitive/kdm-string-pointer";
+import KDMObjectHeading from "../common/kdm-object-heading";
 
 const ILinkType = z.enum([
   "DOOR", "GOAL", "PIPE",
@@ -108,24 +109,24 @@ class LinkType extends KDMStructure<ILinkType> {
   }
 }
 
-class LinkHeading extends KDMStructure<never> {
-  public readonly uid = new KDMU16(this.kdm);
-  public readonly oid = new KDMU16(this.kdm);
+class LinkHeading extends KDMObjectHeading<Link> {
   public readonly size0 = new KDMU16(this.kdm);
   public readonly size1 = new KDMU16(this.kdm);
 
-  public override readonly schema = z.never();
-
   public override get fields(): Array<KDMPrimitive> {
-    return [this.uid, this.size0, this.oid, this.size1];
+    return [this.ouid, this.size0, this.otid, this.size1];
   }
 
-  protected override _get(): never {
-    assert.fail();
+  protected override _build(buffer: WBuffer): void {
+    this.size0.set((this.object.sizeof - this.sizeof) / 4);
+    this.size1.set((this.object.sizeof - this.sizeof) / 4);
+    super._build(buffer);
   }
 
-  protected override _set(): never {
-    assert.fail();
+  protected override _parse(buffer: RBuffer): void {
+    super._parse(buffer);
+    assert.equal(this.size0.get(), (this.object.sizeof - this.sizeof) / 4);
+    assert.equal(this.size1.get(), (this.object.sizeof - this.sizeof) / 4);
   }
 }
 
@@ -145,14 +146,13 @@ const ILink = z.object({
 type ILink = z.infer<typeof ILink>;
 
 class Link extends KDMObject<ILink> {
-  public static OID = 0x0015;
   public static readonly schema = ILink;
-  public static readonly SIZEOF = 0x0009;
-  public static readonly UNKNOWN_SECTION4_VALUE_0 = 0x00000000;
-  public static readonly UNKNOWN_SECTION4_VALUE_1 = 0x00762BB4;
 
   public override readonly schema = ILink;
-  public override readonly heading = new LinkHeading(this.kdm);
+  public override readonly heading = new LinkHeading(this);
+
+  public override readonly unknownSection4Value0 = 0x00000000;
+  public override readonly unknownSection4Value1 = 0x00762BB4;
 
   public readonly type = new LinkType(this.kdm);
   public readonly unknown0 = new KDMU32(this.kdm);
@@ -203,22 +203,6 @@ class Link extends KDMObject<ILink> {
     this.startingEvent.set(link.startingEvent);
     this.endingTransition.set(link.endingTransition);
     this.startingTransition.set(link.startingTransition);
-  }
-
-  protected override _build(buffer: WBuffer): void {
-    this.heading.oid.set(Link.OID);
-    this.heading.size0.set(Link.SIZEOF);
-    this.heading.size1.set(Link.SIZEOF);
-
-    super._build(buffer);
-  }
-
-  protected override _parse(buffer: RBuffer): void {
-    super._parse(buffer);
-
-    assert.equal(this.heading.oid.get(), Link.OID);
-    assert.equal(this.heading.size0.get(), Link.SIZEOF);
-    assert.equal(this.heading.size1.get(), Link.SIZEOF);
   }
 }
 

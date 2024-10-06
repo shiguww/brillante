@@ -10,25 +10,26 @@ import KDMStructure from "#kdm/editor/common/kdm-structure";
 import KDMPrimitive from "#kdm/editor/common/primitive/kdm-primitive";
 import KDMStringPointer from "#kdm/editor/common/primitive/kdm-string-pointer";
 import KDMF32ArrayPointer from "#kdm/editor/common/primitive/kdm-f32-array-pointer";
+import KDMObjectHeading from "../common/kdm-object-heading";
 
-class TrackVolumeDataHeading extends KDMStructure<never> {
-  public readonly uid = new KDMU16(this.kdm);
-  public readonly oid = new KDMU16(this.kdm);
+class TrackVolumeDataHeading extends KDMObjectHeading<TrackVolumeData> {
   public readonly size0 = new KDMU16(this.kdm);
   public readonly size1 = new KDMU16(this.kdm);
 
-  public override readonly schema = z.never();
-
   public override get fields(): Array<KDMPrimitive> {
-    return [this.uid, this.size0, this.oid, this.size1];
+    return [this.ouid, this.size0, this.otid, this.size1];
   }
 
-  protected override _get(): never {
-    assert.fail();
+  protected override _build(buffer: WBuffer): void {
+    this.size0.set((this.object.sizeof - this.sizeof) / 4);
+    this.size1.set((this.object.sizeof - this.sizeof) / 4);
+    super._build(buffer);
   }
 
-  protected override _set(): never {
-    assert.fail();
+  protected override _parse(buffer: RBuffer): void {
+    super._parse(buffer);
+    assert.equal(this.size0.get(), (this.object.sizeof - this.sizeof) / 4);
+    assert.equal(this.size1.get(), (this.object.sizeof - this.sizeof) / 4);
   }
 }
 
@@ -54,14 +55,15 @@ const ITrackVolumeData = z.object({
 type ITrackVolumeData = z.infer<typeof ITrackVolumeData>;
 
 class TrackVolumeData extends KDMObject<ITrackVolumeData> {
-  public static OID = 0x001A;
-  public static readonly SIZEOF = 0x000F;
   public static readonly schema = ITrackVolumeData;
   public static readonly UNKNOWN_SECTION4_VALUE_0 = 0x00000000;
   public static readonly UNKNOWN_SECTION4_VALUE_1 = 0x008E1200;
 
   public override readonly schema = ITrackVolumeData;
-  public override readonly heading = new TrackVolumeDataHeading(this.kdm);
+  public override readonly heading = new TrackVolumeDataHeading(this);
+
+  public override readonly unknownSection4Value0 = 0x00000000;
+  public override readonly unknownSection4Value1 = 0x008E1200;
 
   public readonly unknown3 = new KDMF32(this.kdm);
   public readonly unknown4 = new KDMF32(this.kdm);
@@ -140,22 +142,6 @@ class TrackVolumeData extends KDMObject<ITrackVolumeData> {
     this.unknown12.set(trackvolumedata.unknown12);
     this.unknown13.set(trackvolumedata.unknown13);
     this.unknown14.set(trackvolumedata.unknown14);
-  }
-
-  protected override _build(buffer: WBuffer): void {
-    this.heading.oid.set(TrackVolumeData.OID);
-    this.heading.size0.set(TrackVolumeData.SIZEOF);
-    this.heading.size1.set(TrackVolumeData.SIZEOF);
-
-    super._build(buffer);
-  }
-
-  protected override _parse(buffer: RBuffer): void {
-    super._parse(buffer);
-
-    assert.equal(this.heading.oid.get(), TrackVolumeData.OID);
-    assert.equal(this.heading.size0.get(), TrackVolumeData.SIZEOF);
-    assert.equal(this.heading.size1.get(), TrackVolumeData.SIZEOF);
   }
 }
 

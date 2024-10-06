@@ -11,13 +11,10 @@ class KDMF32 extends KDMPrimitive<IKDMF32> {
 
   private number = -1;
   public override readonly schema = IKDMF32;
+  public override readonly ptid = 0x00000000;
 
   public override get sizeof(): number {
     return WBuffer.F32_SIZE;
-  }
-
-  public override get description(): Array<number> {
-    return [0x00000000];
   }
 
   protected override _get(): IKDMF32 {

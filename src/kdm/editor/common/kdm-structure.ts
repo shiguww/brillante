@@ -17,10 +17,6 @@ abstract class KDMStructure<T = unknown> {
 
   public abstract get fields(): Array<KDMPrimitive>;
 
-  public get description(): Array<number> {
-    return this.fields.map((f) => f.description).flat();
-  }
-
   public get sizeof(): number {
     return this.fields.map((f) => f.sizeof)
       .reduce((prev, curr) => prev + curr);

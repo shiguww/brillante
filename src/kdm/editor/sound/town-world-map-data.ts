@@ -8,25 +8,28 @@ import KDMF32 from "#kdm/editor/common/primitive/kdm-f32";
 import KDMStructure from "#kdm/editor/common/kdm-structure";
 import KDMPrimitive from "#kdm/editor/common/primitive/kdm-primitive";
 import KDMStringPointer from "#kdm/editor/common/primitive/kdm-string-pointer";
+import KDMObjectHeading from "../common/kdm-object-heading";
 
-class TownWorldMapDataHeading extends KDMStructure<never> {
-  public readonly uid = new KDMU16(this.kdm);
-  public readonly oid = new KDMU16(this.kdm);
+class TownWorldMapDataHeading extends KDMObjectHeading<TownWorldMapData> {
   public readonly size0 = new KDMU16(this.kdm);
   public readonly size1 = new KDMU16(this.kdm);
 
   public override readonly schema = z.never();
 
   public override get fields(): Array<KDMPrimitive> {
-    return [this.uid, this.size0, this.oid, this.size1];
+    return [this.ouid, this.size0, this.otid, this.size1];
   }
 
-  protected override _get(): never {
-    assert.fail();
+  protected override _build(buffer: WBuffer): void {
+    this.size0.set((this.object.sizeof - this.sizeof) / 4);
+    this.size1.set((this.object.sizeof - this.sizeof) / 4);
+    super._build(buffer);
   }
 
-  protected override _set(): never {
-    assert.fail();
+  protected override _parse(buffer: RBuffer): void {
+    super._parse(buffer);
+    assert.equal(this.size0.get(), (this.object.sizeof - this.sizeof) / 4);
+    assert.equal(this.size1.get(), (this.object.sizeof - this.sizeof) / 4);
   }
 }
 
@@ -90,14 +93,13 @@ const ITownWorldMapData = z.object({
 type ITownWorldMapData = z.infer<typeof ITownWorldMapData>;
 
 class TownWorldMapData extends KDMObject<ITownWorldMapData> {
-  public static OID = 0x001C;
-  public static readonly SIZEOF = 0x0035;
   public static readonly schema = ITownWorldMapData;
-  public static readonly UNKNOWN_SECTION4_VALUE_0 = 0x00000000;
-  public static readonly UNKNOWN_SECTION4_VALUE_1 = 0x008E12FC;
+
+  public override readonly unknownSection4Value0 = 0x00000000;
+  public override readonly unknownSection4Value1 = 0x008E12FC;
 
   public override readonly schema = ITownWorldMapData;
-  public override readonly heading = new TownWorldMapDataHeading(this.kdm);
+  public override readonly heading = new TownWorldMapDataHeading(this);
 
   public readonly unknown5 = new KDMF32(this.kdm);
   public readonly unknown6 = new KDMF32(this.kdm);
@@ -325,22 +327,6 @@ class TownWorldMapData extends KDMObject<ITownWorldMapData> {
     this.unknown50.set(townworldmapdata.unknown50);
     this.unknown51.set(townworldmapdata.unknown51);
     this.unknown52.set(townworldmapdata.unknown52);
-  }
-
-  protected override _build(buffer: WBuffer): void {
-    this.heading.oid.set(TownWorldMapData.OID);
-    this.heading.size0.set(TownWorldMapData.SIZEOF);
-    this.heading.size1.set(TownWorldMapData.SIZEOF);
-
-    super._build(buffer);
-  }
-
-  protected override _parse(buffer: RBuffer): void {
-    super._parse(buffer);
-
-    assert.equal(this.heading.oid.get(), TownWorldMapData.OID);
-    assert.equal(this.heading.size0.get(), TownWorldMapData.SIZEOF);
-    assert.equal(this.heading.size1.get(), TownWorldMapData.SIZEOF);
   }
 }
 

@@ -10,14 +10,11 @@ class KDMStringPointer extends KDMPrimitive<IKDMStringPointer> {
   public static readonly schema = IKDMStringPointer;
 
   private string: IKDMStringPointer = null;
+  public override readonly ptid = 0x00000003;
   public override readonly schema = IKDMStringPointer;
 
   public override get sizeof(): number {
     return WBuffer.U32_SIZE;
-  }
-
-  public override get description(): Array<number> {
-    return [0x00000003];
   }
 
   protected override _get(): IKDMStringPointer {

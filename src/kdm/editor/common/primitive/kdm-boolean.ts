@@ -10,14 +10,11 @@ class KDMBoolean extends KDMPrimitive<IKDMBoolean> {
   public static readonly schema = IKDMBoolean;
 
   private value: boolean = false;
+  public override readonly ptid = 0x00000004;
   public override readonly schema = IKDMBoolean;
 
   public override get sizeof(): number {
     return WBuffer.U32_SIZE;
-  }
-
-  public override get description(): Array<number> {
-    return [0x00000004];
   }
 
   protected override _get(): IKDMBoolean {

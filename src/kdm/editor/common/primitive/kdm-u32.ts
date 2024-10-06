@@ -11,13 +11,10 @@ class KDMU32 extends KDMPrimitive<IKDMU32> {
 
   private number = -1;
   public override readonly schema = IKDMU32;
+  public override readonly ptid = 0x00000001;
 
   public override get sizeof(): number {
     return WBuffer.U32_SIZE;
-  }
-
-  public override get description(): Array<number> {
-    return [0x00000001];
   }
 
   protected override _get(): IKDMU32 {
