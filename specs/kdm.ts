@@ -59,10 +59,34 @@ describe("KDM", () => {
     });
   });
 
+  describe("kdm_pepalyze.bin", () => {
+    test("parsing and building yields the same file", async () => {
+      const data = await fs.readFile("data/Data/kdm_pepalyze.bin");
+      expectSHA256Checksum(data, "kdm_pepalyze.bin", "c88132e77aa5ba758f3196deea7447939afd3f81384add56b50db0d1d4e4feef");
+
+      const parsed = new KDM().parse(data).get();
+      const built = new KDM().set(parsed).build();
+
+      expect(data).to.be.deep.equal(built);
+    });
+  });
+
   describe("kdm_link_data.bin", () => {
     test("parsing and building yields the same file", async () => {
       const data = await fs.readFile("data/Data/kdm_link_data.bin");
       expectSHA256Checksum(data, "kdm_link_data.bin", "77b8af839061cf8c8427709550f9a7f3760ed23b16a1ce5de101855492c83fa7");
+
+      const parsed = new KDM().parse(data).get();
+      const built = new KDM().set(parsed).build();
+
+      expect(data).to.be.deep.equal(built);
+    });
+  });
+
+  describe("kdm_pepalyze_museum.bin", () => {
+    test("parsing and building yields the same file", async () => {
+      const data = await fs.readFile("data/Data/kdm_pepalyze_museum.bin");
+      expectSHA256Checksum(data, "kdm_pepalyze_museum.bin", "5e3f77b4ed64e4446e32b3511939a2b4b525d4d0f7cc0bbb501fe01224c83fd1");
 
       const parsed = new KDM().parse(data).get();
       const built = new KDM().set(parsed).build();
