@@ -82,4 +82,16 @@ describe("KDM", () => {
       expect(data).to.be.deep.equal(built);
     });
   });
+
+  describe("kdm_pepalyze_museum.bin", () => {
+    test("parsing and building yields the same file", async () => {
+      const data = await fs.readFile("data/Data/kdm_pepalyze_museum.bin");
+      expectSHA256Checksum(data, "kdm_pepalyze_museum.bin", "5e3f77b4ed64e4446e32b3511939a2b4b525d4d0f7cc0bbb501fe01224c83fd1");
+
+      const parsed = new KDM().parse(data).get();
+      const built = new KDM().set(parsed).build();
+
+      expect(data).to.be.deep.equal(built);
+    });
+  });
 });

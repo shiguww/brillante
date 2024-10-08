@@ -61,7 +61,7 @@ pnpm brillante kdm-build -i kdm_mapdata.kdm.json -o file.bin # Builds to file.bi
 | `kdm_battle_camera.bin`   | ❌       |
 | `kdm_battle_common.bin`   | ❌       |
 | `kdm_worldmap_data.bin`   | ❌       |
-| `kdm_pepalyze_museum.bin` | ❌       |
+| `kdm_pepalyze_museum.bin` | ✅       |
 
 * `✅`: fully supported, parsing and building loses no data
 * `🧪`: fully supported, parsing and building loses unused data
