@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import KDMU16 from "#/kdm/common/kdm-u16";
 import type WBuffer from "#/buffer/w-buffer";
 import KDMStructure from "#/kdm/common/kdm-structure"
+import KDMPadding from "#/kdm/common/padding/kdm-padding";
 
 type KDMStructureConstructor = (new (kdm: KDM) => KDMStructure);
 
@@ -33,9 +34,10 @@ abstract class KDMArray<T = unknown> extends KDMStructure<T[]> {
     }
 
     const element = this.entries.at(0)!;
-    return this.useNullTerminatorFlag
+
+    return KDMArray.HEADING_SIZE + (this.useNullTerminatorFlag
       ? element.sizeof * (this.entries.length + 1)
-      : element.sizeof * this.entries.length;
+      : element.sizeof * this.entries.length);
   }
 
   public override get(): T[] {
@@ -48,14 +50,17 @@ abstract class KDMArray<T = unknown> extends KDMStructure<T[]> {
     }
 
     this.offset = buffer.offset;
-    const count = this.sizeof / 4;
-
-    this.size0.set(count);
-    this.size1.set(count);
+    this.size0.set((this.sizeof - KDMArray.HEADING_SIZE) / 4);
 
     const entry = this.entries.at(0)!;
-    const constructor = entry.constructor as KDMStructureConstructor;
 
+    if (this.useNullTerminatorFlag) {
+      this.size1.set((this.entries.length + 1) * entry.fields.filter((f) => !(f instanceof KDMPadding)).length);
+    } else {
+      this.size1.set(this.entries.length * entry.fields.filter((f) => !(f instanceof KDMPadding)).length);
+    }
+
+    const constructor = entry.constructor as KDMStructureConstructor;
     const type = this.kdm.findTypeID(constructor);
 
     assert(type !== null);
@@ -68,7 +73,7 @@ abstract class KDMArray<T = unknown> extends KDMStructure<T[]> {
 
     this.entries.forEach((e) => e.build(buffer));
 
-    if(this.useNullTerminatorFlag) {
+    if (this.useNullTerminatorFlag) {
       const NULL = new constructor(this.kdm);
       NULL.build(buffer);
     }
