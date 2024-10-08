@@ -1,28 +1,41 @@
 import z from "zod";
 import RBuffer from "#buffer/r-buffer";
+import WBuffer from "#buffer/w-buffer";
 import assert from "node:assert/strict";
 import KDMF32 from "#kdm/common/kdm-f32";
 import KDMU16 from "#kdm/common/kdm-u16";
 import KDMU32 from "#kdm/common/kdm-u32";
 import MapData from "#kdm/mapdata/mapdata";
 import KDMArray from "#kdm/common/kdm-array";
+import ShopEntry from "#kdm/shop/shop-entry";
 import KDMString from "#kdm/common/kdm-string";
 import KDMStructure from "#kdm/common/kdm-structure";
 import KDMPadding from "#kdm/common/padding/kdm-padding";
+import KDMArrayPointer from "#kdm/common/kdm-array-pointer";
+import KDMUnknownType0 from "#kdm/common/kdm-unknown-type0";
 import KDMStringPointer from "#kdm/common/kdm-string-pointer";
-import KDMArrayPointer from "./common/kdm-array-pointer";
-import WBuffer from "#buffer/w-buffer";
-import KDMU32Parameter from "./common/parameter/kdm-u32-parameter";
+import KDMU32Parameter from "#kdm/common/parameter/kdm-u32-parameter";
 
 type KDMStructureConstructor = (new (kdm: KDM) => KDMStructure);
 
 const ALL_TYPES: KDMStructureConstructor[] = [
+  // kdm_shop.bin
+  ShopEntry,
+  // kdm_mapdata.bin
   MapData
 ];
 
 const IKDM = z.object({
   tables: z.union([
-    z.tuple([z.literal("mapDataTable"), MapData.schema.array().array()]),
+    // kdm_shop.bin
+    z.tuple([z.literal("SHOP_DOR"), ShopEntry.schema.array().array()]),
+    z.tuple([z.literal("SHOP_IWA"), ShopEntry.schema.array().array()]),
+    z.tuple([z.literal("SHOP_MONO"), ShopEntry.schema.array().array()]),
+    z.tuple([z.literal("SHOP_SNOW"), ShopEntry.schema.array().array()]),
+    z.tuple([z.literal("SHOP_TOWN"), ShopEntry.schema.array().array()]),
+    z.tuple([z.literal("SHOP_KAZAN"), ShopEntry.schema.array().array()]),
+    z.tuple([z.literal("SHOP_KOOPA"), ShopEntry.schema.array().array()]),
+    // kdm_mapdata.bin
     z.tuple([z.literal("mapDataTable"), MapData.schema.array().array()])
   ]).array()
 });
@@ -42,6 +55,8 @@ class KDM {
       [0x00000000, KDMF32],
       [0x00000001, KDMU32],
       [0x00000003, KDMStringPointer],
+      [0x00000008, KDMU16],
+      [0x0000000D, KDMUnknownType0],
       [0x0000000F, KDMArrayPointer]
     ];
 
@@ -55,6 +70,14 @@ class KDM {
 
   public createTable(name: string): KDMArray {
     const map = new Map<IDKMTableName, KDMArray>([
+      // kdm_shop.bin
+      ["SHOP_DOR", new KDMArray(this).useNullTerminator(true)],
+      ["SHOP_IWA", new KDMArray(this).useNullTerminator(true)],
+      ["SHOP_MONO", new KDMArray(this).useNullTerminator(true)],
+      ["SHOP_SNOW", new KDMArray(this).useNullTerminator(true)],
+      ["SHOP_TOWN", new KDMArray(this).useNullTerminator(true)],
+      ["SHOP_KAZAN", new KDMArray(this).useNullTerminator(true)],
+      ["SHOP_KOOPA", new KDMArray(this).useNullTerminator(true)],
       // kdm_mapdata.bin
       ["mapDataTable", new KDMArray(this).useNullTerminator(true)]
     ]);
@@ -76,6 +99,8 @@ class KDM {
     );
 
     const map = new Map<string, KDMStructure>([
+      // kdm_shop.bin
+      ["ShopEntry", new ShopEntry(this)],
       // kdm_mapdata.bin
       ["MapData", new MapData(this)]
     ]);
@@ -181,6 +206,12 @@ class KDM {
   private prebuild(): void {
     // Registering types
     this.tables.forEach(([name]) => {
+      // kdm_shop.bin
+      if (name === "SHOP_DOR") {
+        this.types.push([-1, ShopEntry]);
+      }
+
+      // kdm_mapdata.bin
       if (name === "mapDataTable") {
         this.types.push([-1, MapData]);
       }
@@ -188,6 +219,7 @@ class KDM {
 
     // Set parameters
     this.tables.forEach(([name, table]) => {
+      // kdm_mapdata.bin
       if (name === "mapDataTable") {
         this.parameters.push(new KDMU32Parameter(this).set({
           unknown0: 0x00000000,
@@ -207,6 +239,20 @@ class KDM {
       }
     });
 
+    // For some obscure reason, kdm_shop.bin registers strings in a different order.
+    if (this.tables.map((t) => t[0]).find((s) => s === "SHOP_DOR")) {
+      this.tables.forEach(([_, table]) => {
+        table.entries
+          .map((t) => t.arrays).flat()
+          .map((arr) => arr.entries).flat()
+          .map((e) => e.fields).flat()
+          .filter((f) => f instanceof KDMStringPointer)
+          .forEach((s) => registerStringIfNotExists(s));
+      });
+
+      this.tables.forEach(([name]) => registerStringIfNotExists(name));
+    }
+
     this.tables.forEach(([name, table]) => {
       table.entries
         .map((t) => t.arrays).flat()
@@ -225,15 +271,31 @@ class KDM {
 
     this.types.filter((t) => t[0] === -1).forEach((t) => t[0] = id++);
 
-    this.tables.forEach(([_, table]) => {
-      table.entries
-        .map((t) => t.arrays).flat()
-        .forEach((arr) => arr.uid.set(id++));
+    // For some obscure reason, kdm_shop.bin assigns IDs in a different order.
 
-      table.uid.set(id++);
-    });
+    if (this.tables.map((t) => t[0]).find((s) => s === "SHOP_DOR")) {
+      this.tables.forEach(([_, table]) => {
+        table.entries
+          .map((t) => t.arrays).flat()
+          .forEach((arr) => arr.uid.set(id++));  
+      });
 
-    this.parameters.forEach((p) => p.uid.set(id++));
+      this.tables.forEach(([_, table]) => {
+        table.uid.set(id++);
+      });
+   
+      this.parameters.forEach((p) => p.uid.set(id++));
+    } else {
+      this.tables.forEach(([_, table]) => {
+        table.entries
+          .map((t) => t.arrays).flat()
+          .forEach((arr) => arr.uid.set(id++));
+  
+        table.uid.set(id++);
+      });
+  
+      this.parameters.forEach((p) => p.uid.set(id++));
+    }
 
     // Sorting tables
     this.tables.forEach(([_, table]) => {
@@ -242,6 +304,7 @@ class KDM {
           const a = A.array.entries.at(0)!;
           const b = B.array.entries.at(0)!;
 
+          // kdm_mapdata.bin
           if (a instanceof MapData && b instanceof MapData) {
             const x = a.name.get() || "";
             const y = b.name.get() || "";

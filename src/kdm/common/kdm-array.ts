@@ -131,6 +131,11 @@ class KDMArray extends KDMStructure<IKDMArray> {
       this.entries.push(entry);
     }
 
+    if (this.nullTerminatorFlag) {
+      const entry = new constructor(this.kdm);
+      buffer.offset += entry.sizeof;
+    }
+
     this.entries = this.entries
       .sort((a, b) => {
         if (a instanceof KDMArrayPointer && b instanceof KDMArrayPointer) {
