@@ -1,7 +1,7 @@
 import z from "zod";
 import KDMU32 from "#kdm/common/kdm-u32";
 import KDMStructure from "#kdm/common/kdm-structure";
-import KDMStringPointer from "#kdm/common/kdm-string-pointer";
+import KDMStringPointer from "#kdm/common/pointer/kdm-string-pointer";
 
 const IMapDataBackground = z.union([
   z.null(),

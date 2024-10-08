@@ -2,7 +2,7 @@ import type z from "zod";
 import type KDM from "#kdm/kdm";
 import type RBuffer from "#buffer/w-buffer";
 import type WBuffer from "#buffer/w-buffer";
-import type KDMArray from "#kdm/common/kdm-array";
+import KDMArray from "#kdm/common/array/kdm-array";
 
 abstract class KDMStructure<T = unknown> {
   public offset: number;

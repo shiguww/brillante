@@ -5,7 +5,7 @@ import assert from "node:assert/strict";
 import KDMU16 from "#kdm/common/kdm-u16";
 import KDMU32 from "#kdm/common/kdm-u32";
 import KDMStructure from "#kdm/common/kdm-structure";
-import KDMStringPointer from "#kdm/common/kdm-string-pointer";
+import KDMStringPointer from "#kdm/common/pointer/kdm-string-pointer";
 
 const IKDMU32Parameter = z.object({
   value: KDMU32.schema,

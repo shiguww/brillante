@@ -7,23 +7,47 @@ import KDMF32 from "#kdm/common/kdm-f32";
 import KDMU16 from "#kdm/common/kdm-u16";
 import KDMU32 from "#kdm/common/kdm-u32";
 import MapData from "#kdm/mapdata/mapdata";
-import KDMArray from "#kdm/common/kdm-array";
 import ShopEntry from "#kdm/shop/shop-entry";
 import KDMString from "#kdm/common/kdm-string";
 import LinkData from "#kdm/link-data/link-data";
 import KDMStructure from "#kdm/common/kdm-structure";
+import type KDMArray from "#kdm/common/array/kdm-array";
 import KDMPadding from "#kdm/common/padding/kdm-padding";
-import KDMArrayPointer from "#kdm/common/kdm-array-pointer";
 import KDMUnknownType0 from "#kdm/common/kdm-unknown-type0";
-import KDMStringPointer from "#kdm/common/kdm-string-pointer";
+import KDMGenericArray from "#kdm/common/array/kdm-generic-array";
+import KDMStringPointer from "#kdm/common/pointer/kdm-string-pointer";
 import KDMU32Parameter from "#kdm/common/parameter/kdm-u32-parameter";
-import KDMPointerArrayPointer from "#kdm/common/kdm-pointer-array-pointer";
+import KDMF32ArrayPointer from "#kdm/common/pointer/kdm-f32-array-pointer";
+import KDMGenericArrayPointer from "#kdm/common/pointer/kdm-generic-array-pointer";
+import KDMGenericPointerArrayPointer from "#kdm/common/pointer/kdm-generic-pointer-array-pointer";
+import BattleBGMData from "./sound/battle-bgm-data";
+import ChangeBGMData from "./sound/change-bgm-data";
+import EffectData from "./sound/effect-data";
+import GroupData from "./sound/group-data";
+import Setup3Data from "./sound/setup3-data";
+import TownWorldMapData from "./sound/town-world-map-data";
+import TrackVolumeData from "./sound/track-volume-data";
+import UnusedSoundData0 from "./sound/unused-sound-data0";
+import UnusedSoundData2 from "./sound/unused-sound-data2";
+import UnusedSoundData1 from "./sound/unused-sound-data1";
+import KDMBoolean from "./common/kdm-boolean";
 
 type KDMStructureConstructor = (new (kdm: KDM) => KDMStructure);
 
 const ALL_TYPES: KDMStructureConstructor[] = [
   // kdm_shop.bin
   ShopEntry,
+  // kdm_sound.bin
+  BattleBGMData,
+  ChangeBGMData,
+  EffectData,
+  GroupData,
+  Setup3Data,
+  TownWorldMapData,
+  TrackVolumeData,
+  UnusedSoundData0,
+  UnusedSoundData1,
+  UnusedSoundData2,
   // kdm_mapdata.bin
   MapData,
   // kdm_link_data.bin
@@ -41,6 +65,14 @@ const IKDM = z.object({
     z.tuple([z.literal("SHOP_TOWN"), ShopEntry.schema.array().array()]),
     z.tuple([z.literal("SHOP_KAZAN"), ShopEntry.schema.array().array()]),
     z.tuple([z.literal("SHOP_KOOPA"), ShopEntry.schema.array().array()]),
+    // kdm_sound.bin
+    z.tuple([z.literal("groupDataTable"), GroupData.schema.array().array()]),
+    z.tuple([z.literal("effectDataTable"), EffectData.schema.array().array()]),
+    z.tuple([z.literal("setup3DDataTable"), Setup3Data.schema.array().array()]),
+    z.tuple([z.literal("battleBgmDataTable"), BattleBGMData.schema.array().array()]),
+    z.tuple([z.literal("changeBGMDataTable"), ChangeBGMData.schema.array().array()]),
+    z.tuple([z.literal("trackVolumeDataTable"), TrackVolumeData.schema.array().array()]),
+    z.tuple([z.literal("townWorldMapDataTable"), TownWorldMapData.schema.array().array()]),
     // kdm_mapdata.bin
     z.tuple([z.literal("mapDataTable"), MapData.schema.array().array()]),
     // kdm_link_data.bin
@@ -63,10 +95,12 @@ class KDM {
       [0x00000000, KDMF32],
       [0x00000001, KDMU32],
       [0x00000003, KDMStringPointer],
+      [0x00000004, KDMBoolean],
       [0x00000008, KDMU16],
+      [0x0000000A, KDMF32ArrayPointer],
       [0x0000000D, KDMUnknownType0],
-      [0x0000000F, KDMArrayPointer],
-      [0x00000014, KDMPointerArrayPointer]
+      [0x0000000F, KDMGenericArrayPointer],
+      [0x00000014, KDMGenericPointerArrayPointer]
     ];
 
   public readonly tables: Array<[
@@ -80,17 +114,25 @@ class KDM {
   public createTable(name: string): KDMArray {
     const map = new Map<IDKMTableName, KDMArray>([
       // kdm_shop.bin
-      ["SHOP_DOR", new KDMArray(this).useNullTerminator(true)],
-      ["SHOP_IWA", new KDMArray(this).useNullTerminator(true)],
-      ["SHOP_MONO", new KDMArray(this).useNullTerminator(true)],
-      ["SHOP_SNOW", new KDMArray(this).useNullTerminator(true)],
-      ["SHOP_TOWN", new KDMArray(this).useNullTerminator(true)],
-      ["SHOP_KAZAN", new KDMArray(this).useNullTerminator(true)],
-      ["SHOP_KOOPA", new KDMArray(this).useNullTerminator(true)],
+      ["SHOP_DOR", new KDMGenericArray(this).useNullTerminator(true)],
+      ["SHOP_IWA", new KDMGenericArray(this).useNullTerminator(true)],
+      ["SHOP_MONO", new KDMGenericArray(this).useNullTerminator(true)],
+      ["SHOP_SNOW", new KDMGenericArray(this).useNullTerminator(true)],
+      ["SHOP_TOWN", new KDMGenericArray(this).useNullTerminator(true)],
+      ["SHOP_KAZAN", new KDMGenericArray(this).useNullTerminator(true)],
+      ["SHOP_KOOPA", new KDMGenericArray(this).useNullTerminator(true)],
+      // kdm_sound.bin
+      ["groupDataTable", new KDMGenericArray(this).useNullTerminator(true)],
+      ["effectDataTable", new KDMGenericArray(this).useNullTerminator(true)],
+      ["setup3DDataTable", new KDMGenericArray(this).useNullTerminator(true)],
+      ["battleBgmDataTable", new KDMGenericArray(this).useNullTerminator(true)],
+      ["changeBGMDataTable", new KDMGenericArray(this).useNullTerminator(true)],
+      ["trackVolumeDataTable", new KDMGenericArray(this).useNullTerminator(true)],
+      ["townWorldMapDataTable", new KDMGenericArray(this).useNullTerminator(true)],
       // kdm_mapdata.bin
-      ["mapDataTable", new KDMArray(this).useNullTerminator(true)],
+      ["mapDataTable", new KDMGenericArray(this).useNullTerminator(true)],
       // kdm_link_data.bin
-      ["link_data_all", new KDMArray(this).useNullTerminator(false)]
+      ["link_data_all", new KDMGenericArray(this).useNullTerminator(false)]
     ]);
 
     const table = map.get(name as IDKMTableName);
@@ -103,7 +145,7 @@ class KDM {
     assert(data !== null && typeof data === "object");
 
     if (Array.isArray(data)) {
-      return new KDMArrayPointer(this).set(data);
+      return new KDMGenericArrayPointer(this).set(data);
     }
 
     assert("_structure" in data && typeof data._structure === "string");
@@ -111,6 +153,14 @@ class KDM {
     const map = new Map<string, KDMStructure>([
       // kdm_shop.bin
       ["ShopEntry", new ShopEntry(this)],
+      // kdm_sound.bin
+      ["GroupData", new GroupData(this)],
+      ["EffectData", new EffectData(this)],
+      ["Setup3Data", new Setup3Data(this)],
+      ["ChangeBGMData", new ChangeBGMData(this)],
+      ["BattleBGMData", new BattleBGMData(this)],
+      ["TrackVolumeData", new TrackVolumeData(this)],
+      ["TownWorldMapData", new TownWorldMapData(this)],
       // kdm_mapdata.bin
       ["MapData", new MapData(this)],
       // kdm_link_data.bin
@@ -224,13 +274,29 @@ class KDM {
         this.types.push([-1, ShopEntry]);
       }
 
+      // kdm_sound.bin
+      if (name === "groupDataTable") {
+        this.types.push(
+          [-1, Setup3Data],
+          [-1, UnusedSoundData0],
+          [-1, UnusedSoundData1],
+          [-1, UnusedSoundData2],
+          [-1, BattleBGMData],
+          [-1, TrackVolumeData],
+          [-1, GroupData],
+          [-1, TownWorldMapData],
+          [-1, EffectData],
+          [-1, ChangeBGMData]
+        );
+      }
+
       // kdm_mapdata.bin
       if (name === "mapDataTable") {
         this.types.push([-1, MapData]);
       }
 
       // kdm_link_data.bin
-      if(name === "link_data_all") {
+      if (name === "link_data_all") {
         this.types.push([-1, Link], [-1, LinkData]);
       }
     });
@@ -325,7 +391,7 @@ class KDM {
     // Sorting tables
     this.tables.forEach(([_, table]) => {
       table.entries.sort((A, B) => {
-        if (A instanceof KDMArrayPointer && B instanceof KDMArrayPointer) {
+        if (A instanceof KDMGenericArrayPointer && B instanceof KDMGenericArrayPointer) {
           const a = A.array.entries.at(0)!;
           const b = B.array.entries.at(0)!;
 
@@ -526,11 +592,11 @@ class KDM {
   }
 
   public findTypeWIthID(id: number): null | KDMStructureConstructor {
-    return this.types.find(([typeid]) => typeid === id)?.[1] || null;
+    return this.types.find(([typeid]) => typeid === id)?.[1] ?? null;
   }
 
   public findTypeID(type: KDMStructureConstructor): null | number {
-    return this.types.find(([_, constructor]) => type === constructor)?.[0] || null;
+    return this.types.find(([_, constructor]) => type === constructor)?.[0] ?? null;
   }
 }
 

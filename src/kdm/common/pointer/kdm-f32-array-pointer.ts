@@ -1,18 +1,18 @@
 import z from "zod";
 import WBuffer from "#buffer/w-buffer";
 import type RBuffer from "#buffer/r-buffer";
-import KDMArray from "#kdm/common/kdm-array";
 import KDMStructure from "#kdm/common/kdm-structure";
+import type KDMArray from "#kdm/common/array/kdm-array";
+import KDMF32Array from "#kdm/common/array/kdm-f32-array";
 
-const IKDMPointerArrayPointer = z.unknown().array();
-type IKDMPointerArrayPointer = z.infer<typeof IKDMPointerArrayPointer>;
+const IKDMF32ArrayPointer = KDMF32Array.schema;
+type IKDMF32ArrayPointer = z.infer<typeof IKDMF32ArrayPointer>;
 
-class KDMPointerArrayPointer extends KDMStructure<IKDMPointerArrayPointer> {
-  public static readonly schema = IKDMPointerArrayPointer;
+class KDMF32ArrayPointer extends KDMStructure<IKDMF32ArrayPointer> {
+  public static readonly schema = IKDMF32ArrayPointer;
   
-  public readonly array = new KDMArray(this.kdm);
-
-  public override readonly schema = IKDMPointerArrayPointer;
+  public readonly array = new KDMF32Array(this.kdm);
+  public override readonly schema = IKDMF32ArrayPointer;
   public override readonly unknownSection4Value0 = null;
   public override readonly unknownSection4Value1 = null;
 
@@ -28,7 +28,7 @@ class KDMPointerArrayPointer extends KDMStructure<IKDMPointerArrayPointer> {
     return WBuffer.U32_SIZE;
   }
 
-  public override get(): IKDMPointerArrayPointer {
+  public override get(): IKDMF32ArrayPointer {
     return this.array.get();
   }
 
@@ -45,7 +45,7 @@ class KDMPointerArrayPointer extends KDMStructure<IKDMPointerArrayPointer> {
       return this;
     }
 
-    buffer.setU32(this.array.offset + KDMArray.HEADING_SIZE);
+    buffer.setU32(this.array.offset + KDMF32Array.HEADING_SIZE);
     return this;
   }
 
@@ -54,15 +54,16 @@ class KDMPointerArrayPointer extends KDMStructure<IKDMPointerArrayPointer> {
     const pointer = buffer.getU32();
 
     if(pointer !== 0) {
-      buffer.with(pointer - KDMArray.HEADING_SIZE, (buffer) => this.array.parse(buffer));
+      buffer.with(pointer - KDMF32Array.HEADING_SIZE, (buffer) => this.array.parse(buffer));
     }
 
     return this;
   }
+  
   public useNullTerminator(useit: boolean): this {
     this.array.useNullTerminator(useit);
     return this;
   }
 }
 
-export default KDMPointerArrayPointer;
+export default KDMF32ArrayPointer;

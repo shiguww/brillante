@@ -1,10 +1,10 @@
 import z from "zod";
 import Link from "#kdm/link-data/link";
 import KDMU32 from "#kdm/common/kdm-u32";
-import type KDMArray from "#kdm/common/kdm-array";
+import KDMArray from "#kdm/common/array/kdm-array";
 import KDMStructure from "#kdm/common/kdm-structure";
-import KDMStringPointer from "#kdm/common/kdm-string-pointer";
-import KDMPointerArrayPointer from "#kdm/common/kdm-pointer-array-pointer";
+import KDMStringPointer from "#kdm/common/pointer/kdm-string-pointer";
+import KDMGenericPointerArrayPointer from "#kdm/common/pointer/kdm-generic-pointer-array-pointer";
 
 const ILinkData = z.object({
   name: KDMStringPointer.schema,
@@ -23,7 +23,7 @@ class LinkData extends KDMStructure<ILinkData> {
 
   public readonly count = new KDMU32(this.kdm);
   public readonly name = new KDMStringPointer(this.kdm);
-  public readonly links = new KDMPointerArrayPointer(this.kdm)
+  public readonly links = new KDMGenericPointerArrayPointer(this.kdm)
     .useNullTerminator(false);
 
   public override get arrays(): Array<KDMArray> {

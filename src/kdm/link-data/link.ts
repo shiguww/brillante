@@ -2,7 +2,7 @@ import z from "zod";
 import assert from "node:assert/strict";
 import KDMU32 from "#kdm/common/kdm-u32";
 import KDMStructure from "#kdm/common/kdm-structure";
-import KDMStringPointer from "#kdm/common/kdm-string-pointer";
+import KDMStringPointer from "#kdm/common/pointer/kdm-string-pointer";
 
 const ILinkType = z.enum([
   "DOOR", "GOAL", "PIPE",
