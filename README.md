@@ -24,7 +24,6 @@ The tool has four possible actions:
 * `build` - Create a KDM binary file from a JSON export
 * `parse` - Export a KDM binary file into an editable JSON format
 * `inspect` - Export a KDM binary file into a verbose, readonly JSON format
-* `disassemble` - Get information on the content of a binary KDM file (useful for research purposes, works for all KDM files)
 
 Usage:
 
@@ -32,7 +31,6 @@ Usage:
 pnpm brillante kdm-parse -i kdm_mapdata.bin # Exports to kdm_mapdata.kdm.json
 pnpm brillante kdm-inspect -i kdm_mapdata.bin # Inspects to kdm_mapdata.kdm.json
 pnpm brillante kdm-build -i kdm_mapdata.kdm.json -o file.bin # Builds to file.bin
-pnpm brillante kdm-disassemble -i kdm_mapdata.bin # Disassembles to kdm_mapdata.kdm.json
 ```
 
 **KDM file support table**
@@ -69,6 +67,9 @@ pnpm brillante kdm-disassemble -i kdm_mapdata.bin # Disassembles to kdm_mapdata.
 * `🧪`: fully supported, parsing and building loses unused data
 * `🚧`: partially supported
 * `❌`: not supported
+
+## Running tests
+To run the tests, create a `data` directory and copy a dump of the game's romFS in it. Then run `pnpm test`.
 
 ## Other tools
 - [`kdm_battle_set_*.bin` editor (by Longboost)](https://github.com/Longboost/battle-set-exporter/releases)
