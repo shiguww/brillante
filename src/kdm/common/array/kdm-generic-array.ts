@@ -1,11 +1,15 @@
 import z from "zod";
+import type KDM from "#/kdm/kdm";
 import assert from "node:assert/strict";
 import type RBuffer from "#/buffer/r-buffer";
 import KDMArray from "#/kdm/common/array/kdm-array";
+import type KDMStructure from "#/kdm/common/kdm-structure";
 import KDMGenericArrayPointer from "#/kdm/common/pointer/kdm-generic-array-pointer";
 
 const IKDMGenericArray = z.unknown().array();
 type IKDMGenericArray = z.infer<typeof IKDMGenericArray>;
+
+type KDMStructureConstructor = (new (kdm: KDM) => KDMStructure);
 
 class KDMGenericArray extends KDMArray<IKDMGenericArray[number]> {
   public static readonly schema = IKDMGenericArray;
@@ -20,7 +24,7 @@ class KDMGenericArray extends KDMArray<IKDMGenericArray[number]> {
     });
 
     if (this.entries.length !== 0) {
-      const constructor = this.entries.at(0)!.constructor;
+      const constructor = this.entries.at(0)!.constructor as KDMStructureConstructor;
       this.entries.forEach((e) => assert.equal(e.constructor, constructor));
     }
 

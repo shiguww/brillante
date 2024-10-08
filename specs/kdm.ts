@@ -23,6 +23,18 @@ describe("KDM", () => {
     });
   });
 
+  describe("kdm_lucie.bin", () => {
+    test("parsing and building yields the same file", async () => {
+      const data = await fs.readFile("data/Data/kdm_lucie.bin");
+      expectSHA256Checksum(data, "kdm_lucie.bin", "53f0e139c364b12da549dc486ff8e2b7eeb5b5beca5fe861657551df5c9b4ae8");
+
+      const parsed = new KDM().parse(data).get();
+      const built = new KDM().set(parsed).build();
+
+      expect(data).to.be.deep.equal(built);
+    });
+  });
+
   describe("kdm_sound.bin", () => {
     test("parsing and building yields the same file", async () => {
       const data = await fs.readFile("data/Data/kdm_sound.bin");

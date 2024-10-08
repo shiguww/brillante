@@ -31,12 +31,15 @@ import TrackVolumeData from "#/kdm/sound/track-volume-data";
 import UnusedSoundData0 from "#/kdm/sound/unused-sound-data0";
 import UnusedSoundData2 from "#/kdm/sound/unused-sound-data2";
 import UnusedSoundData1 from "#/kdm/sound/unused-sound-data1";
+import LucieMSG from "#/kdm/lucie/lucie-msg";
 
 type KDMStructureConstructor = (new (kdm: KDM) => KDMStructure);
 
 const ALL_TYPES: KDMStructureConstructor[] = [
   // kdm_shop.bin
   ShopEntry,
+  // kdm_lucie.bin
+  LucieMSG,
   // kdm_sound.bin
   BattleBGMData,
   ChangeBGMData,
@@ -65,6 +68,8 @@ const IKDM = z.object({
     z.tuple([z.literal("SHOP_TOWN"), ShopEntry.schema.array().array()]),
     z.tuple([z.literal("SHOP_KAZAN"), ShopEntry.schema.array().array()]),
     z.tuple([z.literal("SHOP_KOOPA"), ShopEntry.schema.array().array()]),
+    // kdm_lucie.bin
+    z.tuple([z.literal("lucieMsgTbl"), LucieMSG.schema.array().array()]),
     // kdm_sound.bin
     z.tuple([z.literal("groupDataTable"), GroupData.schema.array().array()]),
     z.tuple([z.literal("effectDataTable"), EffectData.schema.array().array()]),
@@ -121,6 +126,8 @@ class KDM {
       ["SHOP_TOWN", new KDMGenericArray(this).useNullTerminator(true)],
       ["SHOP_KAZAN", new KDMGenericArray(this).useNullTerminator(true)],
       ["SHOP_KOOPA", new KDMGenericArray(this).useNullTerminator(true)],
+      // kdm_lucie.bin
+      ["lucieMsgTbl", new KDMGenericArray(this).useNullTerminator(false)],
       // kdm_sound.bin
       ["groupDataTable", new KDMGenericArray(this).useNullTerminator(true)],
       ["effectDataTable", new KDMGenericArray(this).useNullTerminator(true)],
@@ -153,6 +160,8 @@ class KDM {
     const map = new Map<string, KDMStructure>([
       // kdm_shop.bin
       ["ShopEntry", new ShopEntry(this)],
+      // kdm_lucie.bin
+      ["LucieMSG", new LucieMSG(this)],
       // kdm_sound.bin
       ["GroupData", new GroupData(this)],
       ["EffectData", new EffectData(this)],
@@ -272,6 +281,11 @@ class KDM {
       // kdm_shop.bin
       if (name === "SHOP_DOR") {
         this.types.push([-1, ShopEntry]);
+      }
+
+      // kdm_lucie.bin
+      if (name === "lucieMsgTbl") {
+        this.types.push([-1, LucieMSG]);
       }
 
       // kdm_sound.bin

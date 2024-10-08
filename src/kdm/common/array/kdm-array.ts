@@ -8,7 +8,7 @@ type KDMStructureConstructor = (new (kdm: KDM) => KDMStructure);
 
 abstract class KDMArray<T = unknown> extends KDMStructure<T[]> {
   public static readonly HEADING_SIZE = 8;
-  
+
   protected useNullTerminatorFlag: boolean = false;
   public readonly entries: KDMStructure<T>[] = [];
 
@@ -33,7 +33,6 @@ abstract class KDMArray<T = unknown> extends KDMStructure<T[]> {
     }
 
     const element = this.entries.at(0)!;
-
     return this.useNullTerminatorFlag
       ? element.sizeof * (this.entries.length + 1)
       : element.sizeof * this.entries.length;
@@ -49,19 +48,17 @@ abstract class KDMArray<T = unknown> extends KDMStructure<T[]> {
     }
 
     this.offset = buffer.offset;
-
-    const entry = this.entries.at(0)!;
-
-    const count = (this.useNullTerminatorFlag
-      ? (this.entries.length + 1) * entry.sizeof
-      : this.entries.length * entry.sizeof) / 4;
+    const count = this.sizeof / 4;
 
     this.size0.set(count);
     this.size1.set(count);
 
-    const type = this.kdm.findTypeID(entry.constructor as KDMStructureConstructor);
-    assert(type !== null);
+    const entry = this.entries.at(0)!;
+    const constructor = entry.constructor as KDMStructureConstructor;
 
+    const type = this.kdm.findTypeID(constructor);
+
+    assert(type !== null);
     this.type.set(type);
 
     this.uid.build(buffer);
@@ -71,11 +68,9 @@ abstract class KDMArray<T = unknown> extends KDMStructure<T[]> {
 
     this.entries.forEach((e) => e.build(buffer));
 
-    if (this.useNullTerminatorFlag) {
-      const constructor = entry.constructor as KDMStructureConstructor;
-      const instance = new constructor(this.kdm);
-
-      instance.build(buffer);
+    if(this.useNullTerminatorFlag) {
+      const NULL = new constructor(this.kdm);
+      NULL.build(buffer);
     }
 
     return this;

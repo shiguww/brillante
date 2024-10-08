@@ -14,8 +14,8 @@ class KDMF32Array extends KDMArray<IKDMF32Array[number]> {
 
   public override set(_data: unknown): this {
     const data = IKDMF32Array.parse(_data);
-
     data.forEach((data) => this.entries.push(new KDMF32(this.kdm).set(data)));
+
     return this;
   }
 
