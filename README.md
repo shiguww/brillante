@@ -24,15 +24,13 @@ The tool has four possible actions:
 * `build` - Create a KDM binary file from a JSON export
 * `parse` - Export a KDM binary file into an editable JSON format
 * `inspect` - Export a KDM binary file into a verbose, readonly JSON format
-* `disassemble` - Get information on the content of a binary KDM file (useful for research purposes, works for all KDM files)
 
 Usage:
 
 ``` shell
-pnpm brillante kdm-parse -i kdm_mapdata.bin # Exports to kdm_mapdata.kdm.json
-pnpm brillante kdm-inspect -i kdm_mapdata.bin # Inspects to kdm_mapdata.kdm.json
-pnpm brillante kdm-build -i kdm_mapdata.kdm.json -o file.bin # Builds to file.bin
-pnpm brillante kdm-disassemble -i kdm_mapdata.bin # Disassembles to kdm_mapdata.kdm.json
+pnpm brillante kdm parse -i kdm_mapdata.bin # Exports to kdm_mapdata.kdm.json
+pnpm brillante kdm inspect -i kdm_mapdata.bin # Inspects to kdm_mapdata.kdm.json
+pnpm brillante kdm build -i kdm_mapdata.kdm.json -o file.bin # Builds to file.bin
 ```
 
 **KDM file support table**
