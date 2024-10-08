@@ -68,6 +68,9 @@ pnpm brillante kdm-build -i kdm_mapdata.kdm.json -o file.bin # Builds to file.bi
 * `🚧`: partially supported
 * `❌`: not supported
 
+## Running tests
+To run the tests, create a `data` directory and copy a dump of the game's romFS in it. Then run `pnpm test`.
+
 ## Other tools
 - [`kdm_battle_set_*.bin` editor (by Longboost)](https://github.com/Longboost/battle-set-exporter/releases)
 - [`Lang/*.bin` & `NWTexture/*.bin` editor (by Darxoon)](https://github.com/Darxoon/nw-tex)
