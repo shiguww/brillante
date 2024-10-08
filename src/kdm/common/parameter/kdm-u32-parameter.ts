@@ -45,7 +45,7 @@ class KDMU32Parameter extends KDMStructure<IKDMU32Parameter> {
     });
   }
 
-  public override set(data: IKDMU32Parameter): this {
+  public override set(data: unknown): this {
     const parameter = IKDMU32Parameter.parse(data);
 
     this.name.set(parameter.name);

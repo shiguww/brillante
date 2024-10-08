@@ -3,7 +3,7 @@ import KDM from "#kdm/kdm";
 
 (() => {
   const kdm = new KDM();
-  const buffer = fs.readFileSync("data/ORIG/kdm_shop.bin");
+  const buffer = fs.readFileSync("data/ORIG/kdm_link_data.bin");
 
   fs.writeFileSync("data/out.json", JSON.stringify(kdm.parse(buffer).get(), undefined, 2));
 })();

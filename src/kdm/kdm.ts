@@ -1,4 +1,5 @@
 import z from "zod";
+import Link from "#kdm/link-data/link";
 import RBuffer from "#buffer/r-buffer";
 import WBuffer from "#buffer/w-buffer";
 import assert from "node:assert/strict";
@@ -9,12 +10,14 @@ import MapData from "#kdm/mapdata/mapdata";
 import KDMArray from "#kdm/common/kdm-array";
 import ShopEntry from "#kdm/shop/shop-entry";
 import KDMString from "#kdm/common/kdm-string";
+import LinkData from "#kdm/link-data/link-data";
 import KDMStructure from "#kdm/common/kdm-structure";
 import KDMPadding from "#kdm/common/padding/kdm-padding";
 import KDMArrayPointer from "#kdm/common/kdm-array-pointer";
 import KDMUnknownType0 from "#kdm/common/kdm-unknown-type0";
 import KDMStringPointer from "#kdm/common/kdm-string-pointer";
 import KDMU32Parameter from "#kdm/common/parameter/kdm-u32-parameter";
+import KDMPointerArrayPointer from "#kdm/common/kdm-pointer-array-pointer";
 
 type KDMStructureConstructor = (new (kdm: KDM) => KDMStructure);
 
@@ -22,7 +25,10 @@ const ALL_TYPES: KDMStructureConstructor[] = [
   // kdm_shop.bin
   ShopEntry,
   // kdm_mapdata.bin
-  MapData
+  MapData,
+  // kdm_link_data.bin
+  LinkData,
+  Link
 ];
 
 const IKDM = z.object({
@@ -36,7 +42,9 @@ const IKDM = z.object({
     z.tuple([z.literal("SHOP_KAZAN"), ShopEntry.schema.array().array()]),
     z.tuple([z.literal("SHOP_KOOPA"), ShopEntry.schema.array().array()]),
     // kdm_mapdata.bin
-    z.tuple([z.literal("mapDataTable"), MapData.schema.array().array()])
+    z.tuple([z.literal("mapDataTable"), MapData.schema.array().array()]),
+    // kdm_link_data.bin
+    z.tuple([z.literal("link_data_all"), LinkData.schema.array().array()])
   ]).array()
 });
 
@@ -57,7 +65,8 @@ class KDM {
       [0x00000003, KDMStringPointer],
       [0x00000008, KDMU16],
       [0x0000000D, KDMUnknownType0],
-      [0x0000000F, KDMArrayPointer]
+      [0x0000000F, KDMArrayPointer],
+      [0x00000014, KDMPointerArrayPointer]
     ];
 
   public readonly tables: Array<[
@@ -79,7 +88,9 @@ class KDM {
       ["SHOP_KAZAN", new KDMArray(this).useNullTerminator(true)],
       ["SHOP_KOOPA", new KDMArray(this).useNullTerminator(true)],
       // kdm_mapdata.bin
-      ["mapDataTable", new KDMArray(this).useNullTerminator(true)]
+      ["mapDataTable", new KDMArray(this).useNullTerminator(true)],
+      // kdm_link_data.bin
+      ["link_data_all", new KDMArray(this).useNullTerminator(false)]
     ]);
 
     const table = map.get(name as IDKMTableName);
@@ -89,20 +100,22 @@ class KDM {
   }
 
   public createStructure(data: unknown): KDMStructure {
+    assert(data !== null && typeof data === "object");
+
     if (Array.isArray(data)) {
       return new KDMArrayPointer(this).set(data);
     }
 
-    assert(
-      data !== null && typeof data === "object" &&
-      "_structure" in data && typeof data._structure === "string"
-    );
+    assert("_structure" in data && typeof data._structure === "string");
 
     const map = new Map<string, KDMStructure>([
       // kdm_shop.bin
       ["ShopEntry", new ShopEntry(this)],
       // kdm_mapdata.bin
-      ["MapData", new MapData(this)]
+      ["MapData", new MapData(this)],
+      // kdm_link_data.bin
+      ["LinkData", new LinkData(this)],
+      ["Link", new Link(this)]
     ]);
 
     const structure = map.get(data._structure);
@@ -215,6 +228,11 @@ class KDM {
       if (name === "mapDataTable") {
         this.types.push([-1, MapData]);
       }
+
+      // kdm_link_data.bin
+      if(name === "link_data_all") {
+        this.types.push([-1, Link], [-1, LinkData]);
+      }
     });
 
     // Set parameters
@@ -224,8 +242,16 @@ class KDM {
         this.parameters.push(new KDMU32Parameter(this).set({
           unknown0: 0x00000000,
           name: "mapDataTableLen",
-          _structure: "KDMU32Parameter",
           value: table.entries.length + 1
+        }));
+      }
+
+      // kdm_link_data.bin
+      if (name === "link_data_all") {
+        this.parameters.push(new KDMU32Parameter(this).set({
+          unknown0: 0x00000000,
+          name: "link_data_all_len",
+          value: table.entries.length
         }));
       }
     });
@@ -272,28 +298,27 @@ class KDM {
     this.types.filter((t) => t[0] === -1).forEach((t) => t[0] = id++);
 
     // For some obscure reason, kdm_shop.bin assigns IDs in a different order.
-
     if (this.tables.map((t) => t[0]).find((s) => s === "SHOP_DOR")) {
       this.tables.forEach(([_, table]) => {
         table.entries
           .map((t) => t.arrays).flat()
-          .forEach((arr) => arr.uid.set(id++));  
+          .forEach((arr) => arr.uid.set(id++));
       });
 
       this.tables.forEach(([_, table]) => {
         table.uid.set(id++);
       });
-   
+
       this.parameters.forEach((p) => p.uid.set(id++));
     } else {
       this.tables.forEach(([_, table]) => {
         table.entries
           .map((t) => t.arrays).flat()
           .forEach((arr) => arr.uid.set(id++));
-  
+
         table.uid.set(id++);
       });
-  
+
       this.parameters.forEach((p) => p.uid.set(id++));
     }
 
@@ -304,8 +329,11 @@ class KDM {
           const a = A.array.entries.at(0)!;
           const b = B.array.entries.at(0)!;
 
-          // kdm_mapdata.bin
-          if (a instanceof MapData && b instanceof MapData) {
+          // kdm_mapdata.bin // kdm_link_data.bin
+          if (
+            (a instanceof MapData && b instanceof MapData) ||
+            (a instanceof LinkData && b instanceof LinkData)
+          ) {
             const x = a.name.get() || "";
             const y = b.name.get() || "";
 
