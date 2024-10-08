@@ -1,10 +1,10 @@
 import z from "zod";
 import assert from "node:assert/strict";
-import KDMF32 from "#kdm/common/kdm-f32";
-import KDMU32 from "#kdm/common/kdm-u32";
-import KDMStructure from "#kdm/common/kdm-structure";
-import KDMStringPointer from "#kdm/common/pointer/kdm-string-pointer";
-import KDMGenericArrayPointer from "#kdm/common/pointer/kdm-generic-array-pointer";
+import KDMF32 from "#/kdm/common/kdm-f32";
+import KDMU32 from "#/kdm/common/kdm-u32";
+import KDMStructure from "#/kdm/common/kdm-structure";
+import KDMStringPointer from "#/kdm/common/pointer/kdm-string-pointer";
+import KDMGenericArrayPointer from "#/kdm/common/pointer/kdm-generic-array-pointer";
 
 class UnusedSoundData1 extends KDMStructure<never> {
   public static readonly schema = z.never();

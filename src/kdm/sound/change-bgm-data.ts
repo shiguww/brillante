@@ -1,6 +1,6 @@
 import z from "zod";
-import KDMStructure from "#kdm/common/kdm-structure";
-import KDMStringPointer from "#kdm/common/pointer/kdm-string-pointer";
+import KDMStructure from "#/kdm/common/kdm-structure";
+import KDMStringPointer from "#/kdm/common/pointer/kdm-string-pointer";
 
 const IChangeBGMData = z.object({
   unknown0: KDMStringPointer.schema,

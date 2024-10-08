@@ -1,9 +1,9 @@
 import z from "zod";
-import WBuffer from "#buffer/w-buffer";
-import type RBuffer from "#buffer/r-buffer";
-import KDMArray from "#kdm/common/array/kdm-array";
-import KDMStructure from "#kdm/common/kdm-structure";
-import KDMGenericArray from "#kdm/common/array/kdm-generic-array";
+import WBuffer from "#/buffer/w-buffer";
+import type RBuffer from "#/buffer/r-buffer";
+import KDMArray from "#/kdm/common/array/kdm-array";
+import KDMStructure from "#/kdm/common/kdm-structure";
+import KDMGenericArray from "#/kdm/common/array/kdm-generic-array";
 
 const IKDMGenericPointerArrayPointer = z.unknown().array();
 type IKDMGenericPointerArrayPointer = z.infer<typeof IKDMGenericPointerArrayPointer>;

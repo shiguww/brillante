@@ -1,7 +1,7 @@
 import z from "zod";
-import KDMF32 from "#kdm/common/kdm-f32";
-import KDMStructure from "#kdm/common/kdm-structure";
-import KDMStringPointer from "#kdm/common/pointer/kdm-string-pointer";
+import KDMF32 from "#/kdm/common/kdm-f32";
+import KDMStructure from "#/kdm/common/kdm-structure";
+import KDMStringPointer from "#/kdm/common/pointer/kdm-string-pointer";
 
 const ITownWorldMapData = z.object({
   unknown5: KDMF32.schema,

@@ -1,11 +1,11 @@
 import z from "zod";
-import RBuffer from "#buffer/r-buffer";
-import WBuffer from "#buffer/w-buffer";
+import RBuffer from "#/buffer/r-buffer";
+import WBuffer from "#/buffer/w-buffer";
 import assert from "node:assert/strict";
-import KDMU16 from "#kdm/common/kdm-u16";
-import KDMU32 from "#kdm/common/kdm-u32";
-import KDMStructure from "#kdm/common/kdm-structure";
-import KDMStringPointer from "#kdm/common/pointer/kdm-string-pointer";
+import KDMU16 from "#/kdm/common/kdm-u16";
+import KDMU32 from "#/kdm/common/kdm-u32";
+import KDMStructure from "#/kdm/common/kdm-structure";
+import KDMStringPointer from "#/kdm/common/pointer/kdm-string-pointer";
 
 const IKDMU32Parameter = z.object({
   value: KDMU32.schema,

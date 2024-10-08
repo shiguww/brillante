@@ -1,6 +1,6 @@
 import z from "zod";
 import assert from "node:assert/strict";
-import KDMStructure from "#kdm/common/kdm-structure";
+import KDMStructure from "#/kdm/common/kdm-structure";
 
 abstract class KDMPadding extends KDMStructure<never> {
   public override readonly schema = z.never();

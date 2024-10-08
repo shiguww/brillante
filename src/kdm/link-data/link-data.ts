@@ -1,10 +1,10 @@
 import z from "zod";
-import Link from "#kdm/link-data/link";
-import KDMU32 from "#kdm/common/kdm-u32";
-import KDMArray from "#kdm/common/array/kdm-array";
-import KDMStructure from "#kdm/common/kdm-structure";
-import KDMStringPointer from "#kdm/common/pointer/kdm-string-pointer";
-import KDMGenericPointerArrayPointer from "#kdm/common/pointer/kdm-generic-pointer-array-pointer";
+import Link from "#/kdm/link-data/link";
+import KDMU32 from "#/kdm/common/kdm-u32";
+import KDMArray from "#/kdm/common/array/kdm-array";
+import KDMStructure from "#/kdm/common/kdm-structure";
+import KDMStringPointer from "#/kdm/common/pointer/kdm-string-pointer";
+import KDMGenericPointerArrayPointer from "#/kdm/common/pointer/kdm-generic-pointer-array-pointer";
 
 const ILinkData = z.object({
   name: KDMStringPointer.schema,

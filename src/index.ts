@@ -1,5 +1,5 @@
 import fs from "node:fs";
-import KDM from "#kdm/kdm";
+import KDM from "#/kdm/kdm";
 
 (() => {
   const kdm = new KDM();

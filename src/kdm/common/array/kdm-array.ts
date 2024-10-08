@@ -1,8 +1,8 @@
-import type KDM from "#kdm/kdm";
+import type KDM from "#/kdm/kdm";
 import assert from "node:assert/strict";
-import KDMU16 from "#kdm/common/kdm-u16";
-import type WBuffer from "#buffer/w-buffer";
-import KDMStructure from "#kdm/common/kdm-structure"
+import KDMU16 from "#/kdm/common/kdm-u16";
+import type WBuffer from "#/buffer/w-buffer";
+import KDMStructure from "#/kdm/common/kdm-structure"
 
 type KDMStructureConstructor = (new (kdm: KDM) => KDMStructure);
 

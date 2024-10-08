@@ -1,6 +1,6 @@
 import z from "zod";
-import KDMF32 from "#kdm/common/kdm-f32";
-import type RBuffer from "#buffer/r-buffer";
+import KDMF32 from "#/kdm/common/kdm-f32";
+import type RBuffer from "#/buffer/r-buffer";
 import KDMArray from "#/kdm/common/array/kdm-array";
 
 const IKDMF32Array = KDMF32.schema.array();

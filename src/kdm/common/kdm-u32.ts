@@ -1,7 +1,7 @@
 import z from "zod";
-import WBuffer from "#buffer/w-buffer";
-import type RBuffer from "#buffer/r-buffer";
-import KDMStructure from "#kdm/common/kdm-structure";
+import WBuffer from "#/buffer/w-buffer";
+import type RBuffer from "#/buffer/r-buffer";
+import KDMStructure from "#/kdm/common/kdm-structure";
 
 const IKDMU32 = z.number().int();
 type IKDMU32 = z.infer<typeof IKDMU32>;

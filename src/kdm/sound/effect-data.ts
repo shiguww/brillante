@@ -1,9 +1,9 @@
 import z from "zod";
-import KDMF32 from "#kdm/common/kdm-f32";
-import KDMBoolean from "#kdm/common/kdm-boolean";
-import KDMStructure from "#kdm/common/kdm-structure";
-import KDMStringPointer from "#kdm/common/pointer/kdm-string-pointer";
-import KDMU24Padding from "#kdm/common/padding/kdm-u24-padding";
+import KDMF32 from "#/kdm/common/kdm-f32";
+import KDMBoolean from "#/kdm/common/kdm-boolean";
+import KDMStructure from "#/kdm/common/kdm-structure";
+import KDMStringPointer from "#/kdm/common/pointer/kdm-string-pointer";
+import KDMU24Padding from "#/kdm/common/padding/kdm-u24-padding";
 
 const IEffectData = z.object({
   unknown1: KDMF32.schema,

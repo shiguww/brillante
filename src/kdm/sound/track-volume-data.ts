@@ -1,10 +1,10 @@
 import z from "zod";
-import KDMF32 from "#kdm/common/kdm-f32";
-import KDMU32 from "#kdm/common/kdm-u32";
-import KDMArray from "#kdm/common/array/kdm-array";
-import KDMStructure from "#kdm/common/kdm-structure";
-import KDMStringPointer from "#kdm/common/pointer/kdm-string-pointer";
-import KDMF32ArrayPointer from "#kdm/common/pointer/kdm-f32-array-pointer";
+import KDMF32 from "#/kdm/common/kdm-f32";
+import KDMU32 from "#/kdm/common/kdm-u32";
+import KDMArray from "#/kdm/common/array/kdm-array";
+import KDMStructure from "#/kdm/common/kdm-structure";
+import KDMStringPointer from "#/kdm/common/pointer/kdm-string-pointer";
+import KDMF32ArrayPointer from "#/kdm/common/pointer/kdm-f32-array-pointer";
 
 const ITrackVolumeData = z.object({
   unknown3: KDMF32.schema,

@@ -1,7 +1,7 @@
 import z from "zod";
-import WBuffer from "#buffer/w-buffer";
-import type RBuffer from "#buffer/r-buffer";
-import KDMStructure from "#kdm/common/kdm-structure";
+import WBuffer from "#/buffer/w-buffer";
+import type RBuffer from "#/buffer/r-buffer";
+import KDMStructure from "#/kdm/common/kdm-structure";
 
 const IKDMUnknownType0 = z.number().int();
 type IKDMUnknownType0 = z.infer<typeof IKDMUnknownType0>;

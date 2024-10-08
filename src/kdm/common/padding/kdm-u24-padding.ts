@@ -1,7 +1,7 @@
-import WBuffer from "#buffer/w-buffer";
+import WBuffer from "#/buffer/w-buffer";
 import assert from "node:assert/strict";
-import type RBuffer from "#buffer/r-buffer";
-import KDMPadding from "#kdm/common/padding/kdm-padding";
+import type RBuffer from "#/buffer/r-buffer";
+import KDMPadding from "#/kdm/common/padding/kdm-padding";
 
 class KDMU24Padding extends KDMPadding {
   public override get sizeof(): number {

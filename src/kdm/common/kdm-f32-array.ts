@@ -1,6 +1,6 @@
 import z from "zod";
-import KDMF32 from "#kdm/common/kdm-f32";
-import KDMStructure from "#kdm/common/kdm-structure";
+import KDMF32 from "#/kdm/common/kdm-f32";
+import KDMStructure from "#/kdm/common/kdm-structure";
 
 const IKDMF32Array = KDMF32.schema.array();
 type IKDMF32Array = z.infer<typeof IKDMF32Array>;

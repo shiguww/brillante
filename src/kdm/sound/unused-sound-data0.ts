@@ -1,8 +1,8 @@
 import z from "zod";
 import assert from "node:assert/strict";
-import KDMF32 from "#kdm/common/kdm-f32";
-import KDMU32 from "#kdm/common/kdm-u32";
-import KDMStructure from "#kdm/common/kdm-structure";
+import KDMF32 from "#/kdm/common/kdm-f32";
+import KDMU32 from "#/kdm/common/kdm-u32";
+import KDMStructure from "#/kdm/common/kdm-structure";
 
 class UnusedSoundData0 extends KDMStructure<never> {
   public static readonly schema = z.never();

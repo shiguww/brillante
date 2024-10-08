@@ -1,8 +1,8 @@
 import z from "zod";
-import WBuffer from "#buffer/w-buffer";
+import WBuffer from "#/buffer/w-buffer";
 import assert from "node:assert/strict";
-import type RBuffer from "#buffer/r-buffer";
-import KDMStructure from "#kdm/common/kdm-structure";
+import type RBuffer from "#/buffer/r-buffer";
+import KDMStructure from "#/kdm/common/kdm-structure";
 
 const IKDMString = z.string().min(1);
 type IKDMString = z.infer<typeof IKDMString>;

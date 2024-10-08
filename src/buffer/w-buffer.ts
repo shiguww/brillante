@@ -1,5 +1,5 @@
 import { Buffer } from "node:buffer";
-import RBuffer from "#buffer/r-buffer";
+import RBuffer from "#/buffer/r-buffer";
 
 class WBuffer extends RBuffer {
   public static new(size: number): WBuffer {

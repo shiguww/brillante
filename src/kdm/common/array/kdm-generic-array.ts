@@ -1,8 +1,8 @@
 import z from "zod";
 import assert from "node:assert/strict";
-import type RBuffer from "#buffer/r-buffer";
-import KDMArray from "#kdm/common/array/kdm-array";
-import KDMGenericArrayPointer from "#kdm/common/pointer/kdm-generic-array-pointer";
+import type RBuffer from "#/buffer/r-buffer";
+import KDMArray from "#/kdm/common/array/kdm-array";
+import KDMGenericArrayPointer from "#/kdm/common/pointer/kdm-generic-array-pointer";
 
 const IKDMGenericArray = z.unknown().array();
 type IKDMGenericArray = z.infer<typeof IKDMGenericArray>;

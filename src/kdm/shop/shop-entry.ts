@@ -1,9 +1,9 @@
 import z from "zod";
-import KDMU16 from "#kdm/common/kdm-u16";
-import KDMStructure from "#kdm/common/kdm-structure";
-import KDMUnknownType0 from "#kdm/common/kdm-unknown-type0";
-import KDMStringPointer from "#kdm/common/pointer/kdm-string-pointer";
-import KDMU16Padding from "#kdm/common/padding/kdm-u16-padding";
+import KDMU16 from "#/kdm/common/kdm-u16";
+import KDMStructure from "#/kdm/common/kdm-structure";
+import KDMUnknownType0 from "#/kdm/common/kdm-unknown-type0";
+import KDMStringPointer from "#/kdm/common/pointer/kdm-string-pointer";
+import KDMU16Padding from "#/kdm/common/padding/kdm-u16-padding";
 
 const IShopEntry = z.object({
   unknown2: KDMU16.schema,
