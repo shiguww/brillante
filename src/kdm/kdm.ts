@@ -32,6 +32,9 @@ import UnusedSoundData0 from "#/kdm/sound/unused-sound-data0";
 import UnusedSoundData2 from "#/kdm/sound/unused-sound-data2";
 import UnusedSoundData1 from "#/kdm/sound/unused-sound-data1";
 import LucieMSG from "#/kdm/lucie/lucie-msg";
+import LockData from "#/kdm/pepalyze/lock-data";
+import SecretData from "#/kdm/pepalyze/secret-data";
+import SecretSealData from "#/kdm/pepalyze/secret-seal-data";
 
 type KDMStructureConstructor = (new (kdm: KDM) => KDMStructure);
 
@@ -53,6 +56,10 @@ const ALL_TYPES: KDMStructureConstructor[] = [
   UnusedSoundData2,
   // kdm_mapdata.bin
   MapData,
+  // kdm_pepalyze.bin
+  LockData,
+  SecretData,
+  SecretSealData,
   // kdm_link_data.bin
   LinkData,
   Link
@@ -80,6 +87,10 @@ const IKDM = z.object({
     z.tuple([z.literal("townWorldMapDataTable"), TownWorldMapData.schema.array().array()]),
     // kdm_mapdata.bin
     z.tuple([z.literal("mapDataTable"), MapData.schema.array().array()]),
+    // kdm_pepalyze.bin
+    z.tuple([z.literal("lockDataTable"), LockData.schema.array().array()]),
+    z.tuple([z.literal("secretDataTable"), SecretData.schema.array().array()]),
+    z.tuple([z.literal("secretSealDataTable"), SecretSealData.schema.array().array()]),
     // kdm_link_data.bin
     z.tuple([z.literal("link_data_all"), LinkData.schema.array().array()])
   ]).array()
@@ -138,6 +149,10 @@ class KDM {
       ["townWorldMapDataTable", new KDMGenericArray(this).useNullTerminator(true)],
       // kdm_mapdata.bin
       ["mapDataTable", new KDMGenericArray(this).useNullTerminator(true)],
+      // kdm_pepalyze.bin
+      ["lockDataTable", new KDMGenericArray(this).useNullTerminator(true)],
+      ["secretDataTable", new KDMGenericArray(this).useNullTerminator(true)],
+      ["secretSealDataTable", new KDMGenericArray(this).useNullTerminator(false)],
       // kdm_link_data.bin
       ["link_data_all", new KDMGenericArray(this).useNullTerminator(false)]
     ]);
@@ -172,6 +187,10 @@ class KDM {
       ["TownWorldMapData", new TownWorldMapData(this)],
       // kdm_mapdata.bin
       ["MapData", new MapData(this)],
+      // kdm_pepalyze.bin
+      ["LockData", new LockData(this)],
+      ["SecretData", new SecretData(this)],
+      ["SecretSealData", new SecretSealData(this)],
       // kdm_link_data.bin
       ["LinkData", new LinkData(this)],
       ["Link", new Link(this)]
@@ -307,6 +326,15 @@ class KDM {
       // kdm_mapdata.bin
       if (name === "mapDataTable") {
         this.types.push([-1, MapData]);
+      }
+
+      // kdm_pepalyze.bin
+      if(name === "lockDataTable") {
+        this.types.push(
+          [-1, LockData],
+          [-1, SecretData],
+          [-1, SecretSealData]
+        );
       }
 
       // kdm_link_data.bin

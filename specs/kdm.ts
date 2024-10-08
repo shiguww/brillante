@@ -59,6 +59,18 @@ describe("KDM", () => {
     });
   });
 
+  describe("kdm_pepalyze.bin", () => {
+    test("parsing and building yields the same file", async () => {
+      const data = await fs.readFile("data/Data/kdm_pepalyze.bin");
+      expectSHA256Checksum(data, "kdm_pepalyze.bin", "c88132e77aa5ba758f3196deea7447939afd3f81384add56b50db0d1d4e4feef");
+
+      const parsed = new KDM().parse(data).get();
+      const built = new KDM().set(parsed).build();
+
+      expect(data).to.be.deep.equal(built);
+    });
+  });
+
   describe("kdm_link_data.bin", () => {
     test("parsing and building yields the same file", async () => {
       const data = await fs.readFile("data/Data/kdm_link_data.bin");
