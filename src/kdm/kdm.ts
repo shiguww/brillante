@@ -598,6 +598,21 @@ class KDM {
   public findTypeID(type: KDMStructureConstructor): null | number {
     return this.types.find(([_, constructor]) => type === constructor)?.[0] ?? null;
   }
+
+  public toJSON(): object {
+    return ({
+      ...this,
+      types: this.types.filter((t) => t[0] >= 0x0015).map((t) => {
+        const inst = new t[1](this);
+
+        return ({
+          id: t[0],
+          name: t[1].name,
+          fields: inst.fields.map((f) => f.constructor.name)
+        });
+      })
+    });
+  }
 }
 
 export default KDM;

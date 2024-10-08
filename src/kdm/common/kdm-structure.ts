@@ -34,16 +34,25 @@ abstract class KDMStructure<T = unknown> {
 
   public build(buffer: WBuffer): this {
     this.offset = buffer.offset;
-    
+
     this.fields.forEach((f) => f.build(buffer));
     return this;
   }
 
   public parse(buffer: RBuffer): this {
     this.offset = buffer.offset;
-    
+
     this.fields.forEach((f) => f.parse(buffer));
     return this;
+  }
+
+  public toJSON(): object {
+    return ({
+      ...this,
+      kdm: undefined,
+      schema: undefined,
+      _structure: this.constructor.name
+    });
   }
 }
 

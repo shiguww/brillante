@@ -28,9 +28,9 @@ The tool has four possible actions:
 Usage:
 
 ``` shell
-pnpm brillante kdm parse -i kdm_mapdata.bin # Exports to kdm_mapdata.kdm.json
-pnpm brillante kdm inspect -i kdm_mapdata.bin # Inspects to kdm_mapdata.kdm.json
-pnpm brillante kdm build -i kdm_mapdata.kdm.json -o file.bin # Builds to file.bin
+pnpm brillante kdm-parse -i kdm_mapdata.bin # Exports to kdm_mapdata.kdm.json
+pnpm brillante kdm-inspect -i kdm_mapdata.bin # Inspects to kdm_mapdata.kdm.json
+pnpm brillante kdm-build -i kdm_mapdata.kdm.json -o file.bin # Builds to file.bin
 ```
 
 **KDM file support table**
