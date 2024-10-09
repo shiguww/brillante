@@ -1,7 +1,7 @@
 {
 	"private": true,
   "type": "module",
-	"version": "0.0.0",
+	"version": "3.0.0",
 	"name": "brillante",
 	"dependencies": {
 		"commander": "^12.1.0",

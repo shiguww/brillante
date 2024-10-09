@@ -4,7 +4,7 @@ import fs from "node:fs/promises";
 import { Command } from "commander";
 
 const program = new Command()
-  .version("v0.0.0");
+  .version("v3.0.0");
 
 program
   .command("kdm-build")
