@@ -38,6 +38,10 @@ import SecretSealData from "#/kdm/pepalyze/secret-seal-data";
 import MuseumLockData from "./pepalyze-museum/museum-lock-data";
 import MuseumSecretSealData from "./pepalyze-museum/museum-secret-seal-data";
 import MuseumSecretData from "./pepalyze-museum/museum-secret-data";
+import DisposWorldMap from "./worldmap-data/dispos-worldmap";
+import DisposWorldMapConnect from "./worldmap-data/dispos-worldmap-connect";
+import DisposWorldMapConnectSubEntry from "./worldmap-data/dispos-worldmap-connect-subentry";
+import DisposWorldMapSubEntry from "./worldmap-data/dispos-worldmap-subentry";
 
 type KDMStructureConstructor = (new (kdm: KDM) => KDMStructure);
 
@@ -66,6 +70,11 @@ const ALL_TYPES: KDMStructureConstructor[] = [
   // kdm_link_data.bin
   LinkData,
   Link,
+  // kdm_worldmap_data.bin
+  DisposWorldMapSubEntry,
+  DisposWorldMap,
+  DisposWorldMapConnectSubEntry,
+  DisposWorldMapConnect,
   // kdm_pepalyze_museum.bin
   MuseumLockData,
   MuseumSecretData,
@@ -112,7 +121,10 @@ const IKDM = z.object({
       MuseumSecretSealData.schema.array().array()
     ])]),
     // kdm_link_data.bin
-    z.tuple([z.literal("link_data_all"), LinkData.schema.array().array()])
+    z.tuple([z.literal("link_data_all"), LinkData.schema.array().array()]),
+    // kdm_worldmap_data.bin
+    z.tuple([z.literal("disposWorldMapTable"), DisposWorldMap.schema.array().array()]),
+    z.tuple([z.literal("disposWorldMapConnectTable"), DisposWorldMapConnect.schema.array().array()]),
   ]).array()
 });
 
@@ -174,7 +186,10 @@ class KDM {
       ["secretDataTable", new KDMGenericArray(this).useNullTerminator(true)],
       ["secretSealDataTable", new KDMGenericArray(this).useNullTerminator(false)],
       // kdm_link_data.bin
-      ["link_data_all", new KDMGenericArray(this).useNullTerminator(false)]
+      ["link_data_all", new KDMGenericArray(this).useNullTerminator(false)],
+      // kdm_worldmap_data.bin
+      ["disposWorldMapTable", new KDMGenericArray(this).useNullTerminator(true)],
+      ["disposWorldMapConnectTable", new KDMGenericArray(this).useNullTerminator(true)]
     ]);
 
     const table = map.get(name as IDKMTableName);
@@ -214,6 +229,11 @@ class KDM {
       // kdm_link_data.bin
       ["LinkData", new LinkData(this)],
       ["Link", new Link(this)],
+      // kdm_worldmap_data.bin
+      ["DisposWorldMapConnect", new DisposWorldMapConnect(this)],
+      ["DisposWorldMapConnectSubEntry", new DisposWorldMapConnectSubEntry(this)],
+      ["DisposWorldMapSubEntry", new DisposWorldMapSubEntry(this)],
+      ["DisposWorldMap", new DisposWorldMap(this)],
       // kdm_pepalyze_museum.bin
       ["MuseumLockData", new MuseumLockData(this)],
       ["MuseumSecretData", new MuseumSecretData(this)],
@@ -371,6 +391,16 @@ class KDM {
       // kdm_link_data.bin
       if (name === "link_data_all") {
         return this.types.push([-1, Link], [-1, LinkData]);
+      }
+
+      // kdm_worldmap_data.bin
+      if(name === "disposWorldMapTable") {
+        return this.types.push(
+          [-1, DisposWorldMapSubEntry],
+          [-1, DisposWorldMap],
+          [-1, DisposWorldMapConnectSubEntry],
+          [-1, DisposWorldMapConnect]
+        );
       }
 
       // kdm_pepalyze_museum.bin

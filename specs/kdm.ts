@@ -83,6 +83,18 @@ describe("KDM", () => {
     });
   });
 
+  describe("kdm_worldmap_data.bin", () => {
+    test("parsing and building yields the same file", async () => {
+      const data = await fs.readFile("data/Data/kdm_worldmap_data.bin");
+      expectSHA256Checksum(data, "kdm_worldmap_data.bin", "d940cec28f223b03babd5e46446df0bd50dd75499764cfbd84e9e964f72c0ec3");
+
+      const parsed = new KDM().parse(data).get();
+      const built = new KDM().set(parsed).build();
+
+      expect(data).to.be.deep.equal(built);
+    });
+  });
+
   describe("kdm_pepalyze_museum.bin", () => {
     test("parsing and building yields the same file", async () => {
       const data = await fs.readFile("data/Data/kdm_pepalyze_museum.bin");
