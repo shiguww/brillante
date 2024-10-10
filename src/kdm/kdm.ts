@@ -44,6 +44,16 @@ import DisposWorldMapConnectSubEntry from "./worldmap-data/dispos-worldmap-conne
 import DisposWorldMapSubEntry from "./worldmap-data/dispos-worldmap-subentry";
 import KDMUnknownType1 from "#/kdm/common/kdm-unknown-type1";
 
+import MapObjectData0 from "./mapobject/mapobject-data0";
+import MapObjectData1 from "./mapobject/mapobject-data1";
+import MapObjectData2 from "./mapobject/mapobject-data2";
+import MapObjectData3 from "./mapobject/mapobject-data3";
+import MapObjectData4 from "./mapobject/mapobject-data4";
+import MapObjectData5 from "./mapobject/mapobject-data5";
+import MapObjectData6 from "./mapobject/mapobject-data6";
+import MapObjectData7 from "./mapobject/mapobject-data7";
+import MapObjectData8 from "./mapobject/mapobject-data8";
+
 type KDMStructureConstructor = (new (kdm: KDM) => KDMStructure);
 
 const ALL_TYPES: KDMStructureConstructor[] = [
@@ -71,6 +81,16 @@ const ALL_TYPES: KDMStructureConstructor[] = [
   // kdm_link_data.bin
   LinkData,
   Link,
+  // kdm_mapobject.bin
+  MapObjectData0,
+  MapObjectData1,
+  MapObjectData2,
+  MapObjectData3,
+  MapObjectData4,
+  MapObjectData5,
+  MapObjectData6,
+  MapObjectData7,
+  MapObjectData8,
   // kdm_worldmap_data.bin
   DisposWorldMapSubEntry,
   DisposWorldMap,
@@ -123,6 +143,8 @@ const IKDM = z.object({
     ])]),
     // kdm_link_data.bin
     z.tuple([z.literal("link_data_all"), LinkData.schema.array().array()]),
+    // kdm_mapobject.bin
+    z.tuple([z.literal("map_object_data_tbl"), MapObjectData8.schema.array().array()]),
     // kdm_worldmap_data.bin
     z.tuple([z.literal("disposWorldMapTable"), DisposWorldMap.schema.array().array()]),
     z.tuple([z.literal("disposWorldMapConnectTable"), DisposWorldMapConnect.schema.array().array()]),
@@ -189,6 +211,8 @@ class KDM {
       ["secretSealDataTable", new KDMGenericArray(this).useNullTerminator(false)],
       // kdm_link_data.bin
       ["link_data_all", new KDMGenericArray(this).useNullTerminator(false)],
+      // kdm_mapobject.bin
+      ["map_object_data_tbl", new KDMGenericArray(this).useNullTerminator(false)],
       // kdm_worldmap_data.bin
       ["disposWorldMapTable", new KDMGenericArray(this).useNullTerminator(true)],
       ["disposWorldMapConnectTable", new KDMGenericArray(this).useNullTerminator(true)]
@@ -231,6 +255,16 @@ class KDM {
       // kdm_link_data.bin
       ["LinkData", new LinkData(this)],
       ["Link", new Link(this)],
+      // kdm_mapobject.bin
+      ["MapObjectData0", new MapObjectData0(this)],
+      ["MapObjectData1", new MapObjectData1(this)],
+      ["MapObjectData2", new MapObjectData2(this)],
+      ["MapObjectData3", new MapObjectData3(this)],
+      ["MapObjectData4", new MapObjectData4(this)],
+      ["MapObjectData5", new MapObjectData5(this)],
+      ["MapObjectData6", new MapObjectData6(this)],
+      ["MapObjectData7", new MapObjectData7(this)],
+      ["MapObjectData8", new MapObjectData8(this)],
       // kdm_worldmap_data.bin
       ["DisposWorldMapConnect", new DisposWorldMapConnect(this)],
       ["DisposWorldMapConnectSubEntry", new DisposWorldMapConnectSubEntry(this)],
@@ -375,6 +409,21 @@ class KDM {
       // kdm_mapdata.bin
       if (name === "mapDataTable") {
         return this.types.push([-1, MapData]);
+      }
+
+      // kdm_mapobject.bin
+      if(name === "map_object_data_tbl") {
+        return this.types.push(
+          [-1, MapObjectData0],
+          [-1, MapObjectData1],
+          [-1, MapObjectData2],
+          [-1, MapObjectData3],
+          [-1, MapObjectData4],
+          [-1, MapObjectData5],
+          [-1, MapObjectData6],
+          [-1, MapObjectData7],
+          [-1, MapObjectData8]
+        );
       }
 
       // kdm_pepalyze.bin
