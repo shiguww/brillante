@@ -508,282 +508,58 @@ class KDM {
     // For some obscure reason, kdm_mapobject.bin registers strings in a different order.
     if (this.tables.map((t) => t[0]).find((s) => s === "map_object_data_tbl")) {
       this.tables.forEach(([_, table]) => {
-        const all = table.entries
+        const ORDER = [
+          "mac_1_00",
+          "mac_1_01",
+          "mac_1_04",
+          "mac_1_05",
+          "mac_1_20",
+          "mac_m_00",
+          "mac_2_00",
+          "mac_2_02",
+          "mac_2_22",
+          "hei_5_01",
+          "hei_5_02",
+          "hei_5_03",
+          "hei_5_04",
+          "hei_5_06",
+          "hei_5_11",
+          "hei_3_02",
+          "hei_3_03",
+          "hei_3_05",
+          "hei_2_00",
+          "hei_2_01",
+          "hei_2_02",
+          "hei_2_04",
+          "hei_4_00",
+          "hei_4_01",
+          "hei_4_02",
+          "hei_4_03",
+          "hei_4_04",
+          "iwa_4_02"
+        ];
+
+        const ALL = table.entries
           .filter((e) => e instanceof KDMGenericArrayPointer)
           .map((p) => p.array.entries).flat()
           .filter((e) => e instanceof MapObjectData8);
 
-        all
-          .filter((e) => (e.unknown0.get() || "").startsWith("mac_1"))
-          .sort((A, B) => {
-            const a = A.unknown0.get() || "";
-            const b = B.unknown0.get() || "";
+        const BEFORE = ALL.filter((o) => ORDER.includes(o.unknown0.get() || ""));
 
-            if (a < b) return -1;
-            if (a > b) return 1;
-            return 0
-          })
-          .forEach((obj) => {
-            obj.unknown1.strings.forEach((s) => registerStringIfNotExists(s));
-            obj.unknown3.strings.forEach((s) => registerStringIfNotExists(s));
-            obj.unknown5.strings.forEach((s) => registerStringIfNotExists(s));
-            obj.unknown7.strings.forEach((s) => registerStringIfNotExists(s));
-            obj.unknown9.strings.forEach((s) => registerStringIfNotExists(s));
-          });
+        BEFORE.sort((A, B) => {
+          const a = A.unknown0.get() || "";
+          const b = B.unknown0.get() || "";
 
-        all
-          .filter((e) => (e.unknown0.get() || "").startsWith("mac_m"))
-          .sort((A, B) => {
-            const a = A.unknown0.get() || "";
-            const b = B.unknown0.get() || "";
+          return ORDER.indexOf(a) - ORDER.indexOf(b);
+        }).forEach((obj) => {
+          obj.unknown1.strings.forEach((s) => registerStringIfNotExists(s));
+          obj.unknown3.strings.forEach((s) => registerStringIfNotExists(s));
+          obj.unknown5.strings.forEach((s) => registerStringIfNotExists(s));
+          obj.unknown7.strings.forEach((s) => registerStringIfNotExists(s));
+          obj.unknown9.strings.forEach((s) => registerStringIfNotExists(s));
+        });
 
-            if (a < b) return -1;
-            if (a > b) return 1;
-            return 0
-          })
-          .forEach((obj) => {
-            obj.unknown1.strings.forEach((s) => registerStringIfNotExists(s));
-            obj.unknown3.strings.forEach((s) => registerStringIfNotExists(s));
-            obj.unknown5.strings.forEach((s) => registerStringIfNotExists(s));
-            obj.unknown7.strings.forEach((s) => registerStringIfNotExists(s));
-            obj.unknown9.strings.forEach((s) => registerStringIfNotExists(s));
-          });
-
-        all
-          .filter((e) => (e.unknown0.get() || "").startsWith("mac_2"))
-          .sort((A, B) => {
-            const a = A.unknown0.get() || "";
-            const b = B.unknown0.get() || "";
-
-            if (a < b) return -1;
-            if (a > b) return 1;
-            return 0
-          })
-          .forEach((obj) => {
-            obj.unknown1.strings.forEach((s) => registerStringIfNotExists(s));
-            obj.unknown3.strings.forEach((s) => registerStringIfNotExists(s));
-            obj.unknown5.strings.forEach((s) => registerStringIfNotExists(s));
-            obj.unknown7.strings.forEach((s) => registerStringIfNotExists(s));
-            obj.unknown9.strings.forEach((s) => registerStringIfNotExists(s));
-          });
-
-        all
-          .filter((e) => (e.unknown0.get() || "").startsWith("hei_5"))
-          .sort((A, B) => {
-            const a = A.unknown0.get() || "";
-            const b = B.unknown0.get() || "";
-
-            if (a < b) return -1;
-            if (a > b) return 1;
-            return 0
-          })
-          .forEach((obj) => {
-            obj.unknown1.strings.forEach((s) => registerStringIfNotExists(s));
-            obj.unknown3.strings.forEach((s) => registerStringIfNotExists(s));
-            obj.unknown5.strings.forEach((s) => registerStringIfNotExists(s));
-            obj.unknown7.strings.forEach((s) => registerStringIfNotExists(s));
-            obj.unknown9.strings.forEach((s) => registerStringIfNotExists(s));
-          });
-
-        all
-          .filter((e) => (e.unknown0.get() || "").startsWith("hei_3"))
-          .sort((A, B) => {
-            const a = A.unknown0.get() || "";
-            const b = B.unknown0.get() || "";
-
-            if (a < b) return -1;
-            if (a > b) return 1;
-            return 0
-          })
-          .forEach((obj) => {
-            obj.unknown1.strings.forEach((s) => registerStringIfNotExists(s));
-            obj.unknown3.strings.forEach((s) => registerStringIfNotExists(s));
-            obj.unknown5.strings.forEach((s) => registerStringIfNotExists(s));
-            obj.unknown7.strings.forEach((s) => registerStringIfNotExists(s));
-            obj.unknown9.strings.forEach((s) => registerStringIfNotExists(s));
-          });
-
-        all
-          .filter((e) => (e.unknown0.get() || "").startsWith("hei_5"))
-          .sort((A, B) => {
-            const a = A.unknown0.get() || "";
-            const b = B.unknown0.get() || "";
-
-            if (a < b) return -1;
-            if (a > b) return 1;
-            return 0
-          })
-          .forEach((obj) => {
-            obj.unknown1.strings.forEach((s) => registerStringIfNotExists(s));
-            obj.unknown3.strings.forEach((s) => registerStringIfNotExists(s));
-            obj.unknown5.strings.forEach((s) => registerStringIfNotExists(s));
-            obj.unknown7.strings.forEach((s) => registerStringIfNotExists(s));
-            obj.unknown9.strings.forEach((s) => registerStringIfNotExists(s));
-          });
-
-        all
-          .filter((e) => (e.unknown0.get() || "").startsWith("hei_3"))
-          .sort((A, B) => {
-            const a = A.unknown0.get() || "";
-            const b = B.unknown0.get() || "";
-
-            if (a < b) return -1;
-            if (a > b) return 1;
-            return 0
-          })
-          .forEach((obj) => {
-            obj.unknown1.strings.forEach((s) => registerStringIfNotExists(s));
-            obj.unknown3.strings.forEach((s) => registerStringIfNotExists(s));
-            obj.unknown5.strings.forEach((s) => registerStringIfNotExists(s));
-            obj.unknown7.strings.forEach((s) => registerStringIfNotExists(s));
-            obj.unknown9.strings.forEach((s) => registerStringIfNotExists(s));
-          });
-
-        all
-          .filter((e) => (e.unknown0.get() || "").startsWith("hei_2"))
-          .sort((A, B) => {
-            const a = A.unknown0.get() || "";
-            const b = B.unknown0.get() || "";
-
-            if (a < b) return -1;
-            if (a > b) return 1;
-            return 0
-          })
-          .forEach((obj) => {
-            obj.unknown1.strings.forEach((s) => registerStringIfNotExists(s));
-            obj.unknown3.strings.forEach((s) => registerStringIfNotExists(s));
-            obj.unknown5.strings.forEach((s) => registerStringIfNotExists(s));
-            obj.unknown7.strings.forEach((s) => registerStringIfNotExists(s));
-            obj.unknown9.strings.forEach((s) => registerStringIfNotExists(s));
-          });
-
-        all
-          .filter((e) => (e.unknown0.get() || "").startsWith("hei_4"))
-          .sort((A, B) => {
-            const a = A.unknown0.get() || "";
-            const b = B.unknown0.get() || "";
-
-            if (a < b) return -1;
-            if (a > b) return 1;
-            return 0
-          })
-          .forEach((obj) => {
-            obj.unknown1.strings.forEach((s) => registerStringIfNotExists(s));
-            obj.unknown3.strings.forEach((s) => registerStringIfNotExists(s));
-            obj.unknown5.strings.forEach((s) => registerStringIfNotExists(s));
-            obj.unknown7.strings.forEach((s) => registerStringIfNotExists(s));
-            obj.unknown9.strings.forEach((s) => registerStringIfNotExists(s));
-          });
-
-        all
-          .filter((e) => (e.unknown0.get() || "").startsWith("iwa_4_02"))
-          .sort((A, B) => {
-            const a = A.unknown0.get() || "";
-            const b = B.unknown0.get() || "";
-
-            if (a < b) return -1;
-            if (a > b) return 1;
-            return 0
-          })
-          .forEach((obj) => {
-            obj.unknown1.strings.forEach((s) => registerStringIfNotExists(s));
-            obj.unknown3.strings.forEach((s) => registerStringIfNotExists(s));
-            obj.unknown5.strings.forEach((s) => registerStringIfNotExists(s));
-            obj.unknown7.strings.forEach((s) => registerStringIfNotExists(s));
-            obj.unknown9.strings.forEach((s) => registerStringIfNotExists(s));
-          });
-
-        all
-          .filter((e) => (e.unknown0.get() || "").startsWith("iwa_4_03"))
-          .sort((A, B) => {
-            const a = A.unknown0.get() || "";
-            const b = B.unknown0.get() || "";
-
-            if (a < b) return -1;
-            if (a > b) return 1;
-            return 0
-          })
-          .forEach((obj) => {
-            obj.unknown1.strings.forEach((s) => registerStringIfNotExists(s));
-            obj.unknown3.strings.forEach((s) => registerStringIfNotExists(s));
-            obj.unknown5.strings.forEach((s) => registerStringIfNotExists(s));
-            obj.unknown7.strings.forEach((s) => registerStringIfNotExists(s));
-            obj.unknown9.strings.forEach((s) => registerStringIfNotExists(s));
-          });
-
-        all
-          .filter((e) => (e.unknown0.get() || "").startsWith("iwa_4_04"))
-          .sort((A, B) => {
-            const a = A.unknown0.get() || "";
-            const b = B.unknown0.get() || "";
-
-            if (a < b) return -1;
-            if (a > b) return 1;
-            return 0
-          })
-          .forEach((obj) => {
-            obj.unknown1.strings.forEach((s) => registerStringIfNotExists(s));
-            obj.unknown3.strings.forEach((s) => registerStringIfNotExists(s));
-            obj.unknown5.strings.forEach((s) => registerStringIfNotExists(s));
-            obj.unknown7.strings.forEach((s) => registerStringIfNotExists(s));
-            obj.unknown9.strings.forEach((s) => registerStringIfNotExists(s));
-          });
-
-        all
-          .filter((e) => (e.unknown0.get() || "").startsWith("iwa_4_05"))
-          .sort((A, B) => {
-            const a = A.unknown0.get() || "";
-            const b = B.unknown0.get() || "";
-
-            if (a < b) return -1;
-            if (a > b) return 1;
-            return 0
-          })
-          .forEach((obj) => {
-            obj.unknown1.strings.forEach((s) => registerStringIfNotExists(s));
-            obj.unknown3.strings.forEach((s) => registerStringIfNotExists(s));
-            obj.unknown5.strings.forEach((s) => registerStringIfNotExists(s));
-            obj.unknown7.strings.forEach((s) => registerStringIfNotExists(s));
-            obj.unknown9.strings.forEach((s) => registerStringIfNotExists(s));
-          });
-
-        all
-          .filter((e) => (e.unknown0.get() || "").startsWith("iwa_2_02"))
-          .sort((A, B) => {
-            const a = A.unknown0.get() || "";
-            const b = B.unknown0.get() || "";
-
-            if (a < b) return -1;
-            if (a > b) return 1;
-            return 0
-          })
-          .forEach((obj) => {
-            obj.unknown1.strings.forEach((s) => registerStringIfNotExists(s));
-            obj.unknown3.strings.forEach((s) => registerStringIfNotExists(s));
-            obj.unknown5.strings.forEach((s) => registerStringIfNotExists(s));
-            obj.unknown7.strings.forEach((s) => registerStringIfNotExists(s));
-            obj.unknown9.strings.forEach((s) => registerStringIfNotExists(s));
-          });
-
-        all
-          .filter((e) => (e.unknown0.get() || "").startsWith("tst_yas01"))
-          .sort((A, B) => {
-            const a = A.unknown0.get() || "";
-            const b = B.unknown0.get() || "";
-
-            if (a < b) return -1;
-            if (a > b) return 1;
-            return 0
-          })
-          .forEach((obj) => {
-            obj.unknown1.strings.forEach((s) => registerStringIfNotExists(s));
-            obj.unknown3.strings.forEach((s) => registerStringIfNotExists(s));
-            obj.unknown5.strings.forEach((s) => registerStringIfNotExists(s));
-            obj.unknown7.strings.forEach((s) => registerStringIfNotExists(s));
-            obj.unknown9.strings.forEach((s) => registerStringIfNotExists(s));
-          });
-
-        all.forEach((obj) => {
+        ALL.forEach((obj) => {
           obj.unknown1.strings.forEach((s) => registerStringIfNotExists(s));
           obj.unknown3.strings.forEach((s) => registerStringIfNotExists(s));
           obj.unknown5.strings.forEach((s) => registerStringIfNotExists(s));
