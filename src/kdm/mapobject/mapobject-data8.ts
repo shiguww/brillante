@@ -3,6 +3,7 @@ import KDMStructure from "#/kdm/common/kdm-structure";
 import KDMStringPointer from "#/kdm/common/pointer/kdm-string-pointer";
 import KDMGenericArrayPointer from "../common/pointer/kdm-generic-array-pointer";
 import KDMUnknownType1 from "../common/kdm-unknown-type1";
+import KDMArray from "../common/array/kdm-array";
 
 const IMapObjectData8 = z.object({
   unknown0: KDMStringPointer.schema,
@@ -30,7 +31,6 @@ class MapObjectData8 extends KDMStructure<IMapObjectData8> {
   public override readonly schema = IMapObjectData8;
 
   public readonly unknown0 = new KDMStringPointer(this.kdm);
-
   public readonly unknown1 = new KDMGenericArrayPointer(this.kdm);
   public readonly unknown2 = new KDMUnknownType1(this.kdm);
   public readonly unknown3 = new KDMGenericArrayPointer(this.kdm);
@@ -41,6 +41,16 @@ class MapObjectData8 extends KDMStructure<IMapObjectData8> {
   public readonly unknown8 = new KDMUnknownType1(this.kdm);
   public readonly unknown9 = new KDMGenericArrayPointer(this.kdm);
   public readonly unknown10 = new KDMUnknownType1(this.kdm);
+
+  public override get arrays(): Array<KDMArray> {
+    return [
+      ...this.unknown1.array.arrays,
+      ...this.unknown3.array.arrays,
+      ...this.unknown5.array.arrays,
+      ...this.unknown7.array.arrays,
+      ...this.unknown9.array.arrays
+    ];
+  }
 
   public override get fields(): Array<KDMStructure> {
     return [

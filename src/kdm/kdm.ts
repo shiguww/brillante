@@ -412,7 +412,7 @@ class KDM {
       }
 
       // kdm_mapobject.bin
-      if(name === "map_object_data_tbl") {
+      if (name === "map_object_data_tbl") {
         return this.types.push(
           [-1, MapObjectData0],
           [-1, MapObjectData1],
@@ -445,7 +445,7 @@ class KDM {
       }
 
       // kdm_worldmap_data.bin
-      if(name === "disposWorldMapTable") {
+      if (name === "disposWorldMapTable") {
         return this.types.push(
           [-1, DisposWorldMapSubEntry],
           [-1, DisposWorldMap],
@@ -513,6 +513,7 @@ class KDM {
         .map((t) => t.arrays).flat()
         .map((arr) => arr.entries).flat()
         .map((e) => e.fields).flat()
+        .map((f) => f.fields).flat()
         .filter((f) => f instanceof KDMStringPointer)
         .forEach((s) => registerStringIfNotExists(s));
 
