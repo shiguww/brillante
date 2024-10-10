@@ -17,6 +17,7 @@ const IMapObjectData8 = z.object({
   unknown8: KDMUnknownType1.schema,
   unknown9: KDMGenericArrayPointer.schema,
   unknown10: KDMUnknownType1.schema,
+  _offset: z.number(),
   _structure: z.literal("MapObjectData8").default("MapObjectData8")
 });
 
@@ -87,7 +88,8 @@ class MapObjectData8 extends KDMStructure<IMapObjectData8> {
       unknown7: this.unknown7.get(),
       unknown8: this.unknown8.get(),
       unknown9: this.unknown9.get(),
-      unknown10: this.unknown10.get()
+      unknown10: this.unknown10.get(),
+      _offset: this.offset,
     });
   }
 

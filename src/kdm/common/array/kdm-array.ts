@@ -26,7 +26,7 @@ abstract class KDMArray<T = unknown> extends KDMStructure<T[]> {
   }
 
   public override get fields(): Array<KDMStructure> {
-    return [this];
+    return [this.uid, this.size0, this.type, this.size1];
   }
 
   public override get strings(): Array<KDMStringPointer> {

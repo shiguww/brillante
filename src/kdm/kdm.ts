@@ -353,12 +353,12 @@ class KDM {
 
     const arrays = this.tables
       .map(([_, t]) => t.entries).flat()
-      .map((e) => e.arrays).flat();
+      .map((e) => e.arrays).flat()
+      .filter((a) => a.entries.length !== 0)
+      .sort((a, b) => a.uid.get() - b.uid.get());
 
     buffer.setU32(arrays.length);
-
-    arrays.sort((a, b) => a.uid.get() - b.uid.get())
-      .forEach((arr) => arr.build(buffer));
+    arrays.forEach((arr) => arr.build(buffer));
   }
 
   private buildSection6(buffer: WBuffer): void {
@@ -589,7 +589,8 @@ class KDM {
       this.tables.forEach(([_, table]) => {
         table.entries
           .map((t) => t.arrays).flat()
-          .forEach((arr) => arr.uid.set(id++));
+          .filter((a) => a.entries.length !== 0)
+          .forEach((a) => a.uid.set(id++));
       });
 
       this.tables.forEach(([_, table]) => {
@@ -601,6 +602,7 @@ class KDM {
       this.tables.forEach(([_, table]) => {
         table.entries
           .map((t) => t.arrays).flat()
+          .filter((a) => a.entries.length !== 0)
           .forEach((arr) => arr.uid.set(id++));
 
         table.uid.set(id++);
