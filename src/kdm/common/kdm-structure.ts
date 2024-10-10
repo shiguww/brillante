@@ -2,7 +2,8 @@ import type z from "zod";
 import type KDM from "#/kdm/kdm";
 import type RBuffer from "#/buffer/w-buffer";
 import type WBuffer from "#/buffer/w-buffer";
-import KDMArray from "#/kdm/common/array/kdm-array";
+import type KDMArray from "#/kdm/common/array/kdm-array";
+import type KDMStringPointer from "#/kdm/common/pointer/kdm-string-pointer";
 
 abstract class KDMStructure<T = unknown> {
   public offset: number;
@@ -27,6 +28,10 @@ abstract class KDMStructure<T = unknown> {
     return this.fields
       .map((f) => f.sizeof)
       .reduce((prev, curr) => prev + curr);
+  }
+
+  public get strings(): Array<KDMStringPointer> {
+    return [];
   }
 
   public abstract get(): T;

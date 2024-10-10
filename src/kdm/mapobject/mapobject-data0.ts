@@ -32,6 +32,10 @@ class MapObjectData0 extends KDMStructure<IMapObjectData0> {
     ];
   }
 
+  public override get strings(): Array<KDMStringPointer> {
+    return this.fields.filter((f) => f instanceof KDMStringPointer);
+  }
+
   public override get(): IMapObjectData0 {
     return IMapObjectData0.parse({
       unknown0: this.unknown0.get(),

@@ -40,6 +40,10 @@ class ShopEntry extends KDMStructure<IShopEntry> {
     ];
   }
 
+  public override get strings(): KDMStringPointer[] {
+    return this.fields.filter((f) => f instanceof KDMStringPointer);
+  }
+
   public override get(): IShopEntry {
     return IShopEntry.parse({
       unknown0: this.unknown0.get(),

@@ -74,6 +74,10 @@ class TrackVolumeData extends KDMStructure<ITrackVolumeData> {
     ];
   }
 
+  public override get strings(): KDMStringPointer[] {
+    return this.fields.filter((f) => f instanceof KDMStringPointer);
+  }
+
   public override get(): ITrackVolumeData {
     return ITrackVolumeData.parse({
       unknown0: this.unknown0.get(),

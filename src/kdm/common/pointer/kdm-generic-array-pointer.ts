@@ -4,6 +4,7 @@ import type RBuffer from "#/buffer/r-buffer";
 import KDMArray from "#/kdm/common/array/kdm-array";
 import KDMStructure from "#/kdm/common/kdm-structure";
 import KDMGenericArray from "#/kdm/common/array/kdm-generic-array";
+import type KDMStringPointer from "#/kdm/common/pointer/kdm-string-pointer";
 
 const IKDMGenericArrayPointer = z.unknown().array();
 type IKDMGenericArrayPointer = z.infer<typeof IKDMGenericArrayPointer>;
@@ -23,6 +24,10 @@ class KDMGenericArrayPointer extends KDMStructure<IKDMGenericArrayPointer> {
 
   public override get fields(): Array<KDMStructure> {
     return [this];
+  }
+
+  public override get strings(): Array<KDMStringPointer> {
+    return this.array.strings;
   }
 
   public override get sizeof(): number {

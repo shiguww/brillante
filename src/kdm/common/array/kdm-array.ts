@@ -4,6 +4,7 @@ import KDMU16 from "#/kdm/common/kdm-u16";
 import type WBuffer from "#/buffer/w-buffer";
 import KDMStructure from "#/kdm/common/kdm-structure"
 import KDMPadding from "#/kdm/common/padding/kdm-padding";
+import type KDMStringPointer from "#/kdm/common/pointer/kdm-string-pointer";
 
 type KDMStructureConstructor = (new (kdm: KDM) => KDMStructure);
 
@@ -26,6 +27,10 @@ abstract class KDMArray<T = unknown> extends KDMStructure<T[]> {
 
   public override get fields(): Array<KDMStructure> {
     return [this];
+  }
+
+  public override get strings(): Array<KDMStringPointer> {
+    return this.entries.map((e) => e.strings).flat();
   }
 
   public override get sizeof(): number {

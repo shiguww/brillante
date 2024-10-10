@@ -38,6 +38,13 @@ class DisposWorldMap extends KDMStructure<IDisposWorldMap> {
     ];
   }
 
+  public override get strings(): KDMStringPointer[] {
+    return [
+      ...this.unknown1.array.entries.map((e) => e.strings).flat(),
+      ...this.fields.filter((f) => f instanceof KDMStringPointer)
+    ];
+  }
+
   public override get(): IDisposWorldMap {
     return IDisposWorldMap.parse({
       unknown0: this.unknown0.get(),

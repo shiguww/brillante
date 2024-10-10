@@ -33,6 +33,10 @@ class GroupData extends KDMStructure<IGroupData> {
     ];
   }
 
+  public override get strings(): KDMStringPointer[] {
+    return this.fields.filter((f) => f instanceof KDMStringPointer);
+  }
+
   public override get(): IGroupData {
     return IGroupData.parse({
       unknown0: this.unknown0.get(),

@@ -28,6 +28,10 @@ class LucieMSG extends KDMStructure<ILucieMSG> {
     ];
   }
 
+  public override get strings(): KDMStringPointer[] {
+    return this.fields.filter((f) => f instanceof KDMStringPointer);
+  }
+
   public override get(): ILucieMSG {
     return ILucieMSG.parse({
       unknown0: this.unknown0.get(),

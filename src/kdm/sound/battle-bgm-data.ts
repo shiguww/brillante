@@ -76,6 +76,10 @@ class BattleBGMData extends KDMStructure<IBattleBGMData> {
     ];
   }
 
+  public override get strings(): KDMStringPointer[] {
+    return this.fields.filter((f) => f instanceof KDMStringPointer);
+  }
+
   public override get(): IBattleBGMData {
     return IBattleBGMData.parse({
       unknown0: this.unknown0.get(),

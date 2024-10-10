@@ -37,6 +37,13 @@ class LinkData extends KDMStructure<ILinkData> {
       this.count
     ];
   }
+  
+  public override get strings(): KDMStringPointer[] {
+    return [
+      ...this.links.array.entries.map((l) => l.strings).flat(),
+      ...this.fields.filter((f) => f instanceof KDMStringPointer)
+    ];
+  }
 
   public override get(): ILinkData {
     return ILinkData.parse({

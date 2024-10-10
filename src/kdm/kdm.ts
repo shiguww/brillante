@@ -498,10 +498,7 @@ class KDM {
     if (this.tables.map((t) => t[0]).find((s) => s === "SHOP_DOR")) {
       this.tables.forEach(([_, table]) => {
         table.entries
-          .map((t) => t.arrays).flat()
-          .map((arr) => arr.entries).flat()
-          .map((e) => e.fields).flat()
-          .filter((f) => f instanceof KDMStringPointer)
+          .map((e) => e.strings).flat()
           .forEach((s) => registerStringIfNotExists(s));
       });
 
@@ -510,11 +507,7 @@ class KDM {
 
     this.tables.forEach(([name, table]) => {
       table.entries
-        .map((t) => t.arrays).flat()
-        .map((arr) => arr.entries).flat()
-        .map((e) => e.fields).flat()
-        .map((f) => f.fields).flat()
-        .filter((f) => f instanceof KDMStringPointer)
+        .map((e) => e.strings).flat()
         .forEach((s) => registerStringIfNotExists(s));
 
       registerStringIfNotExists(name);

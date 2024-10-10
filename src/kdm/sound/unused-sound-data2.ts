@@ -24,6 +24,10 @@ class UnusedSoundData2 extends KDMStructure<never> {
     ];
   }
 
+  public override get strings(): KDMStringPointer[] {
+    return this.fields.filter((f) => f instanceof KDMStringPointer);
+  }
+
   public override get(): never {
     assert.fail();
   }

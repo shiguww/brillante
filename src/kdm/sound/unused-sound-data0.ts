@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import KDMF32 from "#/kdm/common/kdm-f32";
 import KDMU32 from "#/kdm/common/kdm-u32";
 import KDMStructure from "#/kdm/common/kdm-structure";
+import type KDMStringPointer from "#/kdm/common/pointer/kdm-string-pointer";
 
 class UnusedSoundData0 extends KDMStructure<never> {
   public static readonly schema = z.never();
@@ -28,6 +29,10 @@ class UnusedSoundData0 extends KDMStructure<never> {
       this.unknown4,
       this.unknown5
     ];
+  }
+
+  public override get strings(): KDMStringPointer[] {
+    return [];
   }
 
   public override get(): never {
