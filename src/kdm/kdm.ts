@@ -42,6 +42,7 @@ import DisposWorldMap from "./worldmap-data/dispos-worldmap";
 import DisposWorldMapConnect from "./worldmap-data/dispos-worldmap-connect";
 import DisposWorldMapConnectSubEntry from "./worldmap-data/dispos-worldmap-connect-subentry";
 import DisposWorldMapSubEntry from "./worldmap-data/dispos-worldmap-subentry";
+import KDMUnknownType1 from "#/kdm/common/kdm-unknown-type1";
 
 type KDMStructureConstructor = (new (kdm: KDM) => KDMStructure);
 
@@ -142,6 +143,7 @@ class KDM {
   ]> = [
       [0x00000000, KDMF32],
       [0x00000001, KDMU32],
+      [0x00000002, KDMUnknownType1],
       [0x00000003, KDMStringPointer],
       [0x00000004, KDMBoolean],
       [0x00000008, KDMU16],
