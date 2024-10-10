@@ -505,6 +505,66 @@ class KDM {
       this.tables.forEach(([name]) => registerStringIfNotExists(name));
     }
 
+    // For some obscure reason, kdm_mapobject.bin registers strings in a different order.
+    if (this.tables.map((t) => t[0]).find((s) => s === "map_object_data_tbl")) {
+      this.tables.forEach(([_, table]) => {
+        const all = table.entries
+          .filter((e) => e instanceof KDMGenericArrayPointer)
+          .map((p) => p.array.entries).flat()
+          .filter((e) => e instanceof MapObjectData8);
+
+        all
+          .filter((e) => (e.unknown0.get() || "").startsWith("mac_1"))
+          .sort((A, B) => {
+            const a = A.unknown0.get() || "";
+            const b = B.unknown0.get() || "";
+
+            if (a < b) return -1;
+            if (a > b) return 1;
+            return 0
+          })
+          .map((e) => e.unknown7.array.entries).flat()
+          .filter((e) => e instanceof MapObjectData6)
+          .map((d) => d.strings).flat()
+          .forEach((s) => registerStringIfNotExists(s));
+
+        all
+          .filter((e) => (e.unknown0.get() || "").startsWith("mac_m"))
+          .sort((A, B) => {
+            const a = A.unknown0.get() || "";
+            const b = B.unknown0.get() || "";
+
+            if (a < b) return -1;
+            if (a > b) return 1;
+            return 0
+          })
+          .map((e) => e.unknown7.array.entries).flat()
+          .filter((e) => e instanceof MapObjectData6)
+          .map((d) => d.strings).flat()
+          .forEach((s) => registerStringIfNotExists(s));
+
+        all
+          .filter((e) => (e.unknown0.get() || "").startsWith("mac_2"))
+          .sort((A, B) => {
+            const a = A.unknown0.get() || "";
+            const b = B.unknown0.get() || "";
+
+            if (a < b) return -1;
+            if (a > b) return 1;
+            return 0
+          })
+          .map((e) => e.unknown7.array.entries).flat()
+          .filter((e) => e instanceof MapObjectData6)
+          .map((d) => d.strings).flat()
+          .forEach((s) => registerStringIfNotExists(s));
+
+        all.map((e) => e.unknown7.array.entries).flat()
+          .filter((e) => e instanceof MapObjectData6)
+          .map((d) => d.strings).flat()
+          .forEach((s) => registerStringIfNotExists(s));
+      });
+    }
+
     this.tables.forEach(([name, table]) => {
       table.entries
         .map((e) => e.strings).flat()

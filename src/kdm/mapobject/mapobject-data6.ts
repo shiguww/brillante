@@ -44,8 +44,12 @@ class MapObjectData6 extends KDMStructure<IMapObjectData6> {
 
   public override get strings(): Array<KDMStringPointer> {
     return [
-      ...this.fields.filter((f) => f instanceof KDMStringPointer),
-      ...this.fields.map((f) => f.strings).flat()
+      this.unknown0,
+      ...this.unknown1.strings,
+      this.unknown2,
+      ...this.unknown3.strings,
+      this.unknown4,
+      ...this.unknown5.strings
     ];
   }
 
