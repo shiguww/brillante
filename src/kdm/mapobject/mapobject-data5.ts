@@ -103,7 +103,10 @@ class MapObjectData5 extends KDMStructure<IMapObjectData5> {
   }
 
   public override get strings(): Array<KDMStringPointer> {
-    return this.fields.filter((f) => f instanceof KDMStringPointer);
+    return [
+      ...this.fields.filter((f) => f instanceof KDMStringPointer),
+      ...this.fields.map((f) => f.strings).flat()
+    ];
   }
 
   public override get(): IMapObjectData5 {
