@@ -14,7 +14,6 @@ import KDMStructure from "#/kdm/common/kdm-structure";
 import KDMPadding from "#/kdm/common/padding/kdm-padding";
 import KDMUnknownType0 from "#/kdm/common/kdm-unknown-type0";
 import KDMBoolean from "#/kdm/common/kdm-boolean";
-import KDMGenericArray from "#/kdm/common/array/kdm-generic-array";
 import KDMStringPointer from "#/kdm/common/pointer/kdm-string-pointer";
 import KDMU32Parameter from "#/kdm/common/parameter/kdm-u32-parameter";
 import KDMF32ArrayPointer from "#/kdm/common/pointer/kdm-f32-array-pointer";
@@ -76,6 +75,7 @@ import BattleBGMDataTable from "./sound/battle-bgm-data-table";
 import ChangeBGMDataTable from "./sound/change-bdm-data-table";
 import TrackVolumeDataTable from "./sound/track-volume-data-table";
 import TownWorldMapDataTable from "./sound/town-world-map-data-table";
+import MapObjectDataTbl from "./mapobject/mapobject-data-tbl";
 
 type KDMStructureConstructor = (new (kdm: KDM) => KDMStructure);
 
@@ -154,7 +154,7 @@ const IKDM = z.object({
     // kdm_link_data.bin
     z.tuple([z.literal(LinkDataAll.name), LinkDataAll.schema]),
     // kdm_mapobject.bin
-    z.tuple([z.literal("map_object_data_tbl"), MapObjectData8.schema.array().array()]),
+    z.tuple([z.literal(MapObjectDataTbl.name), MapObjectDataTbl.schema]),
     // kdm_worldmap_data.bin
     z.tuple([z.literal(DisposWorldMapTable.name), DisposWorldMapTable.schema]),
     z.tuple([z.literal(DisposWorldMapConnectTable.name), DisposWorldMapConnectTable.schema]),
@@ -219,7 +219,7 @@ class KDM {
       // kdm_link_data.bin
       [LinkDataAll.name, new LinkDataAll(this)],
       // kdm_mapobject.bin
-      ["map_object_data_tbl", new KDMGenericArray(this).useNullTerminator(false)],
+      [MapObjectDataTbl.name, new MapObjectDataTbl(this)],
       // kdm_worldmap_data.bin
       [DisposWorldMapTable.name, new DisposWorldMapTable(this)],
       [DisposWorldMapConnectTable.name, new DisposWorldMapConnectTable(this)]
@@ -415,7 +415,7 @@ class KDM {
       }
 
       // kdm_mapobject.bin
-      if (table.name.get() === "map_object_data_tbl") {
+      if (table instanceof MapObjectDataTbl) {
         return this.types.push(
           [-1, MapObjectData0],
           [-1, MapObjectData1],
@@ -461,12 +461,7 @@ class KDM {
       if (table instanceof DisposWorldMapTable) {
         return this.types.push(
           [-1, DisposWorldMapSubEntry],
-          [-1, DisposWorldMap]
-        );
-      }
-
-      if (table instanceof DisposWorldMapConnectTable) {
-        return this.types.push(
+          [-1, DisposWorldMap],
           [-1, DisposWorldMapConnectSubEntry],
           [-1, DisposWorldMapConnect]
         );
