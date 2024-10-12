@@ -5,6 +5,7 @@ import type WBuffer from "#/buffer/w-buffer";
 import KDMStructure from "#/kdm/common/kdm-structure"
 import KDMPadding from "#/kdm/common/padding/kdm-padding";
 import type KDMStringPointer from "#/kdm/common/pointer/kdm-string-pointer";
+import MapObjectData7 from "#/kdm/mapobject/mapobject-data7";
 
 type KDMStructureConstructor = (new (kdm: KDM) => KDMStructure);
 
@@ -58,11 +59,16 @@ abstract class KDMArray<T = unknown> extends KDMStructure<T[]> {
     this.size0.set((this.sizeof - KDMArray.HEADING_SIZE) / 4);
 
     const entry = this.entries.at(0)!;
+    const realfields = entry.fields.filter((f) => !(f instanceof KDMPadding));
 
-    if (this.useNullTerminatorFlag) {
-      this.size1.set((this.entries.length + 1) * entry.fields.filter((f) => !(f instanceof KDMPadding)).length);
-    } else {
-      this.size1.set(this.entries.length * entry.fields.filter((f) => !(f instanceof KDMPadding)).length);
+    this.size1.set((this.useNullTerminatorFlag
+      ? this.entries.length + 1
+      : this.entries.length) * realfields.length);
+
+    // I don't know what the fuck is going on and I don't
+    // want to know.
+    if(entry instanceof MapObjectData7) {
+      this.size1.set(this.size0.get());
     }
 
     const constructor = entry.constructor as KDMStructureConstructor;
