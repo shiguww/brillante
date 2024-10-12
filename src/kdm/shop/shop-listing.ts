@@ -5,21 +5,21 @@ import KDMUnknownType0 from "#/kdm/common/kdm-unknown-type0";
 import KDMStringPointer from "#/kdm/common/pointer/kdm-string-pointer";
 import KDMU16Padding from "#/kdm/common/padding/kdm-u16-padding";
 
-const IShopEntry = z.object({
+const IShopListing = z.object({
   unknown2: KDMU16.schema,
   unknown4: KDMUnknownType0.schema,
   unknown0: KDMStringPointer.schema,
   unknown1: KDMStringPointer.schema,
   unknown3: KDMStringPointer.schema,
-  _structure: z.literal("ShopEntry").default("ShopEntry")
+  _structure: z.literal("ShopListing").default("ShopListing")
 });
 
-type IShopEntry = z.infer<typeof IShopEntry>;
+type IShopListing = z.infer<typeof IShopListing>;
 
-class ShopEntry extends KDMStructure<IShopEntry> {
-  public static readonly schema = IShopEntry;
+class ShopListing extends KDMStructure<IShopListing> {
+  public static readonly schema = IShopListing;
 
-  public override readonly schema = IShopEntry;
+  public override readonly schema = IShopListing;
   public override readonly unknownSection4Value0 = 0x000000000;
   public override readonly unknownSection4Value1 = 0x000000000;
 
@@ -44,8 +44,8 @@ class ShopEntry extends KDMStructure<IShopEntry> {
     return this.fields.filter((f) => f instanceof KDMStringPointer);
   }
 
-  public override get(): IShopEntry {
-    return IShopEntry.parse({
+  public override get(): IShopListing {
+    return IShopListing.parse({
       unknown0: this.unknown0.get(),
       unknown1: this.unknown1.get(),
       unknown2: this.unknown2.get(),
@@ -55,7 +55,7 @@ class ShopEntry extends KDMStructure<IShopEntry> {
   }
 
   public override set(data: unknown): this {
-    const shopentry = IShopEntry.parse(data);
+    const shopentry = IShopListing.parse(data);
 
     this.unknown0.set(shopentry.unknown0);
     this.unknown1.set(shopentry.unknown1);
@@ -67,4 +67,4 @@ class ShopEntry extends KDMStructure<IShopEntry> {
   }
 }
 
-export default ShopEntry;
+export default ShopListing;

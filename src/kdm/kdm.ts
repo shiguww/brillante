@@ -7,7 +7,7 @@ import KDMF32 from "#/kdm/common/kdm-f32";
 import KDMU16 from "#/kdm/common/kdm-u16";
 import KDMU32 from "#/kdm/common/kdm-u32";
 import MapData from "#/kdm/mapdata/mapdata";
-import ShopEntry from "#/kdm/shop/shop-entry";
+import ShopListing from "#/kdm/shop/shop-listing";
 import KDMString from "#/kdm/common/kdm-string";
 import LinkData from "#/kdm/link-data/link-data";
 import KDMStructure from "#/kdm/common/kdm-structure";
@@ -59,12 +59,20 @@ import LucieMSGTbl from "./lucie/lucie-msg-tbl";
 import LockDataTable from "./pepalyze/lock-data-table";
 import SecretDataTable from "./pepalyze/secret-data-table";
 import SecretSealDataTable from "./pepalyze/secret-seal-data-table";
+import ShopDORTable from "./shop/shops/shop-dor-table";
+import ShopIWATable from "./shop/shops/shop-iwa-table";
+import ShopKAZANTable from "./shop/shops/shop-kazan-table";
+import ShopKOOPATable from "./shop/shops/shop-koopa-table";
+import ShopMONOTable from "./shop/shops/shop-mono-table";
+import ShopSNOWTable from "./shop/shops/shop-snow-table";
+import ShopTOWNTable from "./shop/shops/shop-town-table";
+import ShopListingTable from "./shop/shop-listing-table";
 
 type KDMStructureConstructor = (new (kdm: KDM) => KDMStructure);
 
 const ALL_TYPES: KDMStructureConstructor[] = [
   // kdm_shop.bin
-  ShopEntry,
+  ShopListing,
   // kdm_lucie.bin
   LucieMSG,
   // kdm_sound.bin
@@ -111,13 +119,13 @@ const ALL_TYPES: KDMStructureConstructor[] = [
 const IKDM = z.object({
   tables: z.union([
     // kdm_shop.bin
-    z.tuple([z.literal("SHOP_DOR"), ShopEntry.schema.array().array()]),
-    z.tuple([z.literal("SHOP_IWA"), ShopEntry.schema.array().array()]),
-    z.tuple([z.literal("SHOP_MONO"), ShopEntry.schema.array().array()]),
-    z.tuple([z.literal("SHOP_SNOW"), ShopEntry.schema.array().array()]),
-    z.tuple([z.literal("SHOP_TOWN"), ShopEntry.schema.array().array()]),
-    z.tuple([z.literal("SHOP_KAZAN"), ShopEntry.schema.array().array()]),
-    z.tuple([z.literal("SHOP_KOOPA"), ShopEntry.schema.array().array()]),
+    z.tuple([z.literal(ShopDORTable.name), ShopDORTable.schema]),
+    z.tuple([z.literal(ShopIWATable.name), ShopIWATable.schema]),
+    z.tuple([z.literal(ShopMONOTable.name), ShopMONOTable.schema]),
+    z.tuple([z.literal(ShopSNOWTable.name), ShopSNOWTable.schema]),
+    z.tuple([z.literal(ShopTOWNTable.name), ShopTOWNTable.schema]),
+    z.tuple([z.literal(ShopKAZANTable.name), ShopKAZANTable.schema]),
+    z.tuple([z.literal(ShopKOOPATable.name), ShopKOOPATable.schema]),
     // kdm_lucie.bin
     z.tuple([z.literal(LucieMSGTbl.name), LucieMSGTbl.schema]),
     // kdm_sound.bin
@@ -176,13 +184,13 @@ class KDM {
   public createTable(name: string): KDMTable {
     const map = new Map<IDKMTableName, KDMTable>([
       // kdm_shop.bin
-      ["SHOP_DOR", new KDMGenericArray(this).useNullTerminator(true)],
-      ["SHOP_IWA", new KDMGenericArray(this).useNullTerminator(true)],
-      ["SHOP_MONO", new KDMGenericArray(this).useNullTerminator(true)],
-      ["SHOP_SNOW", new KDMGenericArray(this).useNullTerminator(true)],
-      ["SHOP_TOWN", new KDMGenericArray(this).useNullTerminator(true)],
-      ["SHOP_KAZAN", new KDMGenericArray(this).useNullTerminator(true)],
-      ["SHOP_KOOPA", new KDMGenericArray(this).useNullTerminator(true)],
+      [ShopDORTable.name, new ShopDORTable(this)],
+      [ShopIWATable.name, new ShopIWATable(this)],
+      [ShopMONOTable.name, new ShopMONOTable(this)],
+      [ShopSNOWTable.name, new ShopSNOWTable(this)],
+      [ShopTOWNTable.name, new ShopTOWNTable(this)],
+      [ShopKAZANTable.name, new ShopKAZANTable(this)],
+      [ShopKOOPATable.name, new ShopKOOPATable(this)],
       // kdm_lucie.bin
       [LucieMSGTbl.name, new LucieMSGTbl(this)],
       // kdm_sound.bin
@@ -225,7 +233,7 @@ class KDM {
 
     const map = new Map<string, KDMStructure>([
       // kdm_shop.bin
-      ["ShopEntry", new ShopEntry(this)],
+      ["ShopListing", new ShopListing(this)],
       // kdm_lucie.bin
       ["LucieMSG", new LucieMSG(this)],
       // kdm_sound.bin
@@ -366,12 +374,9 @@ class KDM {
   private prebuild(): void {
     // Registering types
     this.tables.forEach((table) => {
-      const entry = table.data.entries.at(0);
-      assert(entry !== undefined);
-
       // kdm_shop.bin
-      if (table.name.get() === "SHOP_DOR") {
-        return this.types.push([-1, ShopEntry]);
+      if (table instanceof ShopDORTable) {
+        return this.types.push([-1, ShopListing]);
       }
 
       // kdm_lucie.bin
@@ -417,6 +422,9 @@ class KDM {
 
       // kdm_pepalyze.bin / kdm_pepalyze_museum.bin
       if (table instanceof LockDataTable) {
+        const entry = table.data.entries.at(0);
+        assert(entry !== undefined);
+
         if (
           entry instanceof KDMGenericArrayPointer &&
           entry.array.entries.at(0) instanceof MuseumLockData
@@ -482,7 +490,7 @@ class KDM {
     });
 
     // For some obscure reason, kdm_shop.bin registers strings in a different order.
-    if (this.tables.find((table) => table.name.get() === "SHOP_DOR")) {
+    if (this.tables.find((table) => table instanceof ShopListingTable)) {
       this.tables.forEach((table) => {
         table.strings
           .filter((s) => s !== table.name)
@@ -501,7 +509,7 @@ class KDM {
     this.types.filter((t) => t[0] === -1).forEach((t) => t[0] = id++);
 
     // For some obscure reason, kdm_shop.bin assigns IDs in a different order.
-    if (this.tables.find((table) => table.name.get() === "SHOP_DOR")) {
+    if (this.tables.find((table) => table instanceof ShopListingTable)) {
       this.tables.forEach((table) => {
         table.arrays
           .filter((a) => a !== table.data)

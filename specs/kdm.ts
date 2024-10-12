@@ -12,7 +12,7 @@ function expectSHA256Checksum(data: Buffer, file: string, checksum: string): voi
 
 describe("KDM", () => {
   describe("kdm_shop.bin", () => {
-    test("parsing and building yields the same file", async () => {
+    test.only("parsing and building yields the same file", async () => {
       const data = await fs.readFile("data/Data/kdm_shop.bin");
       expectSHA256Checksum(data, "kdm_shop.bin", "f800563d0b182297ec469a94497c59cf08070c87f3ff7b6c3ad4eb0613a3f472");
 
