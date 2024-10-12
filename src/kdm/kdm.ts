@@ -69,6 +69,13 @@ import ShopTOWNTable from "./shop/shops/shop-town-table";
 import ShopListingTable from "./shop/shop-listing-table";
 import DisposWorldMapTable from "./worldmap-data/dispos-worldmap-table";
 import DisposWorldMapConnectTable from "./worldmap-data/dispos-worldmap-connect-table";
+import GroupDataTable from "./sound/group-data-table";
+import EffectDataTable from "./sound/effect-data-table";
+import Setup3DataTable from "./sound/setup3-data-table";
+import BattleBGMDataTable from "./sound/battle-bgm-data-table";
+import ChangeBGMDataTable from "./sound/change-bdm-data-table";
+import TrackVolumeDataTable from "./sound/track-volume-data-table";
+import TownWorldMapDataTable from "./sound/town-world-map-data-table";
 
 type KDMStructureConstructor = (new (kdm: KDM) => KDMStructure);
 
@@ -131,13 +138,13 @@ const IKDM = z.object({
     // kdm_lucie.bin
     z.tuple([z.literal(LucieMSGTbl.name), LucieMSGTbl.schema]),
     // kdm_sound.bin
-    z.tuple([z.literal("groupDataTable"), GroupData.schema.array().array()]),
-    z.tuple([z.literal("effectDataTable"), EffectData.schema.array().array()]),
-    z.tuple([z.literal("setup3DDataTable"), Setup3Data.schema.array().array()]),
-    z.tuple([z.literal("battleBgmDataTable"), BattleBGMData.schema.array().array()]),
-    z.tuple([z.literal("changeBGMDataTable"), ChangeBGMData.schema.array().array()]),
-    z.tuple([z.literal("trackVolumeDataTable"), TrackVolumeData.schema.array().array()]),
-    z.tuple([z.literal("townWorldMapDataTable"), TownWorldMapData.schema.array().array()]),
+    z.tuple([z.literal(GroupDataTable.name), GroupDataTable.schema]),
+    z.tuple([z.literal(EffectDataTable.name), EffectDataTable.schema]),
+    z.tuple([z.literal(Setup3DataTable.name), Setup3DataTable.schema]),
+    z.tuple([z.literal(BattleBGMDataTable.name), BattleBGMDataTable.schema]),
+    z.tuple([z.literal(ChangeBGMDataTable.name), ChangeBGMDataTable.schema]),
+    z.tuple([z.literal(TrackVolumeDataTable.name), TrackVolumeDataTable.schema]),
+    z.tuple([z.literal(TownWorldMapDataTable.name), TownWorldMapDataTable.schema]),
     // kdm_mapdata.bin
     z.tuple([z.literal(MapDataTable.name), MapDataTable.schema]),
     // kdm_pepalyze.bin
@@ -196,13 +203,13 @@ class KDM {
       // kdm_lucie.bin
       [LucieMSGTbl.name, new LucieMSGTbl(this)],
       // kdm_sound.bin
-      ["groupDataTable", new KDMGenericArray(this).useNullTerminator(true)],
-      ["effectDataTable", new KDMGenericArray(this).useNullTerminator(true)],
-      ["setup3DDataTable", new KDMGenericArray(this).useNullTerminator(true)],
-      ["battleBgmDataTable", new KDMGenericArray(this).useNullTerminator(true)],
-      ["changeBGMDataTable", new KDMGenericArray(this).useNullTerminator(true)],
-      ["trackVolumeDataTable", new KDMGenericArray(this).useNullTerminator(true)],
-      ["townWorldMapDataTable", new KDMGenericArray(this).useNullTerminator(true)],
+      [GroupDataTable.name, new GroupDataTable(this)],
+      [EffectDataTable.name, new EffectDataTable(this)],
+      [Setup3DataTable.name, new Setup3DataTable(this)],
+      [BattleBGMDataTable.name, new BattleBGMDataTable(this)],
+      [ChangeBGMDataTable.name, new ChangeBGMDataTable(this)],
+      [TrackVolumeDataTable.name, new TrackVolumeDataTable(this)],
+      [TownWorldMapDataTable.name, new TownWorldMapDataTable(this)],
       // kdm_mapdata.bin
       [MapDataTable.name, new MapDataTable(this)],
       // kdm_pepalyze.bin / kdm_pepalyze_museum.bin
@@ -387,7 +394,7 @@ class KDM {
       }
 
       // kdm_sound.bin
-      if (table.name.get() === "groupDataTable") {
+      if (table instanceof Setup3DataTable) {
         return this.types.push(
           [-1, Setup3Data],
           [-1, UnusedSoundData0],
