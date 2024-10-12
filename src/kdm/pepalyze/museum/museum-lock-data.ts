@@ -1,10 +1,10 @@
 import z from "zod";
 import KDMStructure from "#/kdm/common/kdm-structure";
 import KDMStringPointer from "#/kdm/common/pointer/kdm-string-pointer";
-import KDMU32 from "../common/kdm-u32";
-import KDMBoolean from "../common/kdm-boolean";
-import KDMF32 from "../common/kdm-f32";
-import KDMU16Padding from "../common/padding/kdm-u16-padding";
+import KDMU32 from "../../common/kdm-u32";
+import KDMBoolean from "../../common/kdm-boolean";
+import KDMF32 from "../../common/kdm-f32";
+import KDMU16Padding from "../../common/padding/kdm-u16-padding";
 
 const IMuseumLockData = z.object({
   unknown0: KDMStringPointer.schema,

@@ -1,6 +1,5 @@
 import z from "zod";
 import assert from "node:assert/strict";
-import type RBuffer from "#/buffer/r-buffer";
 import KDMTable from "#/kdm/common/kdm-table";
 import LinkData from "#/kdm/link-data/link-data";
 import KDMGenericArray from "#/kdm/common/array/kdm-generic-array";
@@ -27,9 +26,9 @@ class LinkDataAll extends KDMTable<ILinkDataAll> {
   }
 
   public override set(data: ILinkDataAll): this {
-    const mapdatatable = ILinkDataAll.parse(data);
+    const linkdatatable = ILinkDataAll.parse(data);
 
-    mapdatatable.forEach((entry) => this.data.entries.push(
+    linkdatatable.forEach((entry) => this.data.entries.push(
       new KDMGenericArrayPointer(this.kdm).set(entry)
     ));
 

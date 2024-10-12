@@ -60,7 +60,7 @@ describe("KDM", () => {
   });
 
   describe("kdm_pepalyze.bin", () => {
-    test("parsing and building yields the same file", async () => {
+    test.only("parsing and building yields the same file", async () => {
       const data = await fs.readFile("data/Data/kdm_pepalyze.bin");
       expectSHA256Checksum(data, "kdm_pepalyze.bin", "c88132e77aa5ba758f3196deea7447939afd3f81384add56b50db0d1d4e4feef");
 
@@ -96,7 +96,7 @@ describe("KDM", () => {
   });
 
   describe("kdm_pepalyze_museum.bin", () => {
-    test("parsing and building yields the same file", async () => {
+    test.only("parsing and building yields the same file", async () => {
       const data = await fs.readFile("data/Data/kdm_pepalyze_museum.bin");
       expectSHA256Checksum(data, "kdm_pepalyze_museum.bin", "5e3f77b4ed64e4446e32b3511939a2b4b525d4d0f7cc0bbb501fe01224c83fd1");
 

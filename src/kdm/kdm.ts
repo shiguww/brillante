@@ -34,9 +34,9 @@ import LucieMSG from "#/kdm/lucie/lucie-msg";
 import LockData from "#/kdm/pepalyze/lock-data";
 import SecretData from "#/kdm/pepalyze/secret-data";
 import SecretSealData from "#/kdm/pepalyze/secret-seal-data";
-import MuseumLockData from "./pepalyze-museum/museum-lock-data";
-import MuseumSecretSealData from "./pepalyze-museum/museum-secret-seal-data";
-import MuseumSecretData from "./pepalyze-museum/museum-secret-data";
+import MuseumLockData from "./pepalyze/museum/museum-lock-data";
+import MuseumSecretSealData from "./pepalyze/museum/museum-secret-seal-data";
+import MuseumSecretData from "./pepalyze/museum/museum-secret-data";
 import DisposWorldMap from "./worldmap-data/dispos-worldmap";
 import DisposWorldMapConnect from "./worldmap-data/dispos-worldmap-connect";
 import DisposWorldMapConnectSubEntry from "./worldmap-data/dispos-worldmap-connect-subentry";
@@ -56,6 +56,9 @@ import LinkDataAll from "./link-data/link-data-all";
 import MapDataTable from "./mapdata/mapdata-table";
 import KDMTable from "./common/kdm-table";
 import LucieMSGTbl from "./lucie/lucie-msg-tbl";
+import LockDataTable from "./pepalyze/lock-data-table";
+import SecretDataTable from "./pepalyze/secret-data-table";
+import SecretSealDataTable from "./pepalyze/secret-seal-data-table";
 
 type KDMStructureConstructor = (new (kdm: KDM) => KDMStructure);
 
@@ -116,7 +119,7 @@ const IKDM = z.object({
     z.tuple([z.literal("SHOP_KAZAN"), ShopEntry.schema.array().array()]),
     z.tuple([z.literal("SHOP_KOOPA"), ShopEntry.schema.array().array()]),
     // kdm_lucie.bin
-    z.tuple([z.literal("lucieMsgTbl"), LucieMSGTbl.schema]),
+    z.tuple([z.literal(LucieMSGTbl.name), LucieMSGTbl.schema]),
     // kdm_sound.bin
     z.tuple([z.literal("groupDataTable"), GroupData.schema.array().array()]),
     z.tuple([z.literal("effectDataTable"), EffectData.schema.array().array()]),
@@ -128,24 +131,11 @@ const IKDM = z.object({
     // kdm_mapdata.bin
     z.tuple([z.literal(MapDataTable.name), MapDataTable.schema]),
     // kdm_pepalyze.bin
-    z.tuple([z.literal("lockDataTable"),
-    z.union([
-      LockData.schema.array().array(),
-      MuseumLockData.schema.array().array()
-    ])
-    ]),
-    z.tuple([z.literal("secretDataTable"),
-    z.union([
-      SecretData.schema.array().array(),
-      MuseumSecretData.schema.array().array()
-    ])
-    ]),
-    z.tuple([z.literal("secretSealDataTable"), z.union([
-      SecretSealData.schema.array().array(),
-      MuseumSecretSealData.schema.array().array()
-    ])]),
+    z.tuple([z.literal(LockDataTable.name), LockDataTable.schema]),
+    z.tuple([z.literal(SecretDataTable.name), SecretDataTable.schema]),
+    z.tuple([z.literal(SecretSealDataTable.name), SecretSealDataTable.schema]),
     // kdm_link_data.bin
-    z.tuple([z.literal("link_data_all"), LinkData.schema.array().array()]),
+    z.tuple([z.literal(LinkDataAll.name), LinkDataAll.schema]),
     // kdm_mapobject.bin
     z.tuple([z.literal("map_object_data_tbl"), MapObjectData8.schema.array().array()]),
     // kdm_worldmap_data.bin
@@ -206,9 +196,9 @@ class KDM {
       // kdm_mapdata.bin
       [MapDataTable.name, new MapDataTable(this)],
       // kdm_pepalyze.bin / kdm_pepalyze_museum.bin
-      ["lockDataTable", new KDMGenericArray(this).useNullTerminator(true)],
-      ["secretDataTable", new KDMGenericArray(this).useNullTerminator(true)],
-      ["secretSealDataTable", new KDMGenericArray(this).useNullTerminator(false)],
+      [LockDataTable.name, new LockDataTable(this)],
+      [SecretDataTable.name, new SecretDataTable(this)],
+      [SecretSealDataTable.name, new SecretSealDataTable(this)],
       // kdm_link_data.bin
       [LinkDataAll.name, new LinkDataAll(this)],
       // kdm_mapobject.bin
@@ -425,12 +415,19 @@ class KDM {
         );
       }
 
-      // kdm_pepalyze.bin
-      if (
-        table.name.get() === "lockDataTable" &&
-        entry instanceof KDMGenericArrayPointer &&
-        entry.array.entries.at(0) instanceof LockData
-      ) {
+      // kdm_pepalyze.bin / kdm_pepalyze_museum.bin
+      if (table instanceof LockDataTable) {
+        if (
+          entry instanceof KDMGenericArrayPointer &&
+          entry.array.entries.at(0) instanceof MuseumLockData
+        ) {
+          return this.types.push(
+            [-1, MuseumLockData],
+            [-1, MuseumSecretData],
+            [-1, MuseumSecretSealData]
+          );
+        }
+
         return this.types.push(
           [-1, LockData],
           [-1, SecretData],
@@ -450,15 +447,6 @@ class KDM {
           [-1, DisposWorldMap],
           [-1, DisposWorldMapConnectSubEntry],
           [-1, DisposWorldMapConnect]
-        );
-      }
-
-      // kdm_pepalyze_museum.bin
-      if (table.name.get() === "lockDataTable") {
-        return this.types.push(
-          [-1, MuseumLockData],
-          [-1, MuseumSecretData],
-          [-1, MuseumSecretSealData]
         );
       }
     });

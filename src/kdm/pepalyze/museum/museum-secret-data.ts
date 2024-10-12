@@ -1,7 +1,7 @@
 import z from "zod";
 import KDMStructure from "#/kdm/common/kdm-structure";
 import KDMStringPointer from "#/kdm/common/pointer/kdm-string-pointer";
-import KDMU32 from "../common/kdm-u32";
+import KDMU32 from "../../common/kdm-u32";
 
 const IMuseumSecretData = z.object({
   unknown2: KDMU32.schema,
