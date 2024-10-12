@@ -1,7 +1,7 @@
 import z from "zod";
 import KDMStructure from "#/kdm/common/kdm-structure";
 import KDMStringPointer from "#/kdm/common/pointer/kdm-string-pointer";
-import KDMU32 from "../common/kdm-u32";
+import KDMU32 from "../../common/kdm-u32";
 
 const IMuseumSecretData = z.object({
   unknown2: KDMU32.schema,
@@ -47,6 +47,10 @@ class MuseumSecretData extends KDMStructure<IMuseumSecretData> {
       this.unknown7,
       this.unknown8
     ];
+  }
+
+  public override get strings(): KDMStringPointer[] {
+    return this.fields.filter((f) => f instanceof KDMStringPointer);
   }
 
   public override get(): IMuseumSecretData {

@@ -83,6 +83,18 @@ describe("KDM", () => {
     });
   });
 
+  describe("kdm_mapobject.bin", () => {
+    test("parsing and building yields the same file", async () => {
+      const data = await fs.readFile("data/Data/kdm_mapobject.bin");
+      expectSHA256Checksum(data, "kdm_mapobject.bin", "47cdc8bbf8c8604fb02e589b58336e1f51b6f61e7f33a39b7d7ca4898380cd36");
+
+      const parsed = new KDM().parse(data).get();
+      const built = new KDM().set(parsed).build();
+
+      expect(data).to.be.deep.equal(built);
+    });
+  });
+
   describe("kdm_worldmap_data.bin", () => {
     test("parsing and building yields the same file", async () => {
       const data = await fs.readFile("data/Data/kdm_worldmap_data.bin");

@@ -157,6 +157,10 @@ class Link extends KDMStructure<ILink> {
     ];
   }
 
+  public override get strings(): KDMStringPointer[] {
+    return this.fields.filter((f) => f instanceof KDMStringPointer);
+  }
+
   public override get(): ILink {
     return ILink.parse({
       type: this.type.get(),

@@ -26,6 +26,10 @@ class MapDataBackground extends KDMStructure<IMapDataBackground> {
     return [this.background0, this.background1];
   }
 
+  public override get strings(): KDMStringPointer[] {
+    return this.fields.filter((f) => f instanceof KDMStringPointer);
+  }
+
   public override get(): IMapDataBackground {
     const bg0 = this.background0.get() || "";
     const bg1 = this.background1.get() || "";
@@ -130,6 +134,10 @@ class MapData extends KDMStructure<IMapData> {
       this.unknown9,
       this.unknown10
     ];
+  }
+
+  public override get strings(): KDMStringPointer[] {
+    return this.fields.filter((f) => f instanceof KDMStringPointer);
   }
 
   public override get(): IMapData {

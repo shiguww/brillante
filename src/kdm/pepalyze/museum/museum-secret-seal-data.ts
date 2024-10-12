@@ -33,6 +33,10 @@ class MuseumSecretSealData extends KDMStructure<IMuseumSecretSealData> {
     ];
   }
 
+  public override get strings(): KDMStringPointer[] {
+    return this.fields.filter((f) => f instanceof KDMStringPointer);
+  }
+
   public override get(): IMuseumSecretSealData {
     return IMuseumSecretSealData.parse({
       unknown0: this.unknown0.get(),

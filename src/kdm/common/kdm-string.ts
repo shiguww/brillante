@@ -23,7 +23,7 @@ class KDMString extends KDMStructure<IKDMString> {
   public override get sizeof(): number {
     return Math.ceil(Buffer.byteLength(this.string + "\0", "utf8") / 4) * 4;
   }
-
+  
   public override get(): IKDMString {
     return IKDMString.parse(this.string);
   }

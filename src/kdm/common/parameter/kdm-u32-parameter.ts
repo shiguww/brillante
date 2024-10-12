@@ -37,6 +37,10 @@ class KDMU32Parameter extends KDMStructure<IKDMU32Parameter> {
     ];
   }
 
+  public override get strings(): Array<KDMStringPointer> {
+    return this.fields.filter((f) => f instanceof KDMStringPointer);
+  }
+
   public override get(): IKDMU32Parameter {
     return IKDMU32Parameter.parse({
       name: this.name.get(),

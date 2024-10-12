@@ -123,7 +123,6 @@ class TownWorldMapData extends KDMStructure<ITownWorldMapData> {
   public readonly unknown3 = new KDMStringPointer(this.kdm);
   public readonly unknown4 = new KDMStringPointer(this.kdm);
 
-
   public override get fields(): Array<KDMStructure> {
     return [
       this.unknown0,
@@ -180,6 +179,10 @@ class TownWorldMapData extends KDMStructure<ITownWorldMapData> {
       this.unknown51,
       this.unknown52
     ];    
+  }
+
+  public override get strings(): KDMStringPointer[] {
+    return this.fields.filter((f) => f instanceof KDMStringPointer);
   }
 
   public override get(): ITownWorldMapData {
