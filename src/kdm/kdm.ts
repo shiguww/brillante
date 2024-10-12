@@ -11,7 +11,6 @@ import ShopEntry from "#/kdm/shop/shop-entry";
 import KDMString from "#/kdm/common/kdm-string";
 import LinkData from "#/kdm/link-data/link-data";
 import KDMStructure from "#/kdm/common/kdm-structure";
-import type KDMArray from "#/kdm/common/array/kdm-array";
 import KDMPadding from "#/kdm/common/padding/kdm-padding";
 import KDMUnknownType0 from "#/kdm/common/kdm-unknown-type0";
 import KDMBoolean from "#/kdm/common/kdm-boolean";
@@ -56,6 +55,7 @@ import MapObjectData8 from "./mapobject/mapobject-data8";
 import LinkDataAll from "./link-data/link-data-all";
 import MapDataTable from "./mapdata/mapdata-table";
 import KDMTable from "./common/kdm-table";
+import LucieMSGTbl from "./lucie/lucie-msg-tbl";
 
 type KDMStructureConstructor = (new (kdm: KDM) => KDMStructure);
 
@@ -116,7 +116,7 @@ const IKDM = z.object({
     z.tuple([z.literal("SHOP_KAZAN"), ShopEntry.schema.array().array()]),
     z.tuple([z.literal("SHOP_KOOPA"), ShopEntry.schema.array().array()]),
     // kdm_lucie.bin
-    z.tuple([z.literal("lucieMsgTbl"), LucieMSG.schema.array().array()]),
+    z.tuple([z.literal("lucieMsgTbl"), LucieMSGTbl.schema]),
     // kdm_sound.bin
     z.tuple([z.literal("groupDataTable"), GroupData.schema.array().array()]),
     z.tuple([z.literal("effectDataTable"), EffectData.schema.array().array()]),
@@ -194,7 +194,7 @@ class KDM {
       ["SHOP_KAZAN", new KDMGenericArray(this).useNullTerminator(true)],
       ["SHOP_KOOPA", new KDMGenericArray(this).useNullTerminator(true)],
       // kdm_lucie.bin
-      ["lucieMsgTbl", new KDMGenericArray(this).useNullTerminator(false)],
+      [LucieMSGTbl.name, new LucieMSGTbl(this)],
       // kdm_sound.bin
       ["groupDataTable", new KDMGenericArray(this).useNullTerminator(true)],
       ["effectDataTable", new KDMGenericArray(this).useNullTerminator(true)],
@@ -204,13 +204,13 @@ class KDM {
       ["trackVolumeDataTable", new KDMGenericArray(this).useNullTerminator(true)],
       ["townWorldMapDataTable", new KDMGenericArray(this).useNullTerminator(true)],
       // kdm_mapdata.bin
-      ["mapDataTable", new MapDataTable(this)],
+      [MapDataTable.name, new MapDataTable(this)],
       // kdm_pepalyze.bin / kdm_pepalyze_museum.bin
       ["lockDataTable", new KDMGenericArray(this).useNullTerminator(true)],
       ["secretDataTable", new KDMGenericArray(this).useNullTerminator(true)],
       ["secretSealDataTable", new KDMGenericArray(this).useNullTerminator(false)],
       // kdm_link_data.bin
-      ["link_data_all", new LinkDataAll(this)],
+      [LinkDataAll.name, new LinkDataAll(this)],
       // kdm_mapobject.bin
       ["map_object_data_tbl", new KDMGenericArray(this).useNullTerminator(false)],
       // kdm_worldmap_data.bin
@@ -385,7 +385,7 @@ class KDM {
       }
 
       // kdm_lucie.bin
-      if (table.name.get() === "lucieMsgTbl") {
+      if (table instanceof LucieMSGTbl) {
         return this.types.push([-1, LucieMSG]);
       }
 
