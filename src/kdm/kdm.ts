@@ -53,6 +53,9 @@ import MapObjectData5 from "./mapobject/mapobject-data5";
 import MapObjectData6 from "./mapobject/mapobject-data6";
 import MapObjectData7 from "./mapobject/mapobject-data7";
 import MapObjectData8 from "./mapobject/mapobject-data8";
+import LinkDataAll from "./link-data/link-data-all";
+import MapDataTable from "./mapdata/mapdata-table";
+import KDMTable from "./common/kdm-table";
 
 type KDMStructureConstructor = (new (kdm: KDM) => KDMStructure);
 
@@ -123,7 +126,7 @@ const IKDM = z.object({
     z.tuple([z.literal("trackVolumeDataTable"), TrackVolumeData.schema.array().array()]),
     z.tuple([z.literal("townWorldMapDataTable"), TownWorldMapData.schema.array().array()]),
     // kdm_mapdata.bin
-    z.tuple([z.literal("mapDataTable"), MapData.schema.array().array()]),
+    z.tuple([z.literal(MapDataTable.name), MapDataTable.schema]),
     // kdm_pepalyze.bin
     z.tuple([z.literal("lockDataTable"),
     z.union([
@@ -175,16 +178,13 @@ class KDM {
       [0x00000014, KDMGenericPointerArrayPointer]
     ];
 
-  public readonly tables: Array<[
-    string, KDMArray
-  ]> = [];
-
+  public readonly tables: Array<KDMTable> = [];
   public readonly sections: Array<number> = [];
   public readonly strings: Array<KDMString> = [];
   public readonly parameters: Array<KDMU32Parameter> = [];
 
-  public createTable(name: string): KDMArray {
-    const map = new Map<IDKMTableName, KDMArray>([
+  public createTable(name: string): KDMTable {
+    const map = new Map<IDKMTableName, KDMTable>([
       // kdm_shop.bin
       ["SHOP_DOR", new KDMGenericArray(this).useNullTerminator(true)],
       ["SHOP_IWA", new KDMGenericArray(this).useNullTerminator(true)],
@@ -204,13 +204,13 @@ class KDM {
       ["trackVolumeDataTable", new KDMGenericArray(this).useNullTerminator(true)],
       ["townWorldMapDataTable", new KDMGenericArray(this).useNullTerminator(true)],
       // kdm_mapdata.bin
-      ["mapDataTable", new KDMGenericArray(this).useNullTerminator(true)],
+      ["mapDataTable", new MapDataTable(this)],
       // kdm_pepalyze.bin / kdm_pepalyze_museum.bin
       ["lockDataTable", new KDMGenericArray(this).useNullTerminator(true)],
       ["secretDataTable", new KDMGenericArray(this).useNullTerminator(true)],
       ["secretSealDataTable", new KDMGenericArray(this).useNullTerminator(false)],
       // kdm_link_data.bin
-      ["link_data_all", new KDMGenericArray(this).useNullTerminator(false)],
+      ["link_data_all", new LinkDataAll(this)],
       // kdm_mapobject.bin
       ["map_object_data_tbl", new KDMGenericArray(this).useNullTerminator(false)],
       // kdm_worldmap_data.bin
@@ -352,9 +352,8 @@ class KDM {
     this.sections.push(buffer.offset);
 
     const arrays = this.tables
-      .map(([_, t]) => t.entries).flat()
-      .map((e) => e.arrays).flat()
-      .filter((a) => a.entries.length !== 0)
+      .map((table) => table.arrays.filter((a) => a !== table.data))
+      .flat().filter((a) => a.entries.length !== 0)
       .sort((a, b) => a.uid.get() - b.uid.get());
 
     buffer.setU32(arrays.length);
@@ -365,8 +364,8 @@ class KDM {
     this.sections.push(buffer.offset);
     buffer.setU32(this.tables.length);
 
-    this.tables.forEach(([name]) => new KDMStringPointer(this).set(name).build(buffer));
-    this.tables.forEach(([_, table]) => table.build(buffer));
+    this.tables.forEach((table) => table.name.build(buffer));
+    this.tables.forEach((table) => table.build(buffer));
   }
 
   private buildSection7(buffer: WBuffer): void {
@@ -376,22 +375,22 @@ class KDM {
 
   private prebuild(): void {
     // Registering types
-    this.tables.forEach(([name, table]) => {
-      const entry = table.entries.at(0);
+    this.tables.forEach((table) => {
+      const entry = table.data.entries.at(0);
       assert(entry !== undefined);
 
       // kdm_shop.bin
-      if (name === "SHOP_DOR") {
+      if (table.name.get() === "SHOP_DOR") {
         return this.types.push([-1, ShopEntry]);
       }
 
       // kdm_lucie.bin
-      if (name === "lucieMsgTbl") {
+      if (table.name.get() === "lucieMsgTbl") {
         return this.types.push([-1, LucieMSG]);
       }
 
       // kdm_sound.bin
-      if (name === "groupDataTable") {
+      if (table.name.get() === "groupDataTable") {
         return this.types.push(
           [-1, Setup3Data],
           [-1, UnusedSoundData0],
@@ -407,12 +406,12 @@ class KDM {
       }
 
       // kdm_mapdata.bin
-      if (name === "mapDataTable") {
+      if (table instanceof MapDataTable) {
         return this.types.push([-1, MapData]);
       }
 
       // kdm_mapobject.bin
-      if (name === "map_object_data_tbl") {
+      if (table.name.get() === "map_object_data_tbl") {
         return this.types.push(
           [-1, MapObjectData0],
           [-1, MapObjectData1],
@@ -428,7 +427,7 @@ class KDM {
 
       // kdm_pepalyze.bin
       if (
-        name === "lockDataTable" &&
+        table.name.get() === "lockDataTable" &&
         entry instanceof KDMGenericArrayPointer &&
         entry.array.entries.at(0) instanceof LockData
       ) {
@@ -440,12 +439,12 @@ class KDM {
       }
 
       // kdm_link_data.bin
-      if (name === "link_data_all") {
+      if (table instanceof LinkDataAll) {
         return this.types.push([-1, Link], [-1, LinkData]);
       }
 
       // kdm_worldmap_data.bin
-      if (name === "disposWorldMapTable") {
+      if (table.name.get() === "disposWorldMapTable") {
         return this.types.push(
           [-1, DisposWorldMapSubEntry],
           [-1, DisposWorldMap],
@@ -455,7 +454,7 @@ class KDM {
       }
 
       // kdm_pepalyze_museum.bin
-      if (name === "lockDataTable") {
+      if (table.name.get() === "lockDataTable") {
         return this.types.push(
           [-1, MuseumLockData],
           [-1, MuseumSecretData],
@@ -465,22 +464,22 @@ class KDM {
     });
 
     // Set parameters
-    this.tables.forEach(([name, table]) => {
+    this.tables.forEach((table) => {
       // kdm_mapdata.bin
-      if (name === "mapDataTable") {
+      if (table instanceof MapDataTable) {
         this.parameters.push(new KDMU32Parameter(this).set({
           unknown0: 0x00000000,
           name: "mapDataTableLen",
-          value: table.entries.length + 1
+          value: table.data.entries.length + 1
         }));
       }
 
       // kdm_link_data.bin
-      if (name === "link_data_all") {
+      if (table instanceof LinkDataAll) {
         this.parameters.push(new KDMU32Parameter(this).set({
           unknown0: 0x00000000,
           name: "link_data_all_len",
-          value: table.entries.length
+          value: table.data.entries.length
         }));
       }
     });
@@ -495,88 +494,17 @@ class KDM {
     });
 
     // For some obscure reason, kdm_shop.bin registers strings in a different order.
-    if (this.tables.map((t) => t[0]).find((s) => s === "SHOP_DOR")) {
-      this.tables.forEach(([_, table]) => {
-        table.entries
-          .map((e) => e.strings).flat()
+    if (this.tables.find((table) => table.name.get() === "SHOP_DOR")) {
+      this.tables.forEach((table) => {
+        table.strings
+          .filter((s) => s !== table.name)
           .forEach((s) => registerStringIfNotExists(s));
       });
 
-      this.tables.forEach(([name]) => registerStringIfNotExists(name));
+      this.tables.forEach((table) => registerStringIfNotExists(table.name));
     }
 
-    // For some obscure reason, kdm_mapobject.bin registers strings in a different order.
-    if (this.tables.map((t) => t[0]).find((s) => s === "map_object_data_tbl")) {
-      this.tables.forEach(([_, table]) => {
-        const ORDER = [
-          "mac_1_00",
-          "mac_1_01",
-          "mac_1_04",
-          "mac_1_05",
-          "mac_1_20",
-          "mac_m_00",
-          "mac_2_00",
-          "mac_2_02",
-          "mac_2_22",
-          "hei_5_01",
-          "hei_5_02",
-          "hei_5_03",
-          "hei_5_04",
-          "hei_5_06",
-          "hei_5_11",
-          "hei_3_02",
-          "hei_3_03",
-          "hei_3_05",
-          "hei_2_00",
-          "hei_2_01",
-          "hei_2_02",
-          "hei_2_04",
-          "hei_4_00",
-          "hei_4_01",
-          "hei_4_02",
-          "hei_4_03",
-          "hei_4_04",
-          "iwa_4_02"
-        ];
-
-        const ALL = table.entries
-          .filter((e) => e instanceof KDMGenericArrayPointer)
-          .map((p) => p.array.entries).flat()
-          .filter((e) => e instanceof MapObjectData8);
-
-        const BEFORE = ALL.filter((o) => ORDER.includes(o.unknown0.get() || ""));
-
-        BEFORE.sort((A, B) => {
-          const a = A.unknown0.get() || "";
-          const b = B.unknown0.get() || "";
-
-          return ORDER.indexOf(a) - ORDER.indexOf(b);
-        }).forEach((obj) => {
-          obj.unknown1.strings.forEach((s) => registerStringIfNotExists(s));
-          obj.unknown3.strings.forEach((s) => registerStringIfNotExists(s));
-          obj.unknown5.strings.forEach((s) => registerStringIfNotExists(s));
-          obj.unknown7.strings.forEach((s) => registerStringIfNotExists(s));
-          obj.unknown9.strings.forEach((s) => registerStringIfNotExists(s));
-        });
-
-        ALL.forEach((obj) => {
-          obj.unknown1.strings.forEach((s) => registerStringIfNotExists(s));
-          obj.unknown3.strings.forEach((s) => registerStringIfNotExists(s));
-          obj.unknown5.strings.forEach((s) => registerStringIfNotExists(s));
-          obj.unknown7.strings.forEach((s) => registerStringIfNotExists(s));
-          obj.unknown9.strings.forEach((s) => registerStringIfNotExists(s));
-        });
-      });
-    }
-
-    this.tables.forEach(([name, table]) => {
-      table.entries
-        .map((e) => e.strings).flat()
-        .forEach((s) => registerStringIfNotExists(s));
-
-      registerStringIfNotExists(name);
-    });
-
+    this.tables.forEach((table) => table.strings.forEach((s) => registerStringIfNotExists(s)));
     this.parameters.forEach((p) => registerStringIfNotExists(p.name));
 
     // Assigning IDs
@@ -585,55 +513,27 @@ class KDM {
     this.types.filter((t) => t[0] === -1).forEach((t) => t[0] = id++);
 
     // For some obscure reason, kdm_shop.bin assigns IDs in a different order.
-    if (this.tables.map((t) => t[0]).find((s) => s === "SHOP_DOR")) {
-      this.tables.forEach(([_, table]) => {
-        table.entries
-          .map((t) => t.arrays).flat()
+    if (this.tables.find((table) => table.name.get() === "SHOP_DOR")) {
+      this.tables.forEach((table) => {
+        table.arrays
+          .filter((a) => a !== table.data)
           .filter((a) => a.entries.length !== 0)
           .forEach((a) => a.uid.set(id++));
       });
 
-      this.tables.forEach(([_, table]) => {
-        table.uid.set(id++);
-      });
-
-      this.parameters.forEach((p) => p.uid.set(id++));
+      this.tables.forEach((table) => table.data.uid.set(id++));
     } else {
-      this.tables.forEach(([_, table]) => {
-        table.entries
-          .map((t) => t.arrays).flat()
+      this.tables.forEach((table) => {
+        table.arrays
+          .filter((a) => a !== table.data)
           .filter((a) => a.entries.length !== 0)
           .forEach((arr) => arr.uid.set(id++));
 
-        table.uid.set(id++);
+        table.data.uid.set(id++);
       });
-
-      this.parameters.forEach((p) => p.uid.set(id++));
     }
 
-    // Sorting tables
-    this.tables.forEach(([_, table]) => {
-      table.entries.sort((A, B) => {
-        if (A instanceof KDMGenericArrayPointer && B instanceof KDMGenericArrayPointer) {
-          const a = A.array.entries.at(0)!;
-          const b = B.array.entries.at(0)!;
-
-          // kdm_mapdata.bin // kdm_link_data.bin
-          if (
-            (a instanceof MapData && b instanceof MapData) ||
-            (a instanceof LinkData && b instanceof LinkData)
-          ) {
-            const x = a.name.get() || "";
-            const y = b.name.get() || "";
-
-            if (x > y) return 1;
-            if (x < y) return -1;
-          }
-        }
-
-        return 0;
-      });
-    });
+    this.parameters.forEach((p) => p.uid.set(id++));
   }
 
   public build(): Buffer {
@@ -771,9 +671,9 @@ class KDM {
       names.push(name.get() || "");
     }
 
-    names.forEach((name) => this.tables.push([
-      name, this.createTable(name).parse(buffer)
-    ]));
+    names.forEach((name) => this.tables.push(
+      this.createTable(name).parse(buffer)
+    ));
   }
 
   private parseSection7(buffer: RBuffer): void {
@@ -799,7 +699,9 @@ class KDM {
   }
 
   public get(): IKDM {
-    const tables = this.tables.map(([name, table]) => [name, table.get()]);
+    const tables = this.tables
+      .map((table) => [table.name.get(), table.get()]);
+
     return IKDM.parse({ tables });
   }
 
@@ -808,7 +710,7 @@ class KDM {
 
     data.tables.forEach(([name, data]) => {
       const table = this.createTable(name).set(data);
-      this.tables.push([name, table]);
+      this.tables.push(table);
     });
 
     return this;

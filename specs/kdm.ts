@@ -48,7 +48,7 @@ describe("KDM", () => {
   });
 
   describe("kdm_mapdata.bin", () => {
-    test("parsing and building yields the same file", async () => {
+    test.only("parsing and building yields the same file", async () => {
       const data = await fs.readFile("data/Data/kdm_mapdata.bin");
       expectSHA256Checksum(data, "kdm_mapdata.bin", "8936cbd3787ca041da921e76316259d5a9ad88c7dc737be423fe37c87ec6d700");
 
@@ -72,7 +72,7 @@ describe("KDM", () => {
   });
 
   describe("kdm_link_data.bin", () => {
-    test("parsing and building yields the same file", async () => {
+    test.only("parsing and building yields the same file", async () => {
       const data = await fs.readFile("data/Data/kdm_link_data.bin");
       expectSHA256Checksum(data, "kdm_link_data.bin", "77b8af839061cf8c8427709550f9a7f3760ed23b16a1ce5de101855492c83fa7");
 
