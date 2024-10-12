@@ -7,6 +7,38 @@ import KDMGenericArrayPointer from "#/kdm/common/pointer/kdm-generic-array-point
 import MapObjectData8 from "./mapobject-data8";
 import KDMArray from "../common/array/kdm-array";
 
+const CUSTOM_ORDER = [
+  "mac_1_00",
+  "mac_1_01",
+  "mac_1_04",
+  "mac_1_05",
+  "mac_1_20",
+  "mac_1_31",
+  "mac_m_00",
+  "mac_2_00",
+  "mac_2_02",
+  "mac_2_22",
+  "hei_5_01",
+  "hei_5_02",
+  "hei_5_03",
+  "hei_5_04",
+  "hei_5_06",
+  "hei_5_11",
+  "hei_3_02",
+  "hei_3_03",
+  "hei_3_05",
+  "hei_2_00",
+  "hei_2_01",
+  "hei_2_02",
+  "hei_2_04",
+  "hei_4_00",
+  "hei_4_01",
+  "hei_4_02",
+  "hei_4_03",
+  "hei_4_04",
+  "iwa_4_02"
+];
+
 const IMapObjectDataTbl = MapObjectData8.schema.array().array();
 type IMapObjectDataTbl = z.infer<typeof IMapObjectDataTbl>;
 
@@ -22,71 +54,77 @@ class MapObjectDataTbl extends KDMTable<IMapObjectDataTbl> {
   public override readonly name = new KDMStringPointer(this.kdm)
     .set(MapObjectDataTbl.name);
 
-  public override get arrays(): KDMArray[] {
-    const ORDER = [
-      "mac_1_00",
-      "mac_1_01",
-      "mac_1_04",
-      "mac_1_05",
-      "mac_1_20",
-      "mac_m_00",
-      "mac_2_00",
-      "mac_2_02",
-      "mac_2_22",
-      "hei_5_01",
-      "hei_5_02",
-      "hei_5_03",
-      "hei_5_04",
-      "hei_5_06",
-      "hei_5_11",
-      "hei_3_02",
-      "hei_3_03",
-      "hei_3_05",
-      "hei_2_00",
-      "hei_2_01",
-      "hei_2_02",
-      "hei_2_04",
-      "hei_4_00",
-      "hei_4_01",
-      "hei_4_02",
-      "hei_4_03",
-      "hei_4_04",
-      "iwa_4_02"
-    ];
 
-    const pointers = this.data.entries.map((e) => {
+  public override get arrays(): KDMArray[] {
+    const all = this.data.entries.map((e) => {
       assert(e instanceof KDMGenericArrayPointer);
-      return e;
+      assert(e.array.entries.every((e) => e instanceof MapObjectData8));
+
+      return ({ pointer: e, array: e.array.entries });
+    }).flat();
+
+    const before = all.filter((o) => {
+      const entry = o.array.at(0);
+      assert(entry !== undefined);
+
+      return CUSTOM_ORDER.includes(entry.unknown0.get() || "");
+    }).sort((A, B) => {
+      const a = A.array.at(0);
+      const b = B.array.at(0);
+
+      assert(a !== undefined);
+      assert(b !== undefined);
+
+      const x = a.unknown0.get() || "";
+      const y = b.unknown0.get() || "";
+
+      return CUSTOM_ORDER.indexOf(x) - CUSTOM_ORDER.indexOf(y); // 2fb0
     });
 
-    const all = pointers.map((e) => {
+    const after = all.filter((o) => !before.includes(o));
+
+    return [
+      ...before.map((o) => o.array).flat().map((o) => o.unknown1.arrays).flat(),
+      ...before.map((o) => o.array).flat().map((o) => o.unknown3.arrays).flat(),
+      ...before.map((o) => o.array).flat().map((o) => o.unknown5.arrays).flat(),
+      ...before.map((o) => o.array).flat().map((o) => o.unknown7.arrays).flat(),
+      ...before.map((o) => o.array).flat().map((o) => o.unknown9.arrays).flat(),
+
+      ...after.map((o) => o.array).flat().map((o) => o.unknown1.arrays).flat(),
+      ...after.map((o) => o.array).flat().map((o) => o.unknown3.arrays).flat(),
+      ...after.map((o) => o.array).flat().map((o) => o.unknown5.arrays).flat(),
+      ...after.map((o) => o.array).flat().map((o) => o.unknown7.arrays).flat(),
+      ...after.map((o) => o.array).flat().map((o) => o.unknown9.arrays).flat(),
+
+      ...all.map((o) => o.pointer.array),
+      this.data
+    ];
+  }
+
+  public override get strings(): KDMStringPointer[] {
+    const all = this.data.entries.map((e) => {
+      assert(e instanceof KDMGenericArrayPointer);
       assert(e.array.entries.every((e) => e instanceof MapObjectData8));
+
       return e.array.entries;
     }).flat();
 
-    const before = all.filter((o) => ORDER.includes(o.unknown0.get() || ""));
-    const rest = all.filter((o) => !before.includes(o));
-
-    before.sort((A, B) => {
-      const a = A.unknown0.get() || "";
-      const b = B.unknown0.get() || "";
-
-      return ORDER.indexOf(a) - ORDER.indexOf(b);
-    });
+    const before = all.filter((o) => CUSTOM_ORDER.includes(o.unknown0.get() || ""));
+    const after = all.filter((o) => !before.includes(o));
 
     return [
-      ...before.map((o) => o.unknown1.arrays).flat(),
-      ...before.map((o) => o.unknown3.arrays).flat(),
-      ...before.map((o) => o.unknown5.arrays).flat(),
-      ...before.map((o) => o.unknown7.arrays).flat(),
-      ...before.map((o) => o.unknown9.arrays).flat(),
-      ...rest.map((o) => o.unknown1.arrays).flat(),
-      ...rest.map((o) => o.unknown3.arrays).flat(),
-      ...rest.map((o) => o.unknown5.arrays).flat(),
-      ...rest.map((o) => o.unknown7.arrays).flat(),
-      ...rest.map((o) => o.unknown9.arrays).flat(),
-      ...pointers.map((p) => p.array).flat(),
-      this.data
+      ...before.map((o) => o.unknown1.strings).flat(),
+      ...before.map((o) => o.unknown3.strings).flat(),
+      ...before.map((o) => o.unknown5.strings).flat(),
+      ...before.map((o) => o.unknown7.strings).flat(),
+      ...before.map((o) => o.unknown9.strings).flat(),
+      ...after.map((o) => o.unknown1.strings).flat(),
+      ...after.map((o) => o.unknown3.strings).flat(),
+      ...after.map((o) => o.unknown5.strings).flat(),
+      ...after.map((o) => o.unknown7.strings).flat(),
+      ...after.map((o) => o.unknown9.strings).flat(),
+      ...all.map((o) => o.unknown0),
+      this.name
     ];
   }
 
