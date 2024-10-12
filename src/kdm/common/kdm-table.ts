@@ -25,7 +25,7 @@ abstract class KDMTable<T = unknown> extends KDMStructure<T> {
 
   public override get strings(): KDMStringPointer[] {
     return [
-      ...this.data.arrays.map((a) => a.strings).flat(),
+      ...this.arrays.map((a) => a.strings).flat(),
       this.name
     ];
   }
