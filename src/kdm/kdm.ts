@@ -67,6 +67,8 @@ import ShopMONOTable from "./shop/shops/shop-mono-table";
 import ShopSNOWTable from "./shop/shops/shop-snow-table";
 import ShopTOWNTable from "./shop/shops/shop-town-table";
 import ShopListingTable from "./shop/shop-listing-table";
+import DisposWorldMapTable from "./worldmap-data/dispos-worldmap-table";
+import DisposWorldMapConnectTable from "./worldmap-data/dispos-worldmap-connect-table";
 
 type KDMStructureConstructor = (new (kdm: KDM) => KDMStructure);
 
@@ -147,8 +149,8 @@ const IKDM = z.object({
     // kdm_mapobject.bin
     z.tuple([z.literal("map_object_data_tbl"), MapObjectData8.schema.array().array()]),
     // kdm_worldmap_data.bin
-    z.tuple([z.literal("disposWorldMapTable"), DisposWorldMap.schema.array().array()]),
-    z.tuple([z.literal("disposWorldMapConnectTable"), DisposWorldMapConnect.schema.array().array()]),
+    z.tuple([z.literal(DisposWorldMapTable.name), DisposWorldMapTable.schema]),
+    z.tuple([z.literal(DisposWorldMapConnectTable.name), DisposWorldMapConnectTable.schema]),
   ]).array()
 });
 
@@ -212,8 +214,8 @@ class KDM {
       // kdm_mapobject.bin
       ["map_object_data_tbl", new KDMGenericArray(this).useNullTerminator(false)],
       // kdm_worldmap_data.bin
-      ["disposWorldMapTable", new KDMGenericArray(this).useNullTerminator(true)],
-      ["disposWorldMapConnectTable", new KDMGenericArray(this).useNullTerminator(true)]
+      [DisposWorldMapTable.name, new DisposWorldMapTable(this)],
+      [DisposWorldMapConnectTable.name, new DisposWorldMapConnectTable(this)]
     ]);
 
     const table = map.get(name as IDKMTableName);
@@ -449,10 +451,15 @@ class KDM {
       }
 
       // kdm_worldmap_data.bin
-      if (table.name.get() === "disposWorldMapTable") {
+      if (table instanceof DisposWorldMapTable) {
         return this.types.push(
           [-1, DisposWorldMapSubEntry],
-          [-1, DisposWorldMap],
+          [-1, DisposWorldMap]
+        );
+      }
+
+      if (table instanceof DisposWorldMapConnectTable) {
+        return this.types.push(
           [-1, DisposWorldMapConnectSubEntry],
           [-1, DisposWorldMapConnect]
         );
