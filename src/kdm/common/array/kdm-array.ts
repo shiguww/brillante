@@ -65,8 +65,7 @@ abstract class KDMArray<T = unknown> extends KDMStructure<T[]> {
       ? this.entries.length + 1
       : this.entries.length) * realfields.length);
 
-    // I don't know what the fuck is going on and I don't
-    // want to know.
+    /* I don't know what the fuck is going on and I don't want to know. */
     if(entry instanceof MapObjectData7) {
       this.size1.set(this.size0.get());
     }
