@@ -48,6 +48,7 @@ class KDMF32Array extends KDMArray<IKDMF32Array[number]> {
       buffer.offset += entry.sizeof;
     }
 
+    logger.debug(`${this.constructor.name}#parse(): parsed array #${this.uid.get()}`);
     return this;
   }
 }

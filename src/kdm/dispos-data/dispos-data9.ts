@@ -6,6 +6,7 @@ import KDMU32 from "../common/kdm-u32";
 const IDisposData9 = z.object({
   unknown0: KDMStringPointer.schema,
   unknown1: KDMU32.schema,
+  _offset: z.number(),
   _structure: z.literal("DisposData9").default("DisposData9")
 });
 
@@ -35,7 +36,8 @@ class DisposData9 extends KDMStructure<IDisposData9> {
   public override get(): IDisposData9 {
     return IDisposData9.parse({
       unknown0: this.unknown0.get(),
-      unknown1: this.unknown1.get()
+      unknown1: this.unknown1.get(),
+      _offset: this.offset
     });
   }
 

@@ -22,7 +22,7 @@ class DisposData10 extends KDMStructure<IDisposData10> {
 
   public override readonly schema = IDisposData10;
   public readonly unknown0 = new KDMStringPointer(this.kdm);
-  public readonly unknown1 = new KDMGenericArrayPointer(this.kdm);
+  public readonly unknown1 = new KDMGenericArrayPointer(this.kdm); // aliasing
   public readonly unknown2 = new KDMU32(this.kdm);
 
   public override get arrays(): KDMArray[] {

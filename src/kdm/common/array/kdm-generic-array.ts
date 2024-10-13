@@ -78,6 +78,7 @@ class KDMGenericArray extends KDMArray<IKDMGenericArray[number]> {
       return a.offset - b.offset;
     });
 
+    logger.debug(`${this.constructor.name}#parse(): parsed array #${this.uid.get()}`);
     return this;
   }
 }

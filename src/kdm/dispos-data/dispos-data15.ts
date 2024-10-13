@@ -44,7 +44,7 @@ class DisposData15 extends KDMStructure<IDisposData15> {
   public readonly unknown7 = new KDMBoolean(this.kdm);
   public readonly unknown8 = new KDMU32(this.kdm);
   public readonly unknown9 = new KDMU32(this.kdm);
-  public readonly unknown10 = new KDMGenericArrayPointer(this.kdm);
+  public readonly unknown10 = new KDMGenericArrayPointer(this.kdm); // aliasing
   public readonly unknown11 = new KDMGenericArrayPointer(this.kdm);
 
   public override get arrays(): KDMArray[] {

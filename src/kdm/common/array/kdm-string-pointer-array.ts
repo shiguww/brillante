@@ -48,6 +48,7 @@ class KDMStringPointerArray extends KDMArray<IKDMStringPointerArray[number]> {
       buffer.offset += entry.sizeof;
     }
 
+    logger.debug(`${this.constructor.name}#parse(): parsed array #${this.uid.get()}`);
     return this;
   }
 }
