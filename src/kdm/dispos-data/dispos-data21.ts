@@ -1,7 +1,6 @@
 import z from "zod";
 import KDMStructure from "#/kdm/common/kdm-structure";
 import KDMStringPointer from "#/kdm/common/pointer/kdm-string-pointer";
-import KDMStringPointerArrayPointer from "../common/pointer/kdm-string-pointer-array-pointer";
 import KDMGenericPointerArrayPointer from "../common/pointer/kdm-generic-pointer-array-pointer";
 import KDMU32 from "../common/kdm-u32";
 import KDMGenericArrayPointer from "../common/pointer/kdm-generic-array-pointer";
@@ -29,7 +28,7 @@ class DisposData21 extends KDMStructure<IDisposData21> {
   public override readonly unknownSection4Value0 = 0x00000000;
 
   public override readonly schema = IDisposData21;
-  public readonly unknown0 = new KDMStringPointerArrayPointer(this.kdm);
+  public readonly unknown0 = new KDMStringPointer(this.kdm);
   public readonly unknown1 = new KDMGenericPointerArrayPointer(this.kdm);
   public readonly unknown2 = new KDMU32(this.kdm);
   public readonly unknown3 = new KDMGenericPointerArrayPointer(this.kdm);
@@ -87,7 +86,7 @@ class DisposData21 extends KDMStructure<IDisposData21> {
     this.unknown7.set(disposdata.unknown7);
     this.unknown8.set(disposdata.unknown8);
     this.unknown9.set(disposdata.unknown9);
-    
+
     return this;
   }
 }

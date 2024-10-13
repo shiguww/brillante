@@ -33,7 +33,7 @@ class DisposData18 extends KDMStructure<IDisposData18> {
   
   public readonly unknown0 = new KDMStringPointer(this.kdm);
   public readonly unknown1 = new KDMStringPointer(this.kdm);
-  public readonly unknown2 = new KDMF32(this.kdm);
+  public readonly unknown2 = new KDMGenericArrayPointer(this.kdm);
   public readonly unknown3 = new KDMF32(this.kdm);
   public readonly unknown4 = new KDMF32(this.kdm);
   public readonly unknown5 = new KDMF32(this.kdm);

@@ -503,7 +503,7 @@ class KDM {
       }
 
       // kdm_dispos_data.bin
-      if(table instanceof AllDisposDataTbl) {
+      if (table instanceof AllDisposDataTbl) {
         return this.types.push(
           [-1, DisposData0],
           [-1, DisposData1],
@@ -590,7 +590,7 @@ class KDM {
       }
 
       // kdm_dispos_data.bin
-      if(table instanceof AllDisposDataTbl) {
+      if (table instanceof AllDisposDataTbl) {
         this.parameters.push(new KDMU32Parameter(this).set({
           unknown0: 0x00000000,
           name: "all_disposDataTblLen",
@@ -794,7 +794,7 @@ class KDM {
   private parseSection7(buffer: RBuffer): void {
     buffer.offset = this.sections.at(7)!;
     const count = buffer.getU32();
-  
+
     assert.equal(count, 0, `Bad object count in section 2 @ ${buffer.offset - RBuffer.U32_SIZE}`);
   }
 

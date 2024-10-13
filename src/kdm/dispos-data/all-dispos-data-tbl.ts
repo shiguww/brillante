@@ -9,7 +9,7 @@ const IAllDisposDataTbl = DisposData21.schema.array().array();
 type IAllDisposDataTbl = z.infer<typeof IAllDisposDataTbl>;
 
 class AllDisposDataTbl extends KDMTable<IAllDisposDataTbl> {
-  public static override readonly name = "all_disposDataTblLen";
+  public static override readonly name = "all_disposDataTbl";
 
   public static readonly schema = IAllDisposDataTbl;
   public override readonly schema = IAllDisposDataTbl;

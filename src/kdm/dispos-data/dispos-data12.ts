@@ -66,9 +66,10 @@ class DisposData12 extends KDMStructure<IDisposData12> {
       this.unknown9,               // 40 -> 40
       this.unknown10,              // 44 -> 48
       this.unknown11,              // 44 -> 52
-      this.unknown12,              // 52 -> 53
-      new KDMU24Padding(this.kdm), // 53 -> 56
-      this.unknown14               // 56 -> 60
+      this.unknown12,              // 52 -> 56
+      this.unknown13,              // 56 -> 57
+      new KDMU24Padding(this.kdm), // 57 -> 60
+      this.unknown14               // 60 -> 64
     ];
   }
 
