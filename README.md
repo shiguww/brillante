@@ -54,7 +54,7 @@ pnpm brillante kdm-build -i kdm_mapdata.kdm.json -o file.bin # Builds to file.bi
 | `kdm_map_viewer.bin`      | ❌       |
 | `kdm_paper_data.bin`      | ❌       |
 | `kdm_char_viewer.bin`     | ❌       |
-| `kdm_dispos_data.bin`     | ❌       |
+| `kdm_dispos_data.bin`     | 🚧       |
 | `kdm_sound_anime.bin`     | ❌       |
 | `kdm_battle_model.bin`    | ❌       |
 | `kdm_battle_set_*.bin`    | ❌       |

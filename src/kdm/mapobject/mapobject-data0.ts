@@ -1,11 +1,11 @@
 import z from "zod";
 import KDMStructure from "#/kdm/common/kdm-structure";
 import KDMStringPointer from "#/kdm/common/pointer/kdm-string-pointer";
-import KDMUnknownType0 from "../common/kdm-unknown-type0";
+import KDMStringPointerArrayPointer from "../common/pointer/kdm-string-pointer-array-pointer";
 import KDMUnknownType1 from "../common/kdm-unknown-type1";
 
 const IMapObjectData0 = z.object({
-  unknown1: KDMUnknownType0.schema,
+  unknown1: KDMStringPointerArrayPointer.schema,
   unknown2: KDMUnknownType1.schema,
   unknown0: KDMStringPointer.schema,
   _structure: z.literal("MapObjectData0").default("MapObjectData0")
@@ -21,7 +21,7 @@ class MapObjectData0 extends KDMStructure<IMapObjectData0> {
 
   public override readonly schema = IMapObjectData0;
   public readonly unknown0 = new KDMStringPointer(this.kdm);
-  public readonly unknown1 = new KDMUnknownType0(this.kdm);
+  public readonly unknown1 = new KDMStringPointerArrayPointer(this.kdm);
   public readonly unknown2 = new KDMUnknownType1(this.kdm);
 
   public override get fields(): Array<KDMStructure> {

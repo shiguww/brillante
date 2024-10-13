@@ -1,13 +1,13 @@
 import z from "zod";
 import KDMU16 from "#/kdm/common/kdm-u16";
 import KDMStructure from "#/kdm/common/kdm-structure";
-import KDMUnknownType0 from "#/kdm/common/kdm-unknown-type0";
+import KDMStringPointerArrayPointer from "#/kdm/common/pointer/kdm-string-pointer-array-pointer";
 import KDMStringPointer from "#/kdm/common/pointer/kdm-string-pointer";
 import KDMU16Padding from "#/kdm/common/padding/kdm-u16-padding";
 
 const IShopListing = z.object({
   unknown2: KDMU16.schema,
-  unknown4: KDMUnknownType0.schema,
+  unknown4: KDMStringPointerArrayPointer.schema,
   unknown0: KDMStringPointer.schema,
   unknown1: KDMStringPointer.schema,
   unknown3: KDMStringPointer.schema,
@@ -24,7 +24,7 @@ class ShopListing extends KDMStructure<IShopListing> {
   public override readonly unknownSection4Value1 = 0x000000000;
 
   public readonly unknown2 = new KDMU16(this.kdm);
-  public readonly unknown4 = new KDMUnknownType0(this.kdm);
+  public readonly unknown4 = new KDMStringPointerArrayPointer(this.kdm);
   public readonly unknown0 = new KDMStringPointer(this.kdm);
   public readonly unknown1 = new KDMStringPointer(this.kdm);
   public readonly unknown3 = new KDMStringPointer(this.kdm);

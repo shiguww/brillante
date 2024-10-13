@@ -12,7 +12,7 @@ import KDMString from "#/kdm/common/kdm-string";
 import LinkData from "#/kdm/link-data/link-data";
 import KDMStructure from "#/kdm/common/kdm-structure";
 import KDMPadding from "#/kdm/common/padding/kdm-padding";
-import KDMUnknownType0 from "#/kdm/common/kdm-unknown-type0";
+import KDMStringPointerArrayPointer from "#/kdm/common/pointer/kdm-string-pointer-array-pointer";
 import KDMBoolean from "#/kdm/common/kdm-boolean";
 import KDMStringPointer from "#/kdm/common/pointer/kdm-string-pointer";
 import KDMU32Parameter from "#/kdm/common/parameter/kdm-u32-parameter";
@@ -76,6 +76,29 @@ import ChangeBGMDataTable from "./sound/change-bdm-data-table";
 import TrackVolumeDataTable from "./sound/track-volume-data-table";
 import TownWorldMapDataTable from "./sound/town-world-map-data-table";
 import MapObjectDataTbl from "./mapobject/mapobject-data-tbl";
+import DisposData0 from "./dispos-data/dispos-data0";
+import DisposData1 from "./dispos-data/dispos-data1";
+import DisposData10 from "./dispos-data/dispos-data10";
+import DisposData11 from "./dispos-data/dispos-data11";
+import DisposData12 from "./dispos-data/dispos-data12";
+import DisposData13 from "./dispos-data/dispos-data13";
+import DisposData14 from "./dispos-data/dispos-data14";
+import DisposData15 from "./dispos-data/dispos-data15";
+import DisposData17 from "./dispos-data/dispos-data17";
+import DisposData18 from "./dispos-data/dispos-data18";
+import DisposData19 from "./dispos-data/dispos-data19";
+import DisposData2 from "./dispos-data/dispos-data2";
+import DisposData20 from "./dispos-data/dispos-data20";
+import DisposData21 from "./dispos-data/dispos-data21";
+import DisposData3 from "./dispos-data/dispos-data3";
+import DisposData4 from "./dispos-data/dispos-data4";
+import DisposData5 from "./dispos-data/dispos-data5";
+import DisposData7 from "./dispos-data/dispos-data7";
+import DisposData8 from "./dispos-data/dispos-data8";
+import DisposData16 from "./dispos-data/dispos-data16";
+import DisposData6 from "./dispos-data/dispos-data6";
+import DisposData9 from "./dispos-data/dispos-data9";
+import AllDisposDataTbl from "./dispos-data/all-dispos-data-tbl";
 
 type KDMStructureConstructor = (new (kdm: KDM) => KDMStructure);
 
@@ -114,6 +137,29 @@ const ALL_TYPES: KDMStructureConstructor[] = [
   MapObjectData6,
   MapObjectData7,
   MapObjectData8,
+  // kdm_dispos_data.bin
+  DisposData0,
+  DisposData1,
+  DisposData2,
+  DisposData3,
+  DisposData4,
+  DisposData5,
+  DisposData6,
+  DisposData7,
+  DisposData8,
+  DisposData9,
+  DisposData10,
+  DisposData11,
+  DisposData12,
+  DisposData13,
+  DisposData14,
+  DisposData15,
+  DisposData16,
+  DisposData17,
+  DisposData18,
+  DisposData19,
+  DisposData20,
+  DisposData21,
   // kdm_worldmap_data.bin
   DisposWorldMapSubEntry,
   DisposWorldMap,
@@ -155,6 +201,8 @@ const IKDM = z.object({
     z.tuple([z.literal(LinkDataAll.name), LinkDataAll.schema]),
     // kdm_mapobject.bin
     z.tuple([z.literal(MapObjectDataTbl.name), MapObjectDataTbl.schema]),
+    // kdm_dispos_data.bin
+    z.tuple([z.literal(AllDisposDataTbl.name), AllDisposDataTbl.schema]),
     // kdm_worldmap_data.bin
     z.tuple([z.literal(DisposWorldMapTable.name), DisposWorldMapTable.schema]),
     z.tuple([z.literal(DisposWorldMapConnectTable.name), DisposWorldMapConnectTable.schema]),
@@ -180,7 +228,7 @@ class KDM {
       [0x00000004, KDMBoolean],
       [0x00000008, KDMU16],
       [0x0000000A, KDMF32ArrayPointer],
-      [0x0000000D, KDMUnknownType0],
+      [0x0000000D, KDMStringPointerArrayPointer],
       [0x0000000F, KDMGenericArrayPointer],
       [0x00000014, KDMGenericPointerArrayPointer]
     ];
@@ -220,6 +268,8 @@ class KDM {
       [LinkDataAll.name, new LinkDataAll(this)],
       // kdm_mapobject.bin
       [MapObjectDataTbl.name, new MapObjectDataTbl(this)],
+      // kdm_dispos_data.bin
+      [AllDisposDataTbl.name, new AllDisposDataTbl(this)],
       // kdm_worldmap_data.bin
       [DisposWorldMapTable.name, new DisposWorldMapTable(this)],
       [DisposWorldMapConnectTable.name, new DisposWorldMapConnectTable(this)]
@@ -272,6 +322,29 @@ class KDM {
       ["MapObjectData6", new MapObjectData6(this)],
       ["MapObjectData7", new MapObjectData7(this)],
       ["MapObjectData8", new MapObjectData8(this)],
+      // kdm_dispos_data.bin
+      ["DisposData0", new DisposData0(this)],
+      ["DisposData1", new DisposData1(this)],
+      ["DisposData2", new DisposData2(this)],
+      ["DisposData3", new DisposData3(this)],
+      ["DisposData4", new DisposData4(this)],
+      ["DisposData5", new DisposData5(this)],
+      ["DisposData6", new DisposData6(this)],
+      ["DisposData7", new DisposData7(this)],
+      ["DisposData8", new DisposData8(this)],
+      ["DisposData9", new DisposData9(this)],
+      ["DisposData10", new DisposData10(this)],
+      ["DisposData11", new DisposData11(this)],
+      ["DisposData12", new DisposData12(this)],
+      ["DisposData13", new DisposData13(this)],
+      ["DisposData14", new DisposData14(this)],
+      ["DisposData15", new DisposData15(this)],
+      ["DisposData16", new DisposData16(this)],
+      ["DisposData17", new DisposData17(this)],
+      ["DisposData18", new DisposData18(this)],
+      ["DisposData19", new DisposData19(this)],
+      ["DisposData20", new DisposData20(this)],
+      ["DisposData21", new DisposData21(this)],
       // kdm_worldmap_data.bin
       ["DisposWorldMapConnect", new DisposWorldMapConnect(this)],
       ["DisposWorldMapConnectSubEntry", new DisposWorldMapConnectSubEntry(this)],
@@ -429,6 +502,34 @@ class KDM {
         );
       }
 
+      // kdm_dispos_data.bin
+      if (table instanceof AllDisposDataTbl) {
+        return this.types.push(
+          [-1, DisposData0],
+          [-1, DisposData1],
+          [-1, DisposData2],
+          [-1, DisposData3],
+          [-1, DisposData4],
+          [-1, DisposData5],
+          [-1, DisposData6],
+          [-1, DisposData7],
+          [-1, DisposData8],
+          [-1, DisposData9],
+          [-1, DisposData10],
+          [-1, DisposData11],
+          [-1, DisposData12],
+          [-1, DisposData13],
+          [-1, DisposData14],
+          [-1, DisposData15],
+          [-1, DisposData16],
+          [-1, DisposData17],
+          [-1, DisposData18],
+          [-1, DisposData19],
+          [-1, DisposData20],
+          [-1, DisposData21]
+        );
+      }
+
       // kdm_pepalyze.bin / kdm_pepalyze_museum.bin
       if (table instanceof LockDataTable) {
         const entry = table.data.entries.at(0);
@@ -485,6 +586,15 @@ class KDM {
           unknown0: 0x00000000,
           name: "link_data_all_len",
           value: table.data.entries.length
+        }));
+      }
+
+      // kdm_dispos_data.bin
+      if (table instanceof AllDisposDataTbl) {
+        this.parameters.push(new KDMU32Parameter(this).set({
+          unknown0: 0x00000000,
+          name: "all_disposDataTblLen",
+          value: table.data.entries.length + 1
         }));
       }
     });
@@ -684,7 +794,7 @@ class KDM {
   private parseSection7(buffer: RBuffer): void {
     buffer.offset = this.sections.at(7)!;
     const count = buffer.getU32();
-  
+
     assert.equal(count, 0, `Bad object count in section 2 @ ${buffer.offset - RBuffer.U32_SIZE}`);
   }
 
