@@ -2,6 +2,7 @@ import z from "zod";
 import type RBuffer from "#/buffer/r-buffer";
 import KDMArray from "#/kdm/common/array/kdm-array";
 import KDMStringPointer from "../pointer/kdm-string-pointer";
+import logger from "#/logger";
 
 const IKDMStringPointerArray = KDMStringPointer.schema.array();
 type IKDMStringPointerArray = z.infer<typeof IKDMStringPointerArray>;
@@ -20,6 +21,7 @@ class KDMStringPointerArray extends KDMArray<IKDMStringPointerArray[number]> {
   }
 
   public override parse(buffer: RBuffer): this {
+    logger.debug(`${this.constructor.name}#parse(): parsing @ ${buffer.offset}`);
     this.offset = buffer.offset;
     
     this.uid.parse(buffer);

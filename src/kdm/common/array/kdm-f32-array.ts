@@ -2,6 +2,7 @@ import z from "zod";
 import KDMF32 from "#/kdm/common/kdm-f32";
 import type RBuffer from "#/buffer/r-buffer";
 import KDMArray from "#/kdm/common/array/kdm-array";
+import logger from "#/logger";
 
 const IKDMF32Array = KDMF32.schema.array();
 type IKDMF32Array = z.infer<typeof IKDMF32Array>;
@@ -20,6 +21,7 @@ class KDMF32Array extends KDMArray<IKDMF32Array[number]> {
   }
 
   public override parse(buffer: RBuffer): this {
+    logger.debug(`${this.constructor.name}#parse(): parsing @ ${buffer.offset}`);
     this.offset = buffer.offset;
     
     this.uid.parse(buffer);

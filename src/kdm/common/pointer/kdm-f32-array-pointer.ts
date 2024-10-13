@@ -4,6 +4,7 @@ import type RBuffer from "#/buffer/r-buffer";
 import KDMStructure from "#/kdm/common/kdm-structure";
 import type KDMArray from "#/kdm/common/array/kdm-array";
 import KDMF32Array from "#/kdm/common/array/kdm-f32-array";
+import logger from "#/logger";
 
 const IKDMF32ArrayPointer = KDMF32Array.schema;
 type IKDMF32ArrayPointer = z.infer<typeof IKDMF32ArrayPointer>;
@@ -38,6 +39,7 @@ class KDMF32ArrayPointer extends KDMStructure<IKDMF32ArrayPointer> {
   }
 
   public override build(buffer: WBuffer): this {
+    logger.debug(`${this.constructor.name}#build(): building @ ${buffer.offset}`);
     this.offset = buffer.offset;
     
     if(this.array.offset === -1) {
@@ -50,11 +52,16 @@ class KDMF32ArrayPointer extends KDMStructure<IKDMF32ArrayPointer> {
   }
 
   public override parse(buffer: RBuffer): this {
+    logger.debug(`${this.constructor.name}#parse(): parsing @ ${buffer.offset}`);
     this.offset = buffer.offset;    
-    const pointer = buffer.getU32();
+    
+    let pointer = buffer.getU32();
 
-    if(pointer !== 0) {
-      buffer.with(pointer - KDMF32Array.HEADING_SIZE, (buffer) => this.array.parse(buffer));
+    if(pointer >= KDMF32Array.HEADING_SIZE) {
+      pointer -= KDMF32Array.HEADING_SIZE;
+
+      logger.debug(`${this.constructor.name}#parse(): parsing ${this.array.constructor.name} @ ${pointer}`);
+      buffer.with(pointer, (buffer) => this.array.parse(buffer));
     }
 
     return this;

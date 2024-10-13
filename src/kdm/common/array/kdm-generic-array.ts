@@ -6,6 +6,7 @@ import KDMArray from "#/kdm/common/array/kdm-array";
 import type KDMStructure from "#/kdm/common/kdm-structure";
 import KDMGenericArrayPointer from "#/kdm/common/pointer/kdm-generic-array-pointer";
 import type KDMStringPointer from "#/kdm/common/pointer/kdm-string-pointer";
+import logger from "#/logger";
 
 const IKDMGenericArray = z.unknown().array();
 type IKDMGenericArray = z.infer<typeof IKDMGenericArray>;
@@ -37,6 +38,7 @@ class KDMGenericArray extends KDMArray<IKDMGenericArray[number]> {
   }
 
   public override parse(buffer: RBuffer): this {
+    logger.debug(`${this.constructor.name}#parse(): parsing @ ${buffer.offset}`);
     this.offset = buffer.offset;
 
     this.uid.parse(buffer);

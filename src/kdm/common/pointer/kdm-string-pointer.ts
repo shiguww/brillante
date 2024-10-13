@@ -2,6 +2,8 @@ import z from "zod";
 import WBuffer from "#/buffer/w-buffer";
 import type RBuffer from "#/buffer/r-buffer";
 import KDMStructure from "#/kdm/common/kdm-structure";
+import KDMString from "../kdm-string";
+import logger from "#/logger";
 
 const IKDMStringPointer = z.string().nullable();
 type IKDMStringPointer = z.infer<typeof IKDMStringPointer>;
@@ -37,6 +39,8 @@ class KDMStringPointer extends KDMStructure<IKDMStringPointer> {
   }
 
   public override build(buffer: WBuffer): this {
+    logger.debug(`${this.constructor.name}#build(): building @ ${buffer.offset}`);
+    
     const pointer = this.kdm.strings.find((s) => s.get() === this.string)?.offset;
     this.offset = buffer.offset;
 
@@ -50,10 +54,15 @@ class KDMStringPointer extends KDMStructure<IKDMStringPointer> {
   }
 
   public override parse(buffer: RBuffer): this {
+    logger.debug(`${this.constructor.name}#parse(): parsing @ ${buffer.offset}`);
     this.offset = buffer.offset;
     
     const pointer = buffer.getU32();
-    this.string = this.kdm.strings.find((s) => s.offset === pointer)?.get() || "";
+    
+    if(pointer !== 0) {
+      logger.debug(`${this.constructor.name}#parse(): parsing ${KDMString.name} @ ${pointer}`);
+      this.string = this.kdm.strings.find((s) => s.offset === pointer)?.get() || "";
+    }
     
     return this;
   }
