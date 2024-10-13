@@ -42,19 +42,19 @@ class UnusedSoundData1 extends KDMStructure<never> {
   }
 
   public override get(): never {
-    assert.fail();
+    assert.fail("unreachable");
   }
 
   public override set(): never {
-    assert.fail();
+    assert.fail("unreachable");
   }
 
   public override build(): never {
-    assert.fail();
+    assert.fail("unreachable");
   }
 
   public override parse(): never {
-    assert.fail();
+    assert.fail("unreachable");
   }
 }
 

@@ -226,7 +226,7 @@ class KDM {
     ]);
 
     const table = map.get(name as IDKMTableName);
-    assert(table !== undefined);
+    assert(table !== undefined, `Bad table name '${name}'`);
 
     return table;
   }
@@ -291,7 +291,7 @@ class KDM {
   }
 
   private buildHeading(buffer: WBuffer): void {
-    assert.equal(this.sections.length, KDM.SECTION_COUNT);
+    assert.equal(this.sections.length, KDM.SECTION_COUNT, "Bad KDM section count");
 
     buffer.setU32(KDM.SIGNATURE_1);
     buffer.setU32(KDM.SIGNATURE_2);
@@ -562,15 +562,15 @@ class KDM {
   }
 
   private parseHeading(buffer: RBuffer): void {
-    assert.equal(buffer.getU32(), KDM.SIGNATURE_1);
-    assert.equal(buffer.getU32(), KDM.SIGNATURE_2);
+    assert.equal(buffer.getU32(), KDM.SIGNATURE_1, `Bad KDM signature @ ${buffer.offset}`);
+    assert.equal(buffer.getU32(), KDM.SIGNATURE_2, `Bad KDM signature @ ${buffer.offset}`);
 
     do {
       const section = buffer.getU32() * 4;
       this.sections.push(section);
     } while (buffer.offset < this.sections.at(0)!);
 
-    assert.equal(this.sections.length, KDM.SECTION_COUNT);
+    assert.equal(this.sections.length, KDM.SECTION_COUNT, "Bad KDM section count");
   }
 
   private parseSection0(buffer: RBuffer): void {
@@ -589,14 +589,14 @@ class KDM {
     buffer.offset = this.sections.at(1)!;
     const count = buffer.getU32();
 
-    assert.equal(count, 0);
+    assert.equal(count, 0, `Bad object count in section 1 @ ${buffer.offset - RBuffer.U32_SIZE}`);
   }
 
   private parseSection2(buffer: RBuffer): void {
     buffer.offset = this.sections.at(2)!;
     const count = buffer.getU32();
 
-    assert.equal(count, 0);
+    assert.equal(count, 0, `Bad object count in section 2 @ ${buffer.offset - RBuffer.U32_SIZE}`);
   }
 
   private parseSection3(buffer: RBuffer): void {
@@ -617,7 +617,7 @@ class KDM {
         continue;
       }
 
-      assert.fail();
+      assert.fail(`Bad parameter type @ ${buffer.offset}`);
     }
   }
 
@@ -684,8 +684,8 @@ class KDM {
   private parseSection7(buffer: RBuffer): void {
     buffer.offset = this.sections.at(7)!;
     const count = buffer.getU32();
-
-    assert.equal(count, 0);
+  
+    assert.equal(count, 0, `Bad object count in section 2 @ ${buffer.offset - RBuffer.U32_SIZE}`);
   }
 
   public parse(_buffer: Buffer): this {

@@ -1,6 +1,6 @@
+import RBuffer from "#/buffer/r-buffer";
 import WBuffer from "#/buffer/w-buffer";
 import assert from "node:assert/strict";
-import type RBuffer from "#/buffer/r-buffer";
 import KDMPadding from "#/kdm/common/padding/kdm-padding";
 
 class KDMU8Padding extends KDMPadding {
@@ -18,7 +18,7 @@ class KDMU8Padding extends KDMPadding {
   public override parse(buffer: RBuffer): this {
     this.offset = buffer.offset;
     
-    assert.equal(buffer.getU8(), 0);
+    assert.equal(buffer.getU8(), 0, `Bad padding @ ${buffer.offset - RBuffer.U8_SIZE}`);
     return this;
   }
 }

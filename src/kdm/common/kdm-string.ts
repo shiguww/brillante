@@ -1,7 +1,7 @@
 import z from "zod";
 import WBuffer from "#/buffer/w-buffer";
 import assert from "node:assert/strict";
-import type RBuffer from "#/buffer/r-buffer";
+import RBuffer from "#/buffer/r-buffer";
 import KDMStructure from "#/kdm/common/kdm-structure";
 
 const IKDMString = z.string().min(1);
@@ -49,7 +49,7 @@ class KDMString extends KDMStructure<IKDMString> {
     this.string = buffer.getCString() || "\0";
     
     while (buffer.offset % 4 !== 0) {
-      assert.equal(buffer.getU8(), 0);
+      assert.equal(buffer.getU8(), 0, `Bad string padding @ ${buffer.offset - RBuffer.U8_SIZE}`);
     }
 
     return this;

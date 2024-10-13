@@ -12,11 +12,11 @@ abstract class KDMPadding extends KDMStructure<never> {
   }
 
   public override get(): never {
-    assert.fail();
+    assert.fail("unreachable");
   }
 
   public override set(): never {
-    assert.fail();
+    assert.fail("unreachable");
   }
 }
 

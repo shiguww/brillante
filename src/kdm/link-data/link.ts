@@ -62,7 +62,7 @@ class LinkType extends KDMStructure<ILinkType> {
       return "SAVE_BLOCK";
     }
 
-    assert.fail();
+    assert.fail("unreachable");
   }
 
   public override set(type: ILinkType): this {
@@ -101,7 +101,7 @@ class LinkType extends KDMStructure<ILinkType> {
       return this;
     }
 
-    assert.fail();
+    assert.fail("unreachable");
   }
 }
 
