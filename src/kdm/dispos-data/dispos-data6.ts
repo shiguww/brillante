@@ -4,21 +4,21 @@ import KDMStringPointer from "#/kdm/common/pointer/kdm-string-pointer";
 import KDMU32 from "../common/kdm-u32";
 import KDMGenericArrayPointer from "../common/pointer/kdm-generic-array-pointer";
 
-const IDisposData5 = z.object({
+const IDisposData6 = z.object({
   unknown0: KDMU32.schema,
   unknown1: KDMGenericArrayPointer.schema,
-  _structure: z.literal("DisposData5").default("DisposData5")
+  _structure: z.literal("DisposData6").default("DisposData6")
 });
 
-type IDisposData5 = z.infer<typeof IDisposData5>;
+type IDisposData6 = z.infer<typeof IDisposData6>;
 
-class DisposData5 extends KDMStructure<IDisposData5> {
-  public static readonly schema = IDisposData5;
+class DisposData6 extends KDMStructure<IDisposData6> {
+  public static readonly schema = IDisposData6;
 
   public override readonly unknownSection4Value1 = 14234368;
   public override readonly unknownSection4Value0 = 0x00000000;
 
-  public override readonly schema = IDisposData5;
+  public override readonly schema = IDisposData6;
   public readonly unknown0 = new KDMU32(this.kdm);
   public readonly unknown1 = new KDMGenericArrayPointer(this.kdm);
 
@@ -33,15 +33,15 @@ class DisposData5 extends KDMStructure<IDisposData5> {
     return this.fields.filter((f) => f instanceof KDMStringPointer);
   }
 
-  public override get(): IDisposData5 {
-    return IDisposData5.parse({
+  public override get(): IDisposData6 {
+    return IDisposData6.parse({
       unknown0: this.unknown0.get(),
       unknown1: this.unknown1.get()
     });
   }
 
   public override set(data: unknown): this {
-    const disposdata = IDisposData5.parse(data);
+    const disposdata = IDisposData6.parse(data);
 
     this.unknown0.set(disposdata.unknown0);
     this.unknown1.set(disposdata.unknown1);
@@ -50,4 +50,4 @@ class DisposData5 extends KDMStructure<IDisposData5> {
   }
 }
 
-export default DisposData5;
+export default DisposData6;
