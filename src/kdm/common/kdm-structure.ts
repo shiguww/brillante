@@ -1,4 +1,5 @@
 import type z from "zod";
+import logger from "#/logger";
 import type KDM from "#/kdm/kdm";
 import type RBuffer from "#/buffer/w-buffer";
 import type WBuffer from "#/buffer/w-buffer";
@@ -25,8 +26,7 @@ abstract class KDMStructure<T = unknown> {
   }
 
   public get sizeof(): number {
-    return this.fields
-      .map((f) => f.sizeof)
+    return this.fields.map((f) => f.sizeof)
       .reduce((prev, curr) => prev + curr);
   }
 
@@ -38,6 +38,7 @@ abstract class KDMStructure<T = unknown> {
   public abstract set(data: unknown): this;
 
   public build(buffer: WBuffer): this {
+    logger.debug(`${this.constructor.name}#build(): building @ ${buffer.offset}`);
     this.offset = buffer.offset;
 
     this.fields.forEach((f) => f.build(buffer));
@@ -45,6 +46,7 @@ abstract class KDMStructure<T = unknown> {
   }
 
   public parse(buffer: RBuffer): this {
+    logger.debug(`${this.constructor.name}#parse(): parsing @ ${buffer.offset}`);
     this.offset = buffer.offset;
 
     this.fields.forEach((f) => f.parse(buffer));

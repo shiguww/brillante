@@ -6,6 +6,7 @@ import KDMStructure from "#/kdm/common/kdm-structure"
 import KDMPadding from "#/kdm/common/padding/kdm-padding";
 import type KDMStringPointer from "#/kdm/common/pointer/kdm-string-pointer";
 import MapObjectData7 from "#/kdm/mapobject/mapobject-data7";
+import logger from "#/logger";
 
 type KDMStructureConstructor = (new (kdm: KDM) => KDMStructure);
 
@@ -55,6 +56,8 @@ abstract class KDMArray<T = unknown> extends KDMStructure<T[]> {
       return this;
     }
 
+    logger.debug(`${this.constructor.name}#build(): building @ ${buffer.offset} (#${this.uid.get()})`);
+    
     this.offset = buffer.offset;
     this.size0.set((this.sizeof - KDMArray.HEADING_SIZE) / 4);
 

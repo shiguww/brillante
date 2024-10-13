@@ -1,10 +1,20 @@
 import KDM from "#/kdm/kdm";
 import path from "node:path";
+import logger from "#/logger";
 import fs from "node:fs/promises";
 import { Command } from "commander";
 
 const program = new Command()
-  .version("v3.0.0");
+  .version("v3.0.0")
+  .option("-v, --verbose");
+
+program.hook("preAction", (cmd) => {
+  const options = cmd.opts();
+
+  if ("verbose" in options && options.verbose) {
+    logger.level = "debug";
+  }
+});
 
 program
   .command("kdm-build")
