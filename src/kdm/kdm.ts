@@ -12,7 +12,7 @@ import KDMString from "#/kdm/common/kdm-string";
 import LinkData from "#/kdm/link-data/link-data";
 import KDMStructure from "#/kdm/common/kdm-structure";
 import KDMPadding from "#/kdm/common/padding/kdm-padding";
-import KDMUnknownType0 from "#/kdm/common/kdm-unknown-type0";
+import KDMStringPointerArrayPointer from "#/kdm/common/pointer/kdm-string-pointer-array-pointer";
 import KDMBoolean from "#/kdm/common/kdm-boolean";
 import KDMStringPointer from "#/kdm/common/pointer/kdm-string-pointer";
 import KDMU32Parameter from "#/kdm/common/parameter/kdm-u32-parameter";
@@ -180,7 +180,7 @@ class KDM {
       [0x00000004, KDMBoolean],
       [0x00000008, KDMU16],
       [0x0000000A, KDMF32ArrayPointer],
-      [0x0000000D, KDMUnknownType0],
+      [0x0000000D, KDMStringPointerArrayPointer],
       [0x0000000F, KDMGenericArrayPointer],
       [0x00000014, KDMGenericPointerArrayPointer]
     ];
