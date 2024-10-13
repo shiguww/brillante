@@ -25,9 +25,9 @@ class AllDisposDataTbl extends KDMTable<IAllDisposDataTbl> {
   }
 
   public override set(data: IAllDisposDataTbl): this {
-    const mapdatatable = IAllDisposDataTbl.parse(data);
+    const alldisposdatatbl = IAllDisposDataTbl.parse(data);
 
-    mapdatatable.forEach((entry) => this.data.entries.push(
+    alldisposdatatbl.forEach((entry) => this.data.entries.push(
       new KDMGenericArrayPointer(this.kdm).set(entry)
     ));
 

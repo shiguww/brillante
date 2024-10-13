@@ -19,13 +19,11 @@ class DisposData4 extends KDMStructure<IDisposData4> {
   public readonly unknown0 = new KDMStringPointer(this.kdm);
 
   public override get fields(): Array<KDMStructure> {
-    return [
-      this.unknown0,
-    ];
+    return [this.unknown0];
   }
 
   public override get strings(): Array<KDMStringPointer> {
-    return this.fields.filter((f) => f instanceof KDMStringPointer);
+    return [this.unknown0];
   }
 
   public override get(): IDisposData4 {

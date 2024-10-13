@@ -91,7 +91,7 @@ class DisposData11 extends KDMStructure<IDisposData11> {
   }
 
   public override get strings(): Array<KDMStringPointer> {
-    return this.fields.filter((f) => f instanceof KDMStringPointer);
+    return [];
   }
 
   public override get(): IDisposData11 {

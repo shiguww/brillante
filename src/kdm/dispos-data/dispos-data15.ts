@@ -6,6 +6,7 @@ import KDMGenericArrayPointer from "../common/pointer/kdm-generic-array-pointer"
 import KDMF32 from "../common/kdm-f32";
 import KDMBoolean from "../common/kdm-boolean";
 import KDMU24Padding from "../common/padding/kdm-u24-padding";
+import KDMArray from "../common/array/kdm-array";
 
 const IDisposData15 = z.object({
   unknown0: KDMStringPointer.schema,
@@ -46,6 +47,13 @@ class DisposData15 extends KDMStructure<IDisposData15> {
   public readonly unknown10 = new KDMGenericArrayPointer(this.kdm);
   public readonly unknown11 = new KDMGenericArrayPointer(this.kdm);
 
+  public override get arrays(): KDMArray[] {
+    return [
+      ...this.unknown10.arrays,
+      ...this.unknown11.arrays,
+    ];
+  }
+
   public override get fields(): Array<KDMStructure> {
     return [
       this.unknown0,               // 00 -> 04
@@ -65,7 +73,10 @@ class DisposData15 extends KDMStructure<IDisposData15> {
   }
 
   public override get strings(): Array<KDMStringPointer> {
-    return this.fields.filter((f) => f instanceof KDMStringPointer);
+    return [
+      ...this.arrays.map((a) => a.strings).flat(),
+      ...this.fields.filter((f) => f instanceof KDMStringPointer)
+    ];
   }
 
   public override get(): IDisposData15 {
