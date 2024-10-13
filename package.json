@@ -1,11 +1,12 @@
 {
 	"private": true,
-  "type": "module",
+	"type": "module",
 	"version": "3.0.0",
 	"name": "brillante",
 	"dependencies": {
 		"commander": "^12.1.0",
 		"vitest": "^2.1.2",
+		"winston": "^3.15.0",
 		"zod": "^3.23.8"
 	},
 	"devDependencies": {
@@ -14,7 +15,7 @@
 		"typescript": "^5.5.4"
 	},
 	"scripts": {
-    "test": "vitest --run",
+		"test": "vitest --run",
 		"brillante": "tsx src/index.ts"
 	},
 	"packageManager": "pnpm@9.12.0"

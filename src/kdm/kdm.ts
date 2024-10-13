@@ -99,6 +99,7 @@ import DisposData16 from "./dispos-data/dispos-data16";
 import DisposData6 from "./dispos-data/dispos-data6";
 import DisposData9 from "./dispos-data/dispos-data9";
 import AllDisposDataTbl from "./dispos-data/all-dispos-data-tbl";
+import logger from "#/logger";
 
 type KDMStructureConstructor = (new (kdm: KDM) => KDMStructure);
 
@@ -602,8 +603,8 @@ class KDM {
     // Registering strings
     const registerStringIfNotExists = ((_string: string | KDMStringPointer) => {
       const string = (_string instanceof KDMStringPointer ? _string.get() : _string) || "";
-
       if (string !== "" && !this.strings.find((s) => s.get() === string)) {
+        logger.debug(`KDM#prebuild(): registering string '${string}'`);
         this.strings.push(new KDMString(this).set(string));
       }
     });
@@ -625,7 +626,12 @@ class KDM {
     // Assigning IDs
     let id = 0x0015;
 
-    this.types.filter((t) => t[0] === -1).forEach((t) => t[0] = id++);
+    this.types
+      .filter((t) => t[0] === -1)
+      .forEach((t) => {
+        logger.debug(`KDM#prebuild(): assigning ID #${id}`);
+        t[0] = id++;
+      });
 
     // For some obscure reason, kdm_shop.bin assigns IDs in a different order.
     if (this.tables.find((table) => table instanceof ShopListingTable)) {
@@ -633,22 +639,35 @@ class KDM {
         table.arrays
           .filter((a) => a !== table.data)
           .filter((a) => a.entries.length !== 0)
-          .forEach((a) => a.uid.set(id++));
+          .forEach((a) => {
+            logger.debug(`KDM#prebuild(): assigning ID #${id}`);
+            a.uid.set(id++);
+          });
       });
 
-      this.tables.forEach((table) => table.data.uid.set(id++));
+      this.tables.forEach((table) => {
+        logger.debug(`KDM#prebuild(): assigning ID #${id}`);
+        table.data.uid.set(id++);
+      });
     } else {
       this.tables.forEach((table) => {
         table.arrays
           .filter((a) => a !== table.data)
           .filter((a) => a.entries.length !== 0)
-          .forEach((arr) => arr.uid.set(id++));
+          .forEach((arr) => {
+            logger.debug(`KDM#prebuild(): assigning ID #${id}`);
+            arr.uid.set(id++);
+          });
 
+        logger.debug(`KDM#prebuild(): assigning ID #${id}`);
         table.data.uid.set(id++);
       });
     }
 
-    this.parameters.forEach((p) => p.uid.set(id++));
+    this.parameters.forEach((p) => {
+      logger.debug(`KDM#prebuild(): assigning ID #${id}`);
+      p.uid.set(id++);
+    });
   }
 
   public build(): Buffer {
