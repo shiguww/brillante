@@ -1,13 +1,16 @@
 import z from "zod";
 import RBuffer from "#/buffer/r-buffer";
 import assert from "node:assert/strict";
+import KDMArray from "#/kdm/common/array/kdm-array";
 import KDMF32 from "#/kdm/common/primitive/kdm-f32";
 import KDMU32 from "#/kdm/common/primitive/kdm-u32";
 import type KDMEntity from "#/kdm/common/kdm-entity";
 import KDMString from "#/kdm/common/primitive/kdm-string";
+import KDMStructArray from "#/kdm/common/array/kdm-struct-array";
 import KDMF32Parameter from "#/kdm/common/parameter/kdm-f32-parameter";
 import KDMU32Parameter from "#/kdm/common/parameter/kdm-u32-parameter";
 import KDMStringPointer from "#/kdm/common/primitive/kdm-string-pointer";
+import KDMStructArrayPointer from "#/kdm/common/array/kdm-struct-array-pointer";
 
 const IKDM = z.object({
   paramters: z.union([
@@ -29,12 +32,35 @@ class KDM {
   }> = [
       { uid: 0x00, constructor: KDMF32 },
       { uid: 0x01, constructor: KDMU32 },
-      { uid: 0x03, constructor: KDMStringPointer }
+      { uid: 0x03, constructor: KDMStringPointer }, 
+      { uid: 0x0F, constructor: KDMStructArrayPointer }
     ];
 
+  public readonly arrays: Array<KDMArray> = [];
   public readonly sections: Array<number> = [];
   public readonly strings: Array<KDMString> = [];
   public readonly parameters: Array<KDMF32Parameter | KDMU32Parameter> = [];
+
+  public createEntity(data: unknown): KDMEntity {
+    assert(data !== null && typeof data === "object");
+    assert("$typeid" in data);
+
+    const typeid = data.$typeid;
+
+    if (typeid === KDMStructArray.typeid) {
+      return new KDMStructArray(this);
+    }
+
+    if (typeid === KDMF32Parameter.typeid) {
+      return new KDMF32Parameter(this);
+    }
+
+    if (typeid === KDMU32Parameter.typeid) {
+      return new KDMU32Parameter(this);
+    }
+
+    assert.fail();
+  }
 
   private parseHeading(buffer: RBuffer): void {
     assert.equal(buffer.getU32(), KDM.SIGNATURE_0);
@@ -105,7 +131,7 @@ class KDM {
 
   private parseSection4(buffer: RBuffer): void {
     buffer.offset = this.sections.at(4)!;
-    
+
     const count = buffer.getU32();
     const names: Array<KDMStringPointer> = [];
 
@@ -128,7 +154,7 @@ class KDM {
     buffer.offset = this.sections.at(6)!;
     const count = buffer.getU32();
 
-    for(let i = 0; i < count; i += 1) { }
+    for (let i = 0; i < count; i += 1) { }
   }
 
   private parseSection7(buffer: RBuffer): void {

@@ -8,17 +8,12 @@ import KDMU16 from "#/kdm/common/primitive/kdm-u16";
 import KDMU32 from "#/kdm/common/primitive/kdm-u32";
 import KDMStringPointer from "#/kdm/common/primitive/kdm-string-pointer";
 
-const IKDMU32Parameter = z.object({
-  value: KDMU32.schema,
-  unknown0: KDMU32.schema,
-  name: KDMStringPointer.schema,
-  _: z.literal("KDMU32Parameter").default("KDMU32Parameter")
-});
-
-type IKDMU32Parameter = z.infer<typeof IKDMU32Parameter>;
-
 class KDMU32Parameter extends KDMEntity<IKDMU32Parameter> {
-  public static readonly schema = IKDMU32Parameter;
+  public static readonly typeid = "KDMU32Parameter";
+
+  public static get schema(): typeof IKDMU32Parameter {
+    return IKDMU32Parameter;
+  };
   
   public readonly uid = new KDMU16(this.kdm);
   public readonly value = new KDMU32(this.kdm);
@@ -82,5 +77,14 @@ class KDMU32Parameter extends KDMEntity<IKDMU32Parameter> {
     this.value.parse(buffer);
   }
 }
+
+const IKDMU32Parameter = z.object({
+  value: KDMU32.schema,
+  unknown0: KDMU32.schema,
+  name: KDMStringPointer.schema,
+  $typeid: z.literal(KDMU32Parameter.typeid).default(KDMU32Parameter.typeid)
+});
+
+type IKDMU32Parameter = z.infer<typeof IKDMU32Parameter>;
 
 export default KDMU32Parameter;

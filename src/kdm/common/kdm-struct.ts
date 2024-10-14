@@ -4,7 +4,11 @@ import KDMEntity from "#/kdm/common/kdm-entity";
 import KDMPadding from "#/kdm/common/padding/kdm-padding";
 import type KDMStringPointer from "#/kdm/common/primitive/kdm-string-pointer";
 
-abstract class KDMStruct<T = unknown> extends KDMEntity<T> {
+interface IKDMStruct {
+  $type_id: string;
+}
+
+abstract class KDMStruct<T extends IKDMStruct = IKDMStruct> extends KDMEntity<T> {
   public abstract signature0: number;
   public abstract signature1: number;
 
