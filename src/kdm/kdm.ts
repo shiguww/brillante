@@ -11,15 +11,35 @@ import KDMF32Parameter from "#/kdm/common/parameter/kdm-f32-parameter";
 import KDMU32Parameter from "#/kdm/common/parameter/kdm-u32-parameter";
 import KDMStringPointer from "#/kdm/common/primitive/kdm-string-pointer";
 import KDMStructArrayPointer from "#/kdm/common/array/kdm-struct-array-pointer";
+import MapData from "#/kdm/mapdata/mapdata";
+import KDMStructArrayPointerArray from "./common/array/kdm-struct-array-pointer-array";
+
+const ALL_STRUCTS = [
+  MapData
+] as const;
 
 const IKDM = z.object({
-  paramters: z.union([
+  parameters: z.union([
     KDMF32Parameter.schema,
     KDMU32Parameter.schema
+  ]).array(),
+  arrays: z.union([
+    KDMStructArray.schema(),
+    KDMStructArray.schema(),
+  ]).array(),
+  tables: z.union([
+    z.object({ name: z.literal("mapDataTable"), table: KDMStructArrayPointerArray.schema }),
+    z.object({ name: z.literal("mapDataTable"), table: KDMStructArrayPointerArray.schema })
   ]).array()
 });
 
 type IKDM = z.infer<typeof IKDM>;
+type IKDMTableName = IKDM["tables"][number]["name"];
+
+interface KDMTable {
+  name: string;
+  table: KDMArray;
+}
 
 class KDM {
   private static readonly SECTION_COUNT = 8;
@@ -32,10 +52,12 @@ class KDM {
   }> = [
       { uid: 0x00, constructor: KDMF32 },
       { uid: 0x01, constructor: KDMU32 },
-      { uid: 0x03, constructor: KDMStringPointer }, 
+      { uid: 0x03, constructor: KDMStringPointer },
       { uid: 0x0F, constructor: KDMStructArrayPointer }
     ];
 
+  private _counter = 0;
+  public readonly tables: Array<KDMTable> = [];
   public readonly arrays: Array<KDMArray> = [];
   public readonly sections: Array<number> = [];
   public readonly strings: Array<KDMString> = [];
@@ -47,16 +69,27 @@ class KDM {
 
     const typeid = data.$typeid;
 
-    if (typeid === KDMStructArray.typeid) {
-      return new KDMStructArray(this);
-    }
 
-    if (typeid === KDMF32Parameter.typeid) {
+    // Global
+    if (typeid === "KDMF32Parameter") {
       return new KDMF32Parameter(this);
     }
 
-    if (typeid === KDMU32Parameter.typeid) {
+    if (typeid === "KDMU32Parameter") {
       return new KDMU32Parameter(this);
+    }
+
+    if (typeid === "KDMStructArray") {
+      return new KDMStructArray(this);
+    }
+
+    if (typeid === "KDMStructArrayPointerArray") {
+      return new KDMStructArrayPointerArray(this);
+    }
+
+    // kdm_mapdata.bin
+    if (typeid === "MapData") {
+      return new MapData(this);
     }
 
     assert.fail();
@@ -133,28 +166,93 @@ class KDM {
     buffer.offset = this.sections.at(4)!;
 
     const count = buffer.getU32();
-    const names: Array<KDMStringPointer> = [];
 
     for (let i = 0; i < count; i += 1) {
-      const name = new KDMStringPointer(this);
-      names.push(name);
+      const uid = buffer.getU16();
+      const size = buffer.getU16();
 
-      name.parse(buffer);
+      const fields: number[] = [];
+      const unknownSection4Value0 = buffer.getU32();
+      const unknownSection4Value1 = buffer.getU32();
+
+      for (let j = 0; j < size; j += 1) {
+        fields.push(buffer.getU32());
+      }
+
+      const constructor = ALL_STRUCTS.find((constructor) => {
+        const instance = new constructor(this);
+
+        return (
+          instance.realfields.length === size &&
+          instance.unknownSection4Value0 === unknownSection4Value0 &&
+          instance.unknownSection4Value1 === unknownSection4Value1
+        );
+      });
+
+      assert(constructor !== undefined);
+      this.entities.push({ uid, constructor });
     }
+  }
+
+  private createTable(_name: string): KDMArray {
+    const name = _name as IKDMTableName;
+
+    if (name === "mapDataTable") {
+      return new KDMStructArrayPointerArray(this)
+        .hasNULLTerminator();
+    }
+
+    assert.fail();
+  }
+
+  private parseArray(buffer: RBuffer): KDMArray {
+    let array: null | KDMArray = null;
+    buffer.offset += 2 * RBuffer.U16_SIZE;
+
+    const tid = buffer.getU16();
+    buffer.offset -= 3 * RBuffer.U16_SIZE;
+
+    if (tid >= 0x0015) {
+      array = new KDMStructArray(this);
+    } else {
+      const constructor = this.entities.find((e) => e.uid === tid)?.constructor;
+      assert(constructor !== undefined);
+
+      if (constructor === KDMStructArrayPointer) {
+        array = new KDMStructArrayPointerArray(this);
+      }
+    }
+
+    assert(array !== null);
+    this.arrays.push(array);
+
+    array.parse(buffer);
+    return array;
   }
 
   private parseSection5(buffer: RBuffer): void {
     buffer.offset = this.sections.at(5)!;
     const count = buffer.getU32();
 
-    for (let i = 0; i < count; i += 1) { }
+    for (let i = 0; i < count; i += 1) {
+      this.parseArray(buffer);
+    }
   }
 
   private parseSection6(buffer: RBuffer): void {
     buffer.offset = this.sections.at(6)!;
-    const count = buffer.getU32();
 
-    for (let i = 0; i < count; i += 1) { }
+    const count = buffer.getU32();
+    const names: Array<string> = [];
+
+    for (let i = 0; i < count; i += 1) {
+      const name = new KDMStringPointer(this);
+      names.push(name.parse(buffer).get() || "");
+    }
+
+    names.forEach((name) => this.tables.push({
+      name: name, table: this.createTable(name).parse(buffer)
+    }));
   }
 
   private parseSection7(buffer: RBuffer): void {
@@ -182,8 +280,17 @@ class KDM {
 
   public get(): IKDM {
     return IKDM.parse({
-      parameters: this.parameters.map((p) => p.get())
+      parameters: this.parameters.map((p) => p.get()),
+      arrays: this.arrays.map((a) => a.get()),
+      tables: this.tables.map((t) => ({
+        name: t.name,
+        table: t.table.get()
+      }))
     });
+  }
+
+  public generateID(): string {
+    return `refkey-${this._counter++}`;
   }
 }
 

@@ -12,6 +12,10 @@ const REF_NULL = "ref: NULL";
 class KDMStructArrayPointer extends KDMEntity<IKDMStructArrayPointer> {
   private _reference: string = REF_NULL;
 
+  public static get schema(): typeof IKDMStructArrayPointer {
+    return IKDMStructArrayPointer;
+  }
+
   public constructor(kdm: KDM) {
     super(kdm, IKDMStructArrayPointer);
   }
@@ -63,9 +67,16 @@ class KDMStructArrayPointer extends KDMEntity<IKDMStructArrayPointer> {
 
   protected override _parse(buffer: RBuffer): void {
     const pointer = buffer.getU32();
-    const array = this.kdm.arrays.find((arr) => arr.offset !== null && ((arr.offset - KDMStructArray.HEADING_SIZE) === pointer));
 
-    if (array == undefined) {
+    if (pointer === 0) {
+      this.reference = REF_NULL;
+      return;
+    }
+
+    const array = this.kdm.arrays
+      .find((arr) => arr.offset !== null && ((arr.offset + KDMStructArray.HEADING_SIZE) === pointer));
+
+    if (array === undefined) {
       this.reference = REF_NULL;
       return;
     }

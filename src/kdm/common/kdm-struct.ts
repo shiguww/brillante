@@ -1,16 +1,17 @@
+import z from "zod";
 import type RBuffer from "#/buffer/r-buffer";
 import type WBuffer from "#/buffer/w-buffer";
 import KDMEntity from "#/kdm/common/kdm-entity";
 import KDMPadding from "#/kdm/common/padding/kdm-padding";
 import type KDMStringPointer from "#/kdm/common/primitive/kdm-string-pointer";
 
-interface IKDMStruct {
-  $type_id: string;
-}
-
 abstract class KDMStruct<T extends IKDMStruct = IKDMStruct> extends KDMEntity<T> {
-  public abstract signature0: number;
-  public abstract signature1: number;
+  public abstract unknownSection4Value0: number;
+  public abstract unknownSection4Value1: number;
+
+  public static get baseschema(): typeof IKDMStruct {
+    return IKDMStruct;
+  }
 
   public abstract get fields(): Array<KDMEntity>;
 
@@ -35,4 +36,9 @@ abstract class KDMStruct<T extends IKDMStruct = IKDMStruct> extends KDMEntity<T>
   }
 }
 
+const IKDMStruct = z.object({
+  $type_id: z.string()
+});
+
+type IKDMStruct = z.infer<typeof IKDMStruct>;
 export default KDMStruct;

@@ -10,8 +10,6 @@ import KDMU32 from "#/kdm/common/primitive/kdm-u32";
 import KDMStringPointer from "#/kdm/common/primitive/kdm-string-pointer";
 
 class KDMF32Parameter extends KDMEntity<IKDMF32Parameter> {
-  public static readonly typeid = "KDMF32Parameter";
-
   public static get schema(): typeof IKDMF32Parameter {
     return IKDMF32Parameter;
   }
@@ -83,7 +81,7 @@ const IKDMF32Parameter = z.object({
   value: KDMF32.schema,
   unknown0: KDMU32.schema,
   name: KDMStringPointer.schema,
-  $typeid: z.literal(KDMF32Parameter.typeid).default(KDMF32Parameter.typeid)
+  $typeid: z.literal("KDMF32Parameter").default("KDMF32Parameter")
 });
 
 type IKDMF32Parameter = z.infer<typeof IKDMF32Parameter>;
