@@ -6,6 +6,7 @@ import type RBuffer from "#/buffer/r-buffer";
 import KDMEntity from "#/kdm/common/kdm-entity";
 import KDMStructArray from "#/kdm/common/array/kdm-struct-array";
 import KDMStringPointer from "#/kdm/common/primitive/kdm-string-pointer";
+import type KDMArray from "./kdm-array";
 
 const REF_NULL = "ref: NULL";
 
@@ -28,16 +29,28 @@ class KDMStructArrayPointer extends KDMEntity<IKDMStructArrayPointer> {
     this._reference = ref;
   }
 
+  public override get arrays(): Array<KDMArray> {
+    if(this.reference === REF_NULL) {
+      return [];
+    }
+
+    return this.array.arrays;
+  }
+
   public override get sizeof(): number {
     return WBuffer.U32_SIZE;
   }
 
   public override get strings(): Array<KDMStringPointer> {
+    if(this.reference === REF_NULL) {
+      return [];
+    }
+
     return this.array.strings;
   }
 
   private get array(): KDMStructArray {
-    const array = this.kdm.arrays.find((arr) => arr.refkey == this.reference);
+    const array = this.kdm.arrays.find((arr) => arr.refkey === this.reference.split("ref: ").at(1));
     assert(array instanceof KDMStructArray);
 
     return array;

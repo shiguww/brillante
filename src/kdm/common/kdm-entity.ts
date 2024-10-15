@@ -3,6 +3,7 @@ import type KDM from "#/kdm/kdm";
 import assert from "node:assert/strict";
 import type RBuffer from "#/buffer/r-buffer";
 import type WBuffer from "#/buffer/w-buffer";
+import type KDMArray from "#/kdm/common/array/kdm-array";
 import type KDMStringPointer from "#/kdm/common/primitive/kdm-string-pointer";
 
 abstract class KDMEntity<T = unknown> {
@@ -17,6 +18,7 @@ abstract class KDMEntity<T = unknown> {
   }
 
   public abstract get sizeof(): number;
+  public abstract get arrays(): Array<KDMArray>;
   public abstract get strings(): Array<KDMStringPointer>;
 
   protected abstract _get(): T;

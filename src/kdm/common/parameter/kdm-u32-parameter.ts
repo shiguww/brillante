@@ -7,6 +7,7 @@ import KDMEntity from "#/kdm/common/kdm-entity";
 import KDMU16 from "#/kdm/common/primitive/kdm-u16";
 import KDMU32 from "#/kdm/common/primitive/kdm-u32";
 import KDMStringPointer from "#/kdm/common/primitive/kdm-string-pointer";
+import type KDMArray from "../array/kdm-array";
 
 class KDMU32Parameter extends KDMEntity<IKDMU32Parameter> {
   public static get schema(): typeof IKDMU32Parameter {
@@ -23,6 +24,10 @@ class KDMU32Parameter extends KDMEntity<IKDMU32Parameter> {
     super(kdm, IKDMU32Parameter);
   }
 
+  public override get arrays(): Array<KDMArray> {
+    return [];
+  }
+ 
   public override get sizeof(): number {
     return this.uid.sizeof
       + this.typeid.sizeof

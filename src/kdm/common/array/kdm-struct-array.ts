@@ -39,8 +39,10 @@ class KDMStructArray extends KDMArray {
 
   public override get strings(): Array<KDMStringPointer> {
     if (this.nullTerminatorFlag) {
-      return this.entries.map((e) => e.strings)
-        .flat().concat(this.element.strings);
+      return [
+        ...this.entries.map((e) => e.strings).flat(),
+        ...this.element.strings
+      ];
     }
 
     return this.entries.map((e) => e.strings).flat();
@@ -78,8 +80,8 @@ class KDMStructArray extends KDMArray {
 
     this.tid.set(tid);
 
-    this.size0.set(this.sizeof / 4);
-    this.size1.set((this.sizeof / this.element.sizeof) * this.element.realfields.length);
+    this.size0.set((this.sizeof - KDMStructArray.HEADING_SIZE) / 4);
+    this.size1.set(((this.sizeof - KDMStructArray.HEADING_SIZE)/ this.element.sizeof) * this.element.realfields.length);
   }
 
   protected override _build(buffer: WBuffer): void {

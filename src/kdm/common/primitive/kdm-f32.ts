@@ -4,6 +4,7 @@ import WBuffer from "#/buffer/w-buffer";
 import type RBuffer from "#/buffer/r-buffer";
 import KDMEntity from "#/kdm/common/kdm-entity";
 import type KDMStringPointer from "#/kdm/common/primitive/kdm-string-pointer";
+import type KDMArray from "../array/kdm-array";
 
 const IKDMF32 = z.number();
 type IKDMF32 = z.infer<typeof IKDMF32>;
@@ -25,6 +26,10 @@ class KDMF32 extends KDMEntity<IKDMF32> {
   }
 
   public override get strings(): Array<KDMStringPointer> {
+    return [];
+  }
+
+  public override get arrays(): Array<KDMArray> {
     return [];
   }
 

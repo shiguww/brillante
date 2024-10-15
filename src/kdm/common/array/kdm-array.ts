@@ -18,6 +18,13 @@ abstract class KDMArray<T = unknown> extends KDMEntity<IKDMArray<T>> {
   public readonly size0 = new KDMU16(this.kdm);
   public readonly size1 = new KDMU16(this.kdm);
 
+  public override get arrays(): Array<KDMArray> {
+    return [
+      ...this.entries.map((e) => e.arrays).flat(),
+      this
+    ];
+  }
+
   public hasNULLTerminator(): this {
     this.nullTerminatorFlag = true;
     return this;

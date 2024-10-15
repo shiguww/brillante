@@ -4,6 +4,7 @@ import WBuffer from "#/buffer/w-buffer";
 import type RBuffer from "#/buffer/r-buffer";
 import KDMEntity from "#/kdm/common/kdm-entity";
 import type KDMStringPointer from "#/kdm/common/primitive/kdm-string-pointer";
+import type KDMArray from "../array/kdm-array";
 
 const IKDMU16 = z.number().int();
 type IKDMU16 = z.infer<typeof IKDMU16>;
@@ -26,6 +27,10 @@ class KDMU16 extends KDMEntity<IKDMU16> {
 
   public override get sizeof(): number {
     return WBuffer.U16_SIZE;
+  }
+  
+  public override get arrays(): Array<KDMArray> {
+    return [];
   }
 
   public override get strings(): Array<KDMStringPointer> {

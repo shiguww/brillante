@@ -62,8 +62,8 @@ class KDMStructArrayPointerArray extends KDMArray<IKDMStructArrayPointer> {
 
     this.tid.set(tid);
 
-    this.size0.set(this.sizeof / 4);
-    this.size1.set(this.sizeof / 4);
+    this.size0.set((this.sizeof - KDMStructArrayPointerArray.HEADING_SIZE) / 4);
+    this.size1.set((this.sizeof - KDMStructArrayPointerArray.HEADING_SIZE) / 4);
   }
 
   protected override _build(buffer: WBuffer): void {
@@ -97,8 +97,8 @@ class KDMStructArrayPointerArray extends KDMArray<IKDMStructArrayPointer> {
     assert(constructor === KDMStructArrayPointer);
 
     const count = (this.nullTerminatorFlag
-      ? (this.size0.get() / this.element.sizeof) - 1
-      : this.size0.get() / this.element.sizeof);
+      ? this.size0.get() - 1
+      : this.size0.get());
 
     for (let i = 0; i < count; i += 1) {
       const instance = new KDMStructArrayPointer(this.kdm);

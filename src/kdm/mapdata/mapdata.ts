@@ -6,6 +6,7 @@ import KDMEntity from "#/kdm/common/kdm-entity";
 import KDMStruct from "#/kdm/common/kdm-struct";
 import KDMU32 from "#/kdm/common/primitive/kdm-u32";
 import KDMStringPointer from "#/kdm/common/primitive/kdm-string-pointer";
+import type KDMArray from "../common/array/kdm-array";
 
 class MapDataBackground extends KDMEntity<IMapDataBackground> {
   private static readonly COLOR_TEXTURE = "<color>";
@@ -19,6 +20,10 @@ class MapDataBackground extends KDMEntity<IMapDataBackground> {
 
   public constructor(kdm: KDM) {
     super(kdm, IMapDataBackground);
+  }
+
+  public override get arrays(): Array<KDMArray> {
+    return [];
   }
 
   public override get sizeof(): number {

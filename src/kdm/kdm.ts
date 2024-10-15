@@ -13,6 +13,8 @@ import KDMU32Parameter from "#/kdm/common/parameter/kdm-u32-parameter";
 import KDMStringPointer from "#/kdm/common/primitive/kdm-string-pointer";
 import KDMStructArrayPointer from "#/kdm/common/array/kdm-struct-array-pointer";
 import KDMStructArrayPointerArray from "./common/array/kdm-struct-array-pointer-array";
+import WBuffer from "#/buffer/w-buffer";
+import KDMStruct from "./common/kdm-struct";
 
 const ALL_STRUCTS = [
   MapData
@@ -43,6 +45,7 @@ interface KDMTable {
 
 class KDM {
   private static readonly SECTION_COUNT = 8;
+  private static readonly HEADING_SIZE = 40;
   private static readonly SIGNATURE_0 = 0x524D444B;
   private static readonly SIGNATURE_1 = 0x00010100;
 
@@ -71,7 +74,7 @@ class KDM {
 
     assert(
       "_metadata" in data &&
-      data._metadata !== null && 
+      data._metadata !== null &&
       typeof data._metadata === "object"
     );
 
@@ -290,15 +293,192 @@ class KDM {
     return this;
   }
 
+  private buildHeading(buffer: WBuffer): void {
+    assert.equal(this.sections.length, KDM.SECTION_COUNT);
+
+    buffer.setU32(KDM.SIGNATURE_0);
+    buffer.setU32(KDM.SIGNATURE_1);
+
+    this.sections.forEach((section) => buffer.setU32(section / 4));
+  }
+
+  private buildSection0(buffer: WBuffer): void {
+    this.sections.push(buffer.offset);
+
+    buffer.setU32(this.strings.length);
+    this.strings.forEach((s) => s.build(buffer));
+  }
+
+  private buildSection1(buffer: WBuffer): void {
+    this.sections.push(buffer.offset);
+    buffer.setU32(0);
+  }
+
+  private buildSection2(buffer: WBuffer): void {
+    this.sections.push(buffer.offset);
+    buffer.setU32(0);
+  }
+
+  private buildSection3(buffer: WBuffer): void {
+    this.sections.push(buffer.offset);
+
+    buffer.setU32(this.parameters.length);
+    this.parameters.forEach((p) => p.build(buffer));
+  }
+
+  private buildSection4(buffer: WBuffer): void {
+    this.sections.push(buffer.offset);
+
+    const entities = this.entities.filter((e) => e.uid >= 0x15);
+    buffer.setU32(entities.length);
+
+    entities.forEach((e) => {
+      const instance = new e.constructor(this);
+      assert(instance instanceof KDMStruct);
+
+      buffer.setU16(e.uid);
+      buffer.setU16(instance.realfields.length);
+
+      buffer.setU32(instance.unknownSection4Value0);
+      buffer.setU32(instance.unknownSection4Value1);
+
+      instance.realfields.forEach((f) => {
+        const uid = this.entities.find((e) => e.constructor === f.constructor)?.uid;
+        assert(uid !== undefined);
+
+        buffer.setU32(uid);
+      });
+    });
+  }
+
+  private buildSection5(buffer: WBuffer): void {
+    this.sections.push(buffer.offset);
+    buffer.setU32(this.arrays.length);
+
+    this.arrays.forEach((arr) => arr.build(buffer));
+  }
+
+  private buildSection6(buffer: WBuffer): void {
+    this.sections.push(buffer.offset);
+    buffer.setU32(this.tables.length);
+
+    this.tables.map(({name}) => new KDMStringPointer(this).set(name).build(buffer));
+    this.tables.map(({table}) => table.build(buffer));
+  }
+
+  private buildSection7(buffer: WBuffer): void {
+    this.sections.push(buffer.offset);
+    buffer.setU32(0);
+  }
+
+  private prebuild(): void {
+    /* ------------------- */
+
+    const registerStringIfNotExists = ((_string: string | KDMStringPointer) => {
+      const string = _string instanceof KDMStringPointer ? _string.string : _string;
+      
+      if (string !== "" && !this.strings.find((s) => s.string === string)) {
+        this.strings.push(new KDMString(this).set(string));
+      }
+    });
+
+    this.arrays.map((arr) => arr.strings).flat().forEach((s) => registerStringIfNotExists(s));
+    this.tables.forEach(({ name }) => registerStringIfNotExists(name));
+
+    this.parameters.map((p) => p.strings).flat().forEach((s) => registerStringIfNotExists(s));
+
+    /* ------------------- */
+
+    let uid = 0x15;
+    const assignUID = (() => uid++);
+
+    this.entities.filter((e) => e.uid === -1).forEach((e) => e.uid = assignUID());
+
+    this.arrays.map((arr) => arr.arrays).flat().forEach((arr) => arr.uid.set(assignUID()));
+    this.tables.forEach(({ table }) => table.uid.set(assignUID()));
+    this.parameters.forEach((p) => p.uid.set(assignUID()));
+  }
+
+  public build(): Buffer {
+    const buffer = WBuffer.new(KDM.HEADING_SIZE);
+    buffer.offset = KDM.HEADING_SIZE;
+
+    this.prebuild();
+    this.buildSection0(buffer);
+    this.buildSection1(buffer);
+    this.buildSection2(buffer);
+    this.buildSection3(buffer);
+    this.buildSection4(buffer);
+    this.buildSection5(buffer);
+    this.buildSection6(buffer);
+    this.buildSection7(buffer);
+
+    buffer.offset = 0;
+    this.buildHeading(buffer);
+
+    return buffer.buffer;
+  }
+
   public get(): IKDM {
+    const parameters = this.parameters.filter((p) => ![
+      "mapDataTableLen"
+    ].includes(p.name.string))
+
     return IKDM.parse({
-      parameters: this.parameters.map((p) => p.get()),
+      parameters: parameters.map((p) => p.get()),
       arrays: this.arrays.map((a) => a.get()),
       tables: this.tables.map((t) => ({
         name: t.name,
         table: t.table.get()
       }))
     });
+  }
+
+  public set(_data: unknown): this {
+    const kdm = IKDM.parse(_data);
+
+    for(const {name} of kdm.tables) {
+      if (name === "mapDataTable") {
+        this.entities.push({
+          uid: -1,
+          constructor: MapData
+        });
+      }
+    }
+
+    for (const data of kdm.parameters) {
+      const parameter = this.createEntity(data);
+      assert(parameter instanceof KDMF32Parameter || parameter instanceof KDMU32Parameter);
+
+      this.parameters.push(parameter);
+      parameter.set(data);
+    }
+
+    for (const data of kdm.arrays) {
+      const array = this.createEntity(data);
+      assert(array instanceof KDMArray);
+
+      this.arrays.push(array);
+      array.set(data);
+    }
+
+    for (const data of kdm.tables) {
+      this.tables.push({
+        name: data.name,
+        table: this.createTable(data.name).set(data.table)
+      });
+
+      if(data.name === "mapDataTable") {
+        this.parameters.push(new KDMU32Parameter(this).set({
+          unknown0: 0,
+          name: "mapDataTableLen",
+          value: data.table.entries.length + 1,
+          _metadata: ({constructor: "KDMU32Parameter"})
+        }));
+      }
+    }
+
+    return this;
   }
 
   public generateID(): string {
