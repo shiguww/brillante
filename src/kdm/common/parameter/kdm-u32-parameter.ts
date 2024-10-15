@@ -12,7 +12,7 @@ class KDMU32Parameter extends KDMEntity<IKDMU32Parameter> {
   public static get schema(): typeof IKDMU32Parameter {
     return IKDMU32Parameter;
   };
-  
+
   public readonly uid = new KDMU16(this.kdm);
   public readonly value = new KDMU32(this.kdm);
   public readonly typeid = new KDMU16(this.kdm);
@@ -39,7 +39,8 @@ class KDMU32Parameter extends KDMEntity<IKDMU32Parameter> {
     return IKDMU32Parameter.parse({
       name: this.name.get(),
       value: this.value.get(),
-      unknown0: this.unknown0.get()
+      unknown0: this.unknown0.get(),
+      _metadata: { constructor: "KDMU32Parameter" }
     });
   }
 
@@ -61,7 +62,7 @@ class KDMU32Parameter extends KDMEntity<IKDMU32Parameter> {
 
     this.name.build(buffer);
     this.unknown0.build(buffer);
-    
+
     this.value.build(buffer);
   }
 
@@ -77,10 +78,12 @@ class KDMU32Parameter extends KDMEntity<IKDMU32Parameter> {
 }
 
 const IKDMU32Parameter = z.object({
+  _metadata: z.object({
+    constructor: z.literal("KDMU32Parameter")
+  }),
   value: KDMU32.schema,
   unknown0: KDMU32.schema,
-  name: KDMStringPointer.schema,
-  $typeid: z.literal("KDMU32Parameter").default("KDMU32Parameter")
+  name: KDMStringPointer.schema
 });
 
 type IKDMU32Parameter = z.infer<typeof IKDMU32Parameter>;

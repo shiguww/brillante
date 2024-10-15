@@ -4,8 +4,6 @@ import KDMStruct from "#/kdm/common/kdm-struct";
 import KDMStringPointer from "#/kdm/common/primitive/kdm-string-pointer";
 
 class MapData extends KDMStruct<IMapData> {
-  public static readonly typeid = "MapData";
-
   public static get schema(): typeof IMapData {
     return IMapData;
   }
@@ -45,7 +43,8 @@ class MapData extends KDMStruct<IMapData> {
 
   protected override _get(): IMapData {
     return IMapData.parse({
-      name: this.name.get()
+      name: this.name.get(),
+      _metadata: { constructor: "MapData" }
     });
   }
 
@@ -55,8 +54,10 @@ class MapData extends KDMStruct<IMapData> {
 }
 
 const IMapData = z.object({
+  _metadata: z.object({
+    constructor: z.literal("MapData")
+  }),
   name: KDMStringPointer.schema,
-  $type_id: z.literal(MapData.typeid).default(MapData.typeid)
 });
 
 type IMapData = z.infer<typeof IMapData>;

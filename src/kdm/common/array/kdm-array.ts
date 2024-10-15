@@ -25,15 +25,19 @@ abstract class KDMArray<T = unknown> extends KDMEntity<IKDMArray<T>> {
 }
 
 const IKDMArray = <T>(element: z.ZodType<T, any, any>) => z.object({
-  $type_id: z.string(),
-  $reference_key: z.string(),
+  _metadata: z.object({
+    refkey: z.string(),
+    constructor: z.string()
+  }),
   entries: element.array()
 });
 
 interface IKDMArray<T = unknown> {
-  $type_id: string;
+  _metadata: {
+    refkey: string;
+    constructor: string;
+  };
   entries: Array<T>;
-  $reference_key: string;
 }
 
 export default KDMArray;

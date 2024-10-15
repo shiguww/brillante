@@ -37,7 +37,9 @@ abstract class KDMStruct<T extends IKDMStruct = IKDMStruct> extends KDMEntity<T>
 }
 
 const IKDMStruct = z.object({
-  $type_id: z.string()
+  _metadata: z.object({
+    constructor: z.string()
+  })
 });
 
 type IKDMStruct = z.infer<typeof IKDMStruct>;

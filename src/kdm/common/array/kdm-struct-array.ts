@@ -47,42 +47,28 @@ class KDMStructArray extends KDMArray {
   }
 
   protected override _get(): IKDMStructArray {
-    if (this.entries.length === 0) {
-      return IKDMStructArray().parse({
-        entries: [],
-        $reference_key: this.refkey,
-        $element_type_id: this.element.get().$type_id
-      });
-    }
+    assert(this._elementConstructor !== null);
 
     return IKDMStructArray().parse({
-      $reference_key: this.refkey,
+      _metadata: ({
+        refkey: this.refkey,
+        constructor: "KDMStructArray",
+        element_constructor: this._elementConstructor.name
+      }),
       entries: this.entries.map((e) => e.get())
     });
   }
 
   protected override _set(array: IKDMStructArray): void {
-    if (array.entries.length !== 0) {
-      const constructor = this.kdm.entities.map((e) => e.constructor).find((constructor) => {
-        const instance = new constructor(this.kdm) as KDMStruct;
-        return (instance instanceof KDMStruct && instance.get().$type_id === array.entries.at(0)!.$type_id);
-      });
+    const constructor = this.kdm.entities.map((e) => e.constructor).find((constructor) => {
+      const instance = new constructor(this.kdm) as KDMStruct;
+      return (instance instanceof KDMStruct && instance.get()._metadata.constructor === array._metadata.element_constructor);
+    });
 
-      assert(constructor !== undefined);
-      this._elementConstructor = constructor as KDMStructConstructor;
-    }
+    assert(constructor !== undefined);
+    this._elementConstructor = constructor as KDMStructConstructor;
 
-    if (array.$element_type_id !== undefined) {
-      const constructor = this.kdm.entities.map((e) => e.constructor).find((constructor) => {
-        const instance = new constructor(this.kdm) as KDMStruct;
-        return (instance instanceof KDMStruct && instance.get().$type_id === array.$element_type_id);
-      });
-
-      assert(constructor !== undefined);
-      this._elementConstructor = constructor as KDMStructConstructor;
-    }
-
-    this.refkey = array.$reference_key;
+    this.refkey = array._metadata.refkey;
     this.entries = array.entries.map((data) => new this._elementConstructor!(this.kdm).set(data));
   }
 
@@ -151,17 +137,20 @@ class KDMStructArray extends KDMArray {
 
 type IKDMStruct = z.infer<typeof KDMStruct.baseschema>;
 
-const IKDMStructArray = <T extends IKDMStruct = IKDMStruct>(element?: z.ZodType<T, any, any>) => KDMArray.baseschema(element || KDMStruct.baseschema).extend({
-  $element_type_id: z.string().optional(),
-  $type_id: z.literal("KDMStructArray").default("KDMStructArray")
-});
-
+const IKDMStructArray = <T extends IKDMStruct = IKDMStruct>(element?: z.ZodType<T, any, any>) => KDMArray.baseschema(element || KDMStruct.baseschema.passthrough()).and(z.object({
+  _metadata: z.object({
+    element_constructor: z.string(),
+    constructor: z.literal("KDMStructArray")
+  })
+}));
 
 interface IKDMStructArray {
-  $type_id: string;
-  $reference_key: string;
-  $element_type_id?: string;
-  entries: Array<{ $type_id: string; }>;
+  _metadata: {
+    refkey: string;
+    constructor: string;
+    element_constructor: string;
+  };
+  entries: Array<z.infer<typeof KDMStruct.baseschema>>;
 }
 
 export default KDMStructArray;

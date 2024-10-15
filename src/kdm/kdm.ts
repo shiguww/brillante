@@ -1,6 +1,7 @@
 import z from "zod";
 import RBuffer from "#/buffer/r-buffer";
 import assert from "node:assert/strict";
+import MapData from "#/kdm/mapdata/mapdata";
 import KDMArray from "#/kdm/common/array/kdm-array";
 import KDMF32 from "#/kdm/common/primitive/kdm-f32";
 import KDMU32 from "#/kdm/common/primitive/kdm-u32";
@@ -11,7 +12,6 @@ import KDMF32Parameter from "#/kdm/common/parameter/kdm-f32-parameter";
 import KDMU32Parameter from "#/kdm/common/parameter/kdm-u32-parameter";
 import KDMStringPointer from "#/kdm/common/primitive/kdm-string-pointer";
 import KDMStructArrayPointer from "#/kdm/common/array/kdm-struct-array-pointer";
-import MapData from "#/kdm/mapdata/mapdata";
 import KDMStructArrayPointerArray from "./common/array/kdm-struct-array-pointer-array";
 
 const ALL_STRUCTS = [
@@ -64,31 +64,43 @@ class KDM {
   public readonly parameters: Array<KDMF32Parameter | KDMU32Parameter> = [];
 
   public createEntity(data: unknown): KDMEntity {
-    assert(data !== null && typeof data === "object");
-    assert("$typeid" in data);
+    assert(
+      data !== null &&
+      typeof data === "object"
+    );
 
-    const typeid = data.$typeid;
+    assert(
+      "_metadata" in data &&
+      data._metadata !== null && 
+      typeof data._metadata === "object"
+    );
 
+    assert(
+      "constructor" in data._metadata &&
+      typeof data._metadata.constructor === "string"
+    );
+
+    const constructor = data._metadata.constructor as string;
 
     // Global
-    if (typeid === "KDMF32Parameter") {
+    if (constructor === "KDMF32Parameter") {
       return new KDMF32Parameter(this);
     }
 
-    if (typeid === "KDMU32Parameter") {
+    if (constructor === "KDMU32Parameter") {
       return new KDMU32Parameter(this);
     }
 
-    if (typeid === "KDMStructArray") {
+    if (constructor === "KDMStructArray") {
       return new KDMStructArray(this);
     }
 
-    if (typeid === "KDMStructArrayPointerArray") {
+    if (constructor === "KDMStructArrayPointerArray") {
       return new KDMStructArrayPointerArray(this);
     }
 
     // kdm_mapdata.bin
-    if (typeid === "MapData") {
+    if (constructor === "MapData") {
       return new MapData(this);
     }
 
