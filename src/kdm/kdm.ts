@@ -11,17 +11,22 @@ import KDMStructArray from "#/kdm/common/array/kdm-struct-array";
 import KDMF32Parameter from "#/kdm/common/parameter/kdm-f32-parameter";
 import KDMU32Parameter from "#/kdm/common/parameter/kdm-u32-parameter";
 import KDMStringPointer from "#/kdm/common/primitive/kdm-string-pointer";
-import KDMStructArrayPointer from "#/kdm/common/array/kdm-struct-array-pointer";
+import KDMStructArrayPointer from "#/kdm/common/primitive/kdm-struct-array-pointer";
 import KDMStructArrayPointerArray from "./common/array/kdm-struct-array-pointer-array";
 import WBuffer from "#/buffer/w-buffer";
 import KDMStruct from "./common/kdm-struct";
 import LucieMSG from "./lucie/lucie-msg";
+import KDMStringPointerArrayPointer from "./common/primitive/kdm-string-pointer-array-pointer";
+import ShopListing from "./shop/shop-listing";
+import KDMU16 from "./common/primitive/kdm-u16";
 
 const ALL_STRUCTS = [
   // kdm_mapdata.bin
   MapData,
   // kdm_lucie.bin
-  LucieMSG
+  LucieMSG,
+  // kdm_shop.bin
+  ShopListing
 ] as const;
 
 const IKDM = z.object({
@@ -30,12 +35,23 @@ const IKDM = z.object({
     KDMU32Parameter.schema
   ]).array(),
   arrays: KDMStructArray.schema().array(),
-  tables: z.union([
-    // kdm_mapdata.bin
-    z.object({ name: z.literal("mapDataTable"), table: KDMStructArrayPointerArray.schema }),
-    // kdm_lucie.bin
-    z.object({ name: z.literal("lucieMsgTbl"), table: KDMStructArrayPointerArray.schema })
-  ]).array()
+  tables: z.object({
+    name: z.union([
+      // kdm_mapdata.bin
+      z.literal("mapDataTable"),
+      // kdm_lucie.bin
+      z.literal("lucieMsgTbl"),
+      // kdm_shop.bin
+      z.literal("SHOP_DOR"),
+      z.literal("SHOP_IWA"),
+      z.literal("SHOP_MONO"),
+      z.literal("SHOP_SNOW"),
+      z.literal("SHOP_TOWN"),
+      z.literal("SHOP_KAZAN"),
+      z.literal("SHOP_KOOPA")
+    ]),
+    table: KDMStructArrayPointerArray.schema
+  }).array()
 });
 
 type IKDM = z.infer<typeof IKDM>;
@@ -61,6 +77,8 @@ class KDM {
       { uid: 0x00, constructor: KDMF32 },
       { uid: 0x01, constructor: KDMU32 },
       { uid: 0x03, constructor: KDMStringPointer },
+      { uid: 0x08, constructor: KDMU16 },
+      { uid: 0x0D, constructor: KDMStringPointerArrayPointer },
       { uid: 0x0F, constructor: KDMStructArrayPointer },
       { uid: 0x14, constructor: KDMStructArrayPointerArray }
     ];
@@ -100,6 +118,11 @@ class KDM {
     // kdm_lucie.bin
     if (kind === "LucieMSG") {
       return new LucieMSG(this);
+    }
+
+    // kdm_shop.bin
+    if (kind === "ShopListing") {
+      return new ShopListing(this);
     }
 
     assert.fail();
@@ -216,6 +239,20 @@ class KDM {
     // kdm_lucie.bin
     if (name === "lucieMsgTbl") {
       return new KDMStructArrayPointerArray(this);
+    }
+
+    // kdm_shop.bin
+    if (
+      name === "SHOP_DOR" ||
+      name === "SHOP_IWA" ||
+      name === "SHOP_MONO" ||
+      name === "SHOP_SNOW" ||
+      name === "SHOP_TOWN" ||
+      name === "SHOP_KAZAN" ||
+      name === "SHOP_KOOPA"
+    ) {
+      return new KDMStructArrayPointerArray(this)
+        .hasNULLTerminator();
     }
 
     assert.fail();
@@ -437,20 +474,24 @@ class KDM {
     const kdm = IKDM.parse(_data);
 
     for (const { name } of kdm.tables) {
-      let constructor: null | KDMEntityConstructor = null;
+      let constructors: Array<KDMEntityConstructor> = [];
 
       // kdm_mapdata.bin
       if (name === "mapDataTable") {
-        constructor = MapData;
+        constructors.push(MapData);
       }
 
       // kdm_lucie.bin
       if (name === "lucieMsgTbl") {
-        constructor = LucieMSG;
+        constructors.push(LucieMSG);
       }
 
-      assert(constructor !== null);
-      this.entities.push({ uid: -1, constructor });
+      // kdm_mapdata.bin
+      if (name === "SHOP_DOR") {
+        constructors.push(ShopListing);
+      }
+
+      constructors.forEach((constructor) => this.entities.push({ uid: -1, constructor }));
     }
 
     for (const data of kdm.parameters) {

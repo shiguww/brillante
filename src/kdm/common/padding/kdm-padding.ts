@@ -1,9 +1,15 @@
+import z from "zod";
+import type KDM from "#/kdm/kdm";
 import assert from "node:assert/strict";
 import KDMEntity from "#/kdm/common/kdm-entity";
+import type KDMArray from "#/kdm/common/array/kdm-array";
 import type KDMStringPointer from "#/kdm/common/primitive/kdm-string-pointer";
-import type KDMArray from "../array/kdm-array";
 
 abstract class KDMPadding extends KDMEntity<never> {
+  public constructor(kdm: KDM) {
+    super(kdm, z.never());
+  }
+
   public override get strings(): Array<KDMStringPointer> {
     return [];
   }

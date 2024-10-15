@@ -1,27 +1,29 @@
 import z from "zod";
 import type KDM from "#/kdm/kdm";
-import KDMArray from "./kdm-array";
 import assert from "node:assert/strict";
 import type RBuffer from "#/buffer/r-buffer";
 import type WBuffer from "#/buffer/w-buffer";
+import KDMArray from "#/kdm/common/array/kdm-array";
 import KDMStringPointer from "#/kdm/common/primitive/kdm-string-pointer";
-import KDMStructArrayPointer from "#/kdm/common/primitive/kdm-struct-array-pointer";
 
-type IKDMStructArrayPointer = z.infer<typeof KDMStructArrayPointer.schema>;
+const IKDMStringPointerArray = KDMArray.baseschema(KDMStringPointer.schema).extend({
+  _kind: z.literal("KDMStringPointerArray").default("KDMStringPointerArray")
+});
 
-class KDMStructArrayPointerArray extends KDMArray<IKDMStructArrayPointer> {
-  public static get schema(): typeof IKDMStructArrayPointerArray {
-    return IKDMStructArrayPointerArray;
-  }
+type IKDMStringPointer = z.infer<typeof KDMStringPointer.schema>;
+type IKDMStringPointerArray = z.infer<typeof IKDMStringPointerArray>;
 
-  public override entries: Array<KDMStructArrayPointer> = [];
+class KDMStringPointerArray extends KDMArray<IKDMStringPointer> {
+  public static readonly schema = IKDMStringPointerArray;
+
+  public override entries: Array<KDMStringPointer> = [];
 
   public constructor(kdm: KDM) {
-    super(kdm, IKDMStructArrayPointerArray);
+    super(kdm, KDMStringPointerArray.schema);
   }
 
-  public get element(): KDMStructArrayPointer {
-    return new KDMStructArrayPointer(this.kdm);
+  public get element(): KDMStringPointer {
+    return new KDMStringPointer(this.kdm);
   }
 
   public override get sizeof(): number {
@@ -29,41 +31,36 @@ class KDMStructArrayPointerArray extends KDMArray<IKDMStructArrayPointer> {
       return 0;
     }
 
-    return KDMStructArrayPointerArray.HEADING_SIZE + (this.nullTerminatorFlag
+    return KDMStringPointerArray.HEADING_SIZE + (this.nullTerminatorFlag
       ? this.element.sizeof * (this.entries.length + 1)
       : this.element.sizeof * this.entries.length);
   }
 
   public override get strings(): Array<KDMStringPointer> {
-    if (this.nullTerminatorFlag) {
-      return this.entries.map((e) => e.strings)
-        .flat().concat(this.element.strings);
-    }
-
-    return this.entries.map((e) => e.strings).flat();
+    return this.entries;
   }
 
-  protected override _get(): IKDMStructArrayPointerArray {
-    return IKDMStructArrayPointerArray.parse({
+  protected override _get(): IKDMStringPointerArray {
+    return IKDMStringPointerArray.parse({
       _refkey: this.refkey,
       entries: this.entries.map((e) => e.get())
     });
   }
 
-  protected override _set(array: IKDMStructArrayPointerArray): void {
+  protected override _set(array: IKDMStringPointerArray): void {
     this.refkey = array._refkey;
-    this.entries = array.entries.map((data) => new KDMStructArrayPointer(this.kdm).set(data));
+    this.entries = array.entries.map((data) => new KDMStringPointer(this.kdm).set(data));
   }
 
   private _prebuild(): void {
     // @ts-expect-error - ???
-    const tid = this.kdm.entities.find((e) => e.constructor === KDMStructArrayPointer)?.uid;
+    const tid = this.kdm.entities.find((e) => e.constructor === KDMStringPointer)?.uid;
     assert(tid !== undefined);
 
     this.tid.set(tid);
 
-    this.size0.set((this.sizeof - KDMStructArrayPointerArray.HEADING_SIZE) / 4);
-    this.size1.set((this.sizeof - KDMStructArrayPointerArray.HEADING_SIZE) / 4);
+    this.size0.set((this.sizeof - KDMStringPointerArray.HEADING_SIZE) / 4);
+    this.size1.set((this.sizeof - KDMStringPointerArray.HEADING_SIZE) / 4);
   }
 
   protected override _build(buffer: WBuffer): void {
@@ -94,7 +91,7 @@ class KDMStructArrayPointerArray extends KDMArray<IKDMStructArrayPointer> {
     this.size1.parse(buffer);
 
     const constructor = this.kdm.entities.find((e) => e.uid === this.tid.get())?.constructor;
-    assert(constructor === KDMStructArrayPointer);
+    assert(constructor === KDMStringPointer);
 
     const count = (this.nullTerminatorFlag
       ? this.size0.get() - 1
@@ -113,9 +110,4 @@ class KDMStructArrayPointerArray extends KDMArray<IKDMStructArrayPointer> {
   }
 }
 
-const IKDMStructArrayPointerArray = KDMArray.baseschema(KDMStructArrayPointer.schema).extend({
-  _kind: z.literal("KDMStructArrayPointerArray").default("KDMStructArrayPointerArray")
-});
-
-type IKDMStructArrayPointerArray = z.infer<typeof IKDMStructArrayPointerArray>;
-export default KDMStructArrayPointerArray;
+export default KDMStringPointerArray;

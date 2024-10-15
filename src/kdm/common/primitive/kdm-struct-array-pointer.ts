@@ -6,7 +6,7 @@ import type RBuffer from "#/buffer/r-buffer";
 import KDMEntity from "#/kdm/common/kdm-entity";
 import KDMStructArray from "#/kdm/common/array/kdm-struct-array";
 import KDMStringPointer from "#/kdm/common/primitive/kdm-string-pointer";
-import type KDMArray from "./kdm-array";
+import type KDMArray from "../array/kdm-array";
 
 const REF_NULL = "ref: NULL";
 
