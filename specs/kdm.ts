@@ -46,4 +46,16 @@ describe("KDM", () => {
       expect(data).to.be.deep.equal(built);
     });
   });
+
+  describe("kdm_link_data.bin", () => {
+    test("parsing and building yields the same file", async () => {
+      const data = await fs.readFile("data/Data/kdm_link_data.bin");
+      expectSHA256Checksum(data, "kdm_link_data.bin", "77b8af839061cf8c8427709550f9a7f3760ed23b16a1ce5de101855492c83fa7");
+
+      const parsed = new KDM().parse(data).get();
+      const built = new KDM().set(parsed).build();
+
+      expect(data).to.be.deep.equal(built);
+    });
+  });
 });

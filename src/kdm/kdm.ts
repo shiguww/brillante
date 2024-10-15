@@ -19,6 +19,9 @@ import LucieMSG from "./lucie/lucie-msg";
 import KDMStringPointerArrayPointer from "./common/primitive/kdm-string-pointer-array-pointer";
 import ShopListing from "./shop/shop-listing";
 import KDMU16 from "./common/primitive/kdm-u16";
+import Link from "./link-data/link";
+import LinkData from "./link-data/link-data";
+import KDMStructArrayPointerArrayPointer from "./common/primitive/kdm-struct-array-pointer-array-pointer";
 
 const ALL_STRUCTS = [
   // kdm_mapdata.bin
@@ -26,7 +29,10 @@ const ALL_STRUCTS = [
   // kdm_lucie.bin
   LucieMSG,
   // kdm_shop.bin
-  ShopListing
+  ShopListing,
+  // kdm_link_data.bin
+  Link,
+  LinkData
 ] as const;
 
 const IKDM = z.object({
@@ -34,7 +40,10 @@ const IKDM = z.object({
     KDMF32Parameter.schema,
     KDMU32Parameter.schema
   ]).array(),
-  arrays: KDMStructArray.schema().array(),
+  arrays: z.union([
+    KDMStructArray.schema(),
+    KDMStructArrayPointerArray.schema
+  ]).array(),
   tables: z.object({
     name: z.union([
       // kdm_mapdata.bin
@@ -48,7 +57,9 @@ const IKDM = z.object({
       z.literal("SHOP_SNOW"),
       z.literal("SHOP_TOWN"),
       z.literal("SHOP_KAZAN"),
-      z.literal("SHOP_KOOPA")
+      z.literal("SHOP_KOOPA"),
+      // kdm_link_data.bin
+      z.literal("link_data_all")
     ]),
     table: KDMStructArrayPointerArray.schema
   }).array()
@@ -80,7 +91,7 @@ class KDM {
       { uid: 0x08, constructor: KDMU16 },
       { uid: 0x0D, constructor: KDMStringPointerArrayPointer },
       { uid: 0x0F, constructor: KDMStructArrayPointer },
-      { uid: 0x14, constructor: KDMStructArrayPointerArray }
+      { uid: 0x14, constructor: KDMStructArrayPointerArrayPointer }
     ];
 
   private _counter = 0;
@@ -106,7 +117,7 @@ class KDM {
       return new KDMStructArray(this);
     }
 
-    if(kind === "KDMStructArrayPointer") {
+    if (kind === "KDMStructArrayPointer") {
       return new KDMStructArrayPointer(this);
     }
 
@@ -114,7 +125,7 @@ class KDM {
       return new KDMStructArrayPointerArray(this);
     }
 
-    if(kind === "KDMStringPointerArrayPointer") {
+    if (kind === "KDMStringPointerArrayPointer") {
       return new KDMStringPointerArrayPointer(this);
     }
 
@@ -131,6 +142,15 @@ class KDM {
     // kdm_shop.bin
     if (kind === "ShopListing") {
       return new ShopListing(this);
+    }
+
+    // kdm_link_data.bin
+    if (kind === "Link") {
+      return new Link(this);
+    }
+
+    if (kind === "LinkData") {
+      return new LinkData(this);
     }
 
     assert.fail();
@@ -263,6 +283,11 @@ class KDM {
         .hasNULLTerminator();
     }
 
+    // kdm_link_data.bin
+    if (name === "link_data_all") {
+      return new KDMStructArrayPointerArray(this);
+    }
+
     assert.fail();
   }
 
@@ -282,8 +307,6 @@ class KDM {
       if (constructor === KDMStructArrayPointer) {
         array = new KDMStructArrayPointerArray(this);
       }
-
-      console.log(constructor.name);
     }
 
     assert(array !== null);
@@ -382,7 +405,7 @@ class KDM {
 
     entities.forEach((e) => {
       const instance = new e.constructor(this);
-      assert(instance instanceof KDMStruct);
+      assert(instance instanceof KDMStruct, `${instance.constructor.name}`);
 
       buffer.setU16(e.uid);
       buffer.setU16(instance.realfields.length);
@@ -440,11 +463,29 @@ class KDM {
     let uid = 0x15;
     const assignUID = (() => uid++);
 
-    this.entities.filter((e) => e.uid === -1).forEach((e) => e.uid = assignUID());
+    this.entities.forEach((e) => {
+      if (Number.isNaN(e.uid)) {
+        e.uid = assignUID();
+      }
+    });
 
-    this.arrays.map((arr) => arr.arrays).flat().forEach((arr) => arr.uid.set(assignUID()));
-    this.tables.forEach(({ table }) => table.uid.set(assignUID()));
-    this.parameters.forEach((p) => p.uid.set(assignUID()));
+    this.arrays.map((arr) => arr.arrays).flat().forEach((arr) => {
+      if (arr.uid.get() === 0) {
+        arr.uid.set(assignUID());
+      }
+    });
+
+    this.tables.forEach(({ table }) => {
+      if (table.uid.get() === 0) {
+        table.uid.set(assignUID());
+      }
+    });
+
+    this.parameters.forEach((p) => {
+      if (p.uid.get() === 0) {
+        p.uid.set(assignUID());
+      }
+    });
   }
 
   public build(): Buffer {
@@ -472,7 +513,8 @@ class KDM {
     const tables = this.tables.map((t) => ({ ...t, table: t.table.get() }));
 
     const parameters = this.parameters.filter((p) => ![
-      "mapDataTableLen"
+      "mapDataTableLen",
+      "link_data_all_len"
     ].includes(p.name.string)).map((p) => p.get());
 
     return IKDM.parse({ arrays, tables, parameters });
@@ -499,7 +541,12 @@ class KDM {
         constructors.push(ShopListing);
       }
 
-      constructors.forEach((constructor) => this.entities.push({ uid: -1, constructor }));
+      // kdm_link_data.bin
+      if (name === "link_data_all") {
+        constructors.push(Link, LinkData);
+      }
+
+      constructors.forEach((constructor) => this.entities.push({ uid: NaN, constructor }));
     }
 
     for (const data of kdm.parameters) {
@@ -524,6 +571,14 @@ class KDM {
           unknown0: 0,
           name: "mapDataTableLen",
           value: data.table.entries.length + 1
+        }));
+      }
+
+      if (data.name === "link_data_all") {
+        this.parameters.push(new KDMU32Parameter(this).set({
+          unknown0: 0,
+          name: "link_data_all_len",
+          value: data.table.entries.length
         }));
       }
 
