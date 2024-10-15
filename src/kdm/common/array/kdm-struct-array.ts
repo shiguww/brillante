@@ -3,6 +3,7 @@ import type KDM from "#/kdm/kdm";
 import assert from "node:assert/strict";
 import type RBuffer from "#/buffer/r-buffer";
 import type WBuffer from "#/buffer/w-buffer";
+import LucieMSG from "#/kdm/lucie/lucie-msg";
 import KDMStruct from "#/kdm/common/kdm-struct";
 import KDMArray from "#/kdm/common/array/kdm-array";
 import type KDMStringPointer from "#/kdm/common/primitive/kdm-string-pointer";
@@ -33,8 +34,20 @@ class KDMStructArray extends KDMArray {
   }
 
   public get element(): KDMStruct {
+    return new this.elementConstructor(this.kdm);
+  }
+
+  private get elementConstructor(): KDMStructConstructor {
     assert(this._elementConstructor !== null);
-    return new this._elementConstructor(this.kdm);
+    return this._elementConstructor;
+  }
+
+  private set elementConstructor(constructor: KDMStructConstructor) {
+    if (constructor === LucieMSG) {
+      this.hasNULLTerminator();
+    }
+
+    this._elementConstructor = constructor;
   }
 
   public override get strings(): Array<KDMStringPointer> {
@@ -49,11 +62,9 @@ class KDMStructArray extends KDMArray {
   }
 
   protected override _get(): IKDMStructArray {
-    assert(this._elementConstructor !== null);
-
     return IKDMStructArray().parse({
       _refkey: this.refkey,
-      _item_kind: this._elementConstructor.name,
+      _item_kind: this.elementConstructor.name,
       entries: this.entries.map((e) => e.get())
     });
   }
@@ -65,14 +76,14 @@ class KDMStructArray extends KDMArray {
     });
 
     assert(constructor !== undefined);
-    this._elementConstructor = constructor as KDMStructConstructor;
+    this.elementConstructor = constructor as KDMStructConstructor;
 
     this.refkey = array._refkey;
-    this.entries = array.entries.map((data) => new this._elementConstructor!(this.kdm).set(data));
+    this.entries = array.entries.map((data) => this.element.set(data));
   }
 
   private _prebuild(): void {
-    const tid = this.kdm.entities.find((e) => e.constructor === this._elementConstructor)?.uid;
+    const tid = this.kdm.entities.find((e) => e.constructor === this.elementConstructor)?.uid;
     assert(tid !== undefined);
 
     this.tid.set(tid);
@@ -111,25 +122,21 @@ class KDMStructArray extends KDMArray {
     const constructor = this.kdm.entities.find((e) => e.uid === this.tid.get())?.constructor;
     assert(constructor !== undefined);
 
-    this._elementConstructor = constructor as KDMStructConstructor;
-
-    const instance = new constructor(this.kdm);
-    assert(instance instanceof KDMStruct);
+    this.elementConstructor = constructor as KDMStructConstructor;
 
     const count = (this.nullTerminatorFlag
-      ? (this.size0.get() / instance.sizeof) - 1
-      : this.size0.get() / instance.sizeof);
+      ? ((this.size0.get() * 4) / this.element.sizeof) - 1
+      : (this.size0.get() * 4) / this.element.sizeof);
 
     for (let i = 0; i < count; i += 1) {
-      const instance = new constructor(this.kdm);
-      assert(instance instanceof KDMStruct);
+      const instance = this.element;
 
       this.entries.push(instance);
       instance.parse(buffer);
     }
 
     if (this.nullTerminatorFlag) {
-      instance.parse(buffer);
+      this.element.parse(buffer);
     }
   }
 }

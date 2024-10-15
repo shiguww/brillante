@@ -15,9 +15,13 @@ import KDMStructArrayPointer from "#/kdm/common/array/kdm-struct-array-pointer";
 import KDMStructArrayPointerArray from "./common/array/kdm-struct-array-pointer-array";
 import WBuffer from "#/buffer/w-buffer";
 import KDMStruct from "./common/kdm-struct";
+import LucieMSG from "./lucie/lucie-msg";
 
 const ALL_STRUCTS = [
-  MapData
+  // kdm_mapdata.bin
+  MapData,
+  // kdm_lucie.bin
+  LucieMSG
 ] as const;
 
 const IKDM = z.object({
@@ -25,13 +29,12 @@ const IKDM = z.object({
     KDMF32Parameter.schema,
     KDMU32Parameter.schema
   ]).array(),
-  arrays: z.union([
-    KDMStructArray.schema(),
-    KDMStructArray.schema(),
-  ]).array(),
+  arrays: KDMStructArray.schema().array(),
   tables: z.union([
+    // kdm_mapdata.bin
     z.object({ name: z.literal("mapDataTable"), table: KDMStructArrayPointerArray.schema }),
-    z.object({ name: z.literal("mapDataTable"), table: KDMStructArrayPointerArray.schema })
+    // kdm_lucie.bin
+    z.object({ name: z.literal("lucieMsgTbl"), table: KDMStructArrayPointerArray.schema })
   ]).array()
 });
 
@@ -43,6 +46,8 @@ interface KDMTable {
   table: KDMArray;
 }
 
+type KDMEntityConstructor = (new (kdm: KDM) => KDMEntity);
+
 class KDM {
   private static readonly SECTION_COUNT = 8;
   private static readonly HEADING_SIZE = 40;
@@ -51,12 +56,13 @@ class KDM {
 
   public readonly entities: Array<{
     uid: number;
-    constructor: new (kdm: KDM) => KDMEntity;
+    constructor: KDMEntityConstructor;
   }> = [
       { uid: 0x00, constructor: KDMF32 },
       { uid: 0x01, constructor: KDMU32 },
       { uid: 0x03, constructor: KDMStringPointer },
-      { uid: 0x0F, constructor: KDMStructArrayPointer }
+      { uid: 0x0F, constructor: KDMStructArrayPointer },
+      { uid: 0x14, constructor: KDMStructArrayPointerArray }
     ];
 
   private _counter = 0;
@@ -89,6 +95,11 @@ class KDM {
     // kdm_mapdata.bin
     if (kind === "MapData") {
       return new MapData(this);
+    }
+
+    // kdm_lucie.bin
+    if (kind === "LucieMSG") {
+      return new LucieMSG(this);
     }
 
     assert.fail();
@@ -196,9 +207,15 @@ class KDM {
   private createTable(_name: string): KDMArray {
     const name = _name as IKDMTableName;
 
+    // kdm_mapdata.bin
     if (name === "mapDataTable") {
       return new KDMStructArrayPointerArray(this)
         .hasNULLTerminator();
+    }
+
+    // kdm_lucie.bin
+    if (name === "lucieMsgTbl") {
+      return new KDMStructArrayPointerArray(this);
     }
 
     assert.fail();
@@ -220,6 +237,8 @@ class KDM {
       if (constructor === KDMStructArrayPointer) {
         array = new KDMStructArrayPointerArray(this);
       }
+
+      console.log(constructor.name);
     }
 
     assert(array !== null);
@@ -418,12 +437,20 @@ class KDM {
     const kdm = IKDM.parse(_data);
 
     for (const { name } of kdm.tables) {
+      let constructor: null | KDMEntityConstructor = null;
+
+      // kdm_mapdata.bin
       if (name === "mapDataTable") {
-        this.entities.push({
-          uid: -1,
-          constructor: MapData
-        });
+        constructor = MapData;
       }
+
+      // kdm_lucie.bin
+      if (name === "lucieMsgTbl") {
+        constructor = LucieMSG;
+      }
+
+      assert(constructor !== null);
+      this.entities.push({ uid: -1, constructor });
     }
 
     for (const data of kdm.parameters) {
@@ -443,11 +470,6 @@ class KDM {
     }
 
     for (const data of kdm.tables) {
-      this.tables.push({
-        name: data.name,
-        table: this.createTable(data.name).set(data.table)
-      });
-
       if (data.name === "mapDataTable") {
         this.parameters.push(new KDMU32Parameter(this).set({
           unknown0: 0,
@@ -455,6 +477,11 @@ class KDM {
           value: data.table.entries.length + 1
         }));
       }
+
+      this.tables.push({
+        name: data.name,
+        table: this.createTable(data.name).set(data.table)
+      });
     }
 
     return this;
