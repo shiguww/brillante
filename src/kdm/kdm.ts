@@ -22,6 +22,10 @@ import KDMU16 from "./common/primitive/kdm-u16";
 import Link from "./link-data/link";
 import LinkData from "./link-data/link-data";
 import KDMStructArrayPointerArrayPointer from "./common/primitive/kdm-struct-array-pointer-array-pointer";
+import WorldMapData0 from "./worldmap-data/worldmap-data0";
+import WorldMapData1 from "./worldmap-data/worldmap-data1";
+import WorldMapData2 from "./worldmap-data/worldmap-data2";
+import WorldMapData3 from "./worldmap-data/worldmap-data3";
 
 const ALL_STRUCTS = [
   // kdm_mapdata.bin
@@ -32,7 +36,12 @@ const ALL_STRUCTS = [
   ShopListing,
   // kdm_link_data.bin
   Link,
-  LinkData
+  LinkData,
+  // kdm_worldmap_data.bin
+  WorldMapData0,
+  WorldMapData1,
+  WorldMapData2,
+  WorldMapData3
 ] as const;
 
 const IKDM = z.object({
@@ -59,7 +68,10 @@ const IKDM = z.object({
       z.literal("SHOP_KAZAN"),
       z.literal("SHOP_KOOPA"),
       // kdm_link_data.bin
-      z.literal("link_data_all")
+      z.literal("link_data_all"),
+      // kdm_worldmap_data.bin
+      z.literal("disposWorldMapTable"),
+      z.literal("disposWorldMapConnectTable")
     ]),
     table: KDMStructArrayPointerArray.schema
   }).array()
@@ -151,6 +163,23 @@ class KDM {
 
     if (kind === "LinkData") {
       return new LinkData(this);
+    }
+
+    // kdm_worldmap_data.bin
+    if (kind === "WorldMapData0") {
+      return new WorldMapData0(this);
+    }
+
+    if (kind === "WorldMapData1") {
+      return new WorldMapData1(this);
+    }
+
+    if (kind === "WorldMapData2") {
+      return new WorldMapData2(this);
+    }
+
+    if (kind === "WorldMapData3") {
+      return new WorldMapData3(this);
     }
 
     assert.fail();
@@ -246,7 +275,13 @@ class KDM {
         return (
           instance.realfields.length === size &&
           instance.unknownSection4Value0 === unknownSection4Value0 &&
-          instance.unknownSection4Value1 === unknownSection4Value1
+          instance.unknownSection4Value1 === unknownSection4Value1 &&
+          instance.realfields.every((f, i) => {
+            const e = this.entities.find((e) => e.constructor === f.constructor);
+            assert(e !== undefined);
+
+            return (e.uid === fields.at(i));
+          })
         );
       });
 
@@ -286,6 +321,12 @@ class KDM {
     // kdm_link_data.bin
     if (name === "link_data_all") {
       return new KDMStructArrayPointerArray(this);
+    }
+
+    // kdm_worldmap_data.bin
+    if (name === "disposWorldMapTable" || name === "disposWorldMapConnectTable") {
+      return new KDMStructArrayPointerArray(this)
+        .hasNULLTerminator();
     }
 
     assert.fail();
@@ -453,8 +494,24 @@ class KDM {
       }
     });
 
-    this.arrays.map((arr) => arr.strings).flat().forEach((s) => registerStringIfNotExists(s));
-    this.tables.forEach(({ name }) => registerStringIfNotExists(name));
+    if (this.tables.find(({ name }) => name === "SHOP_DOR")) {
+      this.tables.map(({ table }) => table.strings).flat().forEach((s) => registerStringIfNotExists(s));
+      this.tables.forEach(({ name }) => registerStringIfNotExists(name));
+    } else if (this.tables.find(({ name }) => name === "mapDataTable" || name === "link_data_all")) {
+      this.arrays.map((arr) => arr.strings).flat().forEach((s) => registerStringIfNotExists(s));
+      this.tables.forEach(({ name }) => registerStringIfNotExists(name));
+    } else {
+      this.tables.forEach(({ name, table }) => {
+        this.arrays.forEach((arr) => {
+          if (table.arrays.includes(arr)) {
+            arr.strings.forEach((s) => registerStringIfNotExists(s));
+          }
+        });
+
+        table.strings.forEach((s) => registerStringIfNotExists(s));
+        registerStringIfNotExists(name);
+      });
+    }
 
     this.parameters.map((p) => p.strings).flat().forEach((s) => registerStringIfNotExists(s));
 
@@ -469,17 +526,40 @@ class KDM {
       }
     });
 
-    this.arrays.map((arr) => arr.arrays).flat().forEach((arr) => {
-      if (arr.uid.get() === 0) {
-        arr.uid.set(assignUID());
-      }
-    });
+    if (this.tables.find(({ name }) => name === "disposWorldMapTable")) {
+      this.tables.forEach(({ table }, i, arr) => {
+        const last = (i + 1 === arr.length);
 
-    this.tables.forEach(({ table }) => {
-      if (table.uid.get() === 0) {
-        table.uid.set(assignUID());
+        this.arrays.forEach((arr) => {
+          if (arr.uid.get() === 0 && table.arrays.includes(arr)) {
+            arr.uid.set(assignUID());
+          }
+        });
+
+        if (table.uid.get() === 0 && !last) {
+          table.uid.set(assignUID());
+        }
+      });
+
+      const last = this.tables.at(-1);
+      assert(last !== undefined);
+
+      if(last.table.uid.get() === 0) {
+        last.table.uid.set(assignUID());
       }
-    });
+    } else {
+      this.arrays.map((arr) => arr.arrays).flat().forEach((arr) => {
+        if (arr.uid.get() === 0) {
+          arr.uid.set(assignUID());
+        }
+      });
+
+      this.tables.forEach(({ table }) => {
+        if (table.uid.get() === 0) {
+          table.uid.set(assignUID());
+        }
+      });
+    }
 
     this.parameters.forEach((p) => {
       if (p.uid.get() === 0) {
@@ -544,6 +624,15 @@ class KDM {
       // kdm_link_data.bin
       if (name === "link_data_all") {
         constructors.push(Link, LinkData);
+      }
+
+      // kdm_worldmap_data.bin
+      if (name === "disposWorldMapTable") {
+        constructors.push(WorldMapData0, WorldMapData1);
+      }
+
+      if (name === "disposWorldMapConnectTable") {
+        constructors.push(WorldMapData2, WorldMapData3);
       }
 
       constructors.forEach((constructor) => this.entities.push({ uid: NaN, constructor }));

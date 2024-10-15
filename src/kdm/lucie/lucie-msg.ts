@@ -18,7 +18,6 @@ class LucieMSG extends KDMStruct<ILucieMSG> {
   public override readonly unknownSection4Value0 = 0x00000000;
   public override readonly unknownSection4Value1 = 0x00000000;
 
-  public override readonly schema = ILucieMSG;
   public readonly unknown1 = new KDMU32(this.kdm);
   public readonly unknown0 = new KDMStringPointer(this.kdm)
     .set("\0");

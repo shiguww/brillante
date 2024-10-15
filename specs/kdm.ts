@@ -12,50 +12,77 @@ function expectSHA256Checksum(data: Buffer, file: string, checksum: string): voi
 
 describe("KDM", () => {
   describe("kdm_mapdata.bin", () => {
+    const FILE = "Data/kdm_mapdata.bin";
+    const CHECKSUM = "8936cbd3787ca041da921e76316259d5a9ad88c7dc737be423fe37c87ec6d700";
+
     test("parsing and building yields the same file", async () => {
-      const data = await fs.readFile("data/Data/kdm_mapdata.bin");
-      expectSHA256Checksum(data, "kdm_mapdata.bin", "8936cbd3787ca041da921e76316259d5a9ad88c7dc737be423fe37c87ec6d700");
+      const data = await fs.readFile(`data/${FILE}`);
+      expectSHA256Checksum(data, FILE, CHECKSUM);
 
       const parsed = new KDM().parse(data).get();
       const built = new KDM().set(parsed).build();
 
-      expect(data).to.be.deep.equal(built);
+      expectSHA256Checksum(built, `${FILE} (rebuilt)`, CHECKSUM);
     });
   });
 
   describe("kdm_lucie.bin", () => {
+    const FILE = "Data/kdm_lucie.bin";
+    const CHECKSUM = "53f0e139c364b12da549dc486ff8e2b7eeb5b5beca5fe861657551df5c9b4ae8";
+
     test("parsing and building yields the same file", async () => {
-      const data = await fs.readFile("data/Data/kdm_lucie.bin");
-      expectSHA256Checksum(data, "kdm_lucie.bin", "53f0e139c364b12da549dc486ff8e2b7eeb5b5beca5fe861657551df5c9b4ae8");
+      const data = await fs.readFile(`data/${FILE}`);
+      expectSHA256Checksum(data, FILE, CHECKSUM);
 
       const parsed = new KDM().parse(data).get();
       const built = new KDM().set(parsed).build();
 
-      expect(data).to.be.deep.equal(built);
+      expectSHA256Checksum(built, `${FILE} (rebuilt)`, CHECKSUM);
     });
   });
 
   describe("kdm_shop.bin", () => {
+    const FILE = "Data/kdm_shop.bin";
+    const CHECKSUM = "f800563d0b182297ec469a94497c59cf08070c87f3ff7b6c3ad4eb0613a3f472";
+
     test("parsing and building yields the same file", async () => {
-      const data = await fs.readFile("data/Data/kdm_shop.bin");
-      expectSHA256Checksum(data, "kdm_shop.bin", "f800563d0b182297ec469a94497c59cf08070c87f3ff7b6c3ad4eb0613a3f472");
+      const data = await fs.readFile(`data/${FILE}`);
+      expectSHA256Checksum(data, FILE, CHECKSUM);
 
       const parsed = new KDM().parse(data).get();
       const built = new KDM().set(parsed).build();
 
-      expect(data).to.be.deep.equal(built);
+      expectSHA256Checksum(built, `${FILE} (rebuilt)`, CHECKSUM);
     });
   });
 
   describe("kdm_link_data.bin", () => {
+    const FILE = "Data/kdm_link_data.bin";
+    const CHECKSUM = "77b8af839061cf8c8427709550f9a7f3760ed23b16a1ce5de101855492c83fa7";
+
     test("parsing and building yields the same file", async () => {
-      const data = await fs.readFile("data/Data/kdm_link_data.bin");
-      expectSHA256Checksum(data, "kdm_link_data.bin", "77b8af839061cf8c8427709550f9a7f3760ed23b16a1ce5de101855492c83fa7");
+      const data = await fs.readFile(`data/${FILE}`);
+      expectSHA256Checksum(data, FILE, CHECKSUM);
 
       const parsed = new KDM().parse(data).get();
       const built = new KDM().set(parsed).build();
 
-      expect(data).to.be.deep.equal(built);
+      expectSHA256Checksum(built, `${FILE} (rebuilt)`, CHECKSUM);
+    });
+  });
+
+  describe("kdm_worldmap_data.bin", () => {
+    const FILE = "Data/kdm_worldmap_data.bin";
+    const CHECKSUM = "d940cec28f223b03babd5e46446df0bd50dd75499764cfbd84e9e964f72c0ec3";
+
+    test("parsing and building yields the same file", async () => {
+      const data = await fs.readFile(`data/${FILE}`);
+      expectSHA256Checksum(data, FILE, CHECKSUM);
+
+      const parsed = new KDM().parse(data).get();
+      const built = new KDM().set(parsed).build();
+
+      expectSHA256Checksum(built, `${FILE} (rebuilt)`, CHECKSUM);
     });
   });
 });

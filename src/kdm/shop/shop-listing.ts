@@ -21,7 +21,6 @@ type IShopListing = z.infer<typeof IShopListing>;
 class ShopListing extends KDMStruct<IShopListing> {
   public static readonly schema = IShopListing;
 
-  public override readonly schema = IShopListing;
   public override readonly unknownSection4Value0 = 0x000000000;
   public override readonly unknownSection4Value1 = 0x000000000;
 
