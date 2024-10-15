@@ -39,23 +39,14 @@ class MapDataBackground extends KDMEntity<IMapDataBackground> {
     const bg1 = this.background1.get();
 
     if(bg0 === null && bg1 === null) {
-      return IMapDataBackground.parse({
-        none: true,
-        _metadata: ({ constructor: "MapDataBackground" })
-      });
+      return IMapDataBackground.parse({ none: true });
     }
 
     if(bg0 === MapDataBackground.COLOR_TEXTURE) {
-      return IMapDataBackground.parse({
-        color: bg1,
-        _metadata: ({ constructor: "MapDataBackground" })
-      });
+      return IMapDataBackground.parse({ color: bg1 });
     }
 
-    return IMapDataBackground.parse({
-      textures: [bg0, bg1],
-      _metadata: ({ constructor: "MapDataBackground" })
-    });
+    return IMapDataBackground.parse({ textures: [bg0, bg1] });
   }
 
   protected override _set(background: IMapDataBackground): void {
@@ -87,9 +78,7 @@ class MapDataBackground extends KDMEntity<IMapDataBackground> {
 }
 
 const IMapDataBackground = z.object({
-  _metadata: z.object({
-    constructor: z.literal("MapDataBackground")
-  })
+  _kind: z.literal("MapDataBackground").default("MapDataBackground")
 }).and(z.union([
   z.object({ none: z.literal(true) }),
   z.object({ color: KDMStringPointer.schema }),
@@ -169,8 +158,7 @@ class MapData extends KDMStruct<IMapData> {
       unknown8: this.unknown8.get(),
       unknown9: this.unknown9.get(),
       unknown10: this.unknown10.get(),
-      background: this.background.get(),
-      _metadata: { constructor: "MapData" }
+      background: this.background.get()
     });
   }
 
@@ -196,9 +184,7 @@ class MapData extends KDMStruct<IMapData> {
 }
 
 const IMapData = z.object({
-  _metadata: z.object({
-    constructor: z.literal("MapData")
-  }),
+  _kind: z.literal("MapData").default("MapData"),
   unknown2: KDMU32.schema,
   unknown3: KDMU32.schema,
   unknown10: KDMU32.schema,

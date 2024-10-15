@@ -5,7 +5,7 @@ import type RBuffer from "#/buffer/r-buffer";
 import type WBuffer from "#/buffer/w-buffer";
 import KDMStruct from "#/kdm/common/kdm-struct";
 import KDMArray from "#/kdm/common/array/kdm-array";
-import KDMStringPointer from "#/kdm/common/primitive/kdm-string-pointer";
+import type KDMStringPointer from "#/kdm/common/primitive/kdm-string-pointer";
 
 type KDMStructConstructor = (new (kdm: KDM) => KDMStruct);
 
@@ -52,11 +52,8 @@ class KDMStructArray extends KDMArray {
     assert(this._elementConstructor !== null);
 
     return IKDMStructArray().parse({
-      _metadata: ({
-        refkey: this.refkey,
-        constructor: "KDMStructArray",
-        element_constructor: this._elementConstructor.name
-      }),
+      _refkey: this.refkey,
+      _item_kind: this._elementConstructor.name,
       entries: this.entries.map((e) => e.get())
     });
   }
@@ -64,13 +61,13 @@ class KDMStructArray extends KDMArray {
   protected override _set(array: IKDMStructArray): void {
     const constructor = this.kdm.entities.map((e) => e.constructor).find((constructor) => {
       const instance = new constructor(this.kdm) as KDMStruct;
-      return (instance instanceof KDMStruct && instance.get()._metadata.constructor === array._metadata.element_constructor);
+      return (instance instanceof KDMStruct && instance.get()._kind === array._item_kind);
     });
 
     assert(constructor !== undefined);
     this._elementConstructor = constructor as KDMStructConstructor;
 
-    this.refkey = array._metadata.refkey;
+    this.refkey = array._refkey;
     this.entries = array.entries.map((data) => new this._elementConstructor!(this.kdm).set(data));
   }
 
@@ -81,7 +78,7 @@ class KDMStructArray extends KDMArray {
     this.tid.set(tid);
 
     this.size0.set((this.sizeof - KDMStructArray.HEADING_SIZE) / 4);
-    this.size1.set(((this.sizeof - KDMStructArray.HEADING_SIZE)/ this.element.sizeof) * this.element.realfields.length);
+    this.size1.set(((this.sizeof - KDMStructArray.HEADING_SIZE) / this.element.sizeof) * this.element.realfields.length);
   }
 
   protected override _build(buffer: WBuffer): void {
@@ -139,19 +136,16 @@ class KDMStructArray extends KDMArray {
 
 type IKDMStruct = z.infer<typeof KDMStruct.baseschema>;
 
-const IKDMStructArray = <T extends IKDMStruct = IKDMStruct>(element?: z.ZodType<T, any, any>) => KDMArray.baseschema(element || KDMStruct.baseschema.passthrough()).and(z.object({
-  _metadata: z.object({
-    element_constructor: z.string(),
-    constructor: z.literal("KDMStructArray")
-  })
-}));
+const IKDMStructArray = <T extends IKDMStruct = IKDMStruct>(element?: z.ZodType<T, any, any>) => z.object({
+  _item_kind: z.string(),
+  ...KDMArray.baseschema(element || KDMStruct.baseschema.passthrough()).shape,
+  _kind: z.literal("KDMStructArray").default("KDMStructArray")
+});
 
 interface IKDMStructArray {
-  _metadata: {
-    refkey: string;
-    constructor: string;
-    element_constructor: string;
-  };
+  _kind: string;
+  _refkey: string;
+  _item_kind: string;
   entries: Array<z.infer<typeof KDMStruct.baseschema>>;
 }
 

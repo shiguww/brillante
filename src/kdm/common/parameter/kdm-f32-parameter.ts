@@ -45,8 +45,7 @@ class KDMF32Parameter extends KDMEntity<IKDMF32Parameter> {
     return IKDMF32Parameter.parse({
       name: this.name.get(),
       value: this.value.get(),
-      unknown0: this.unknown0.get(),
-      _metadata: { constructor: "KDMF32Parameter" }
+      unknown0: this.unknown0.get()
     });
   }
 
@@ -84,9 +83,7 @@ class KDMF32Parameter extends KDMEntity<IKDMF32Parameter> {
 }
 
 const IKDMF32Parameter = z.object({
-  _metadata: z.object({
-    constructor: z.literal("KDMF32Parameter")
-  }),
+  _kind: z.literal("KDMF32Parameter").default("KDMF32Parameter"),
   value: KDMF32.schema,
   unknown0: KDMU32.schema,
   name: KDMStringPointer.schema,

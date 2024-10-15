@@ -45,13 +45,13 @@ class KDMStructArrayPointerArray extends KDMArray<IKDMStructArrayPointer> {
 
   protected override _get(): IKDMStructArrayPointerArray {
     return IKDMStructArrayPointerArray.parse({
-      entries: this.entries.map((e) => e.get()),
-      _metadata: ({ refkey: this.refkey, constructor: "KDMStructArrayPointerArray" })
+      _refkey: this.refkey,
+      entries: this.entries.map((e) => e.get())
     });
   }
 
   protected override _set(array: IKDMStructArrayPointerArray): void {
-    this.refkey = array._metadata.refkey;
+    this.refkey = array._refkey;
     this.entries = array.entries.map((data) => new KDMStructArrayPointer(this.kdm).set(data));
   }
 
@@ -113,11 +113,9 @@ class KDMStructArrayPointerArray extends KDMArray<IKDMStructArrayPointer> {
   }
 }
 
-const IKDMStructArrayPointerArray = KDMArray.baseschema(KDMStructArrayPointer.schema).and(z.object({
-  _metadata: z.object({
-    constructor: z.literal("KDMStructArrayPointerArray")
-  })
-}));
+const IKDMStructArrayPointerArray = KDMArray.baseschema(KDMStructArrayPointer.schema).extend({
+  _kind: z.literal("KDMStructArrayPointerArray").default("KDMStructArrayPointerArray")
+});
 
 type IKDMStructArrayPointerArray = z.infer<typeof IKDMStructArrayPointerArray>;
 export default KDMStructArrayPointerArray;

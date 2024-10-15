@@ -67,43 +67,27 @@ class KDM {
   public readonly parameters: Array<KDMF32Parameter | KDMU32Parameter> = [];
 
   public createEntity(data: unknown): KDMEntity {
-    assert(
-      data !== null &&
-      typeof data === "object"
-    );
-
-    assert(
-      "_metadata" in data &&
-      data._metadata !== null &&
-      typeof data._metadata === "object"
-    );
-
-    assert(
-      "constructor" in data._metadata &&
-      typeof data._metadata.constructor === "string"
-    );
-
-    const constructor = data._metadata.constructor as string;
+    const kind = (Object(data) as { _kind: unknown })._kind;
 
     // Global
-    if (constructor === "KDMF32Parameter") {
+    if (kind === "KDMF32Parameter") {
       return new KDMF32Parameter(this);
     }
 
-    if (constructor === "KDMU32Parameter") {
+    if (kind === "KDMU32Parameter") {
       return new KDMU32Parameter(this);
     }
 
-    if (constructor === "KDMStructArray") {
+    if (kind === "KDMStructArray") {
       return new KDMStructArray(this);
     }
 
-    if (constructor === "KDMStructArrayPointerArray") {
+    if (kind === "KDMStructArrayPointerArray") {
       return new KDMStructArrayPointerArray(this);
     }
 
     // kdm_mapdata.bin
-    if (constructor === "MapData") {
+    if (kind === "MapData") {
       return new MapData(this);
     }
 
@@ -362,8 +346,8 @@ class KDM {
     this.sections.push(buffer.offset);
     buffer.setU32(this.tables.length);
 
-    this.tables.map(({name}) => new KDMStringPointer(this).set(name).build(buffer));
-    this.tables.map(({table}) => table.build(buffer));
+    this.tables.map(({ name }) => new KDMStringPointer(this).set(name).build(buffer));
+    this.tables.map(({ table }) => table.build(buffer));
   }
 
   private buildSection7(buffer: WBuffer): void {
@@ -376,7 +360,7 @@ class KDM {
 
     const registerStringIfNotExists = ((_string: string | KDMStringPointer) => {
       const string = _string instanceof KDMStringPointer ? _string.string : _string;
-      
+
       if (string !== "" && !this.strings.find((s) => s.string === string)) {
         this.strings.push(new KDMString(this).set(string));
       }
@@ -420,24 +404,20 @@ class KDM {
   }
 
   public get(): IKDM {
+    const arrays = this.arrays.map((a) => a.get());
+    const tables = this.tables.map((t) => ({ ...t, table: t.table.get() }));
+
     const parameters = this.parameters.filter((p) => ![
       "mapDataTableLen"
-    ].includes(p.name.string))
+    ].includes(p.name.string)).map((p) => p.get());
 
-    return IKDM.parse({
-      parameters: parameters.map((p) => p.get()),
-      arrays: this.arrays.map((a) => a.get()),
-      tables: this.tables.map((t) => ({
-        name: t.name,
-        table: t.table.get()
-      }))
-    });
+    return IKDM.parse({ arrays, tables, parameters });
   }
 
   public set(_data: unknown): this {
     const kdm = IKDM.parse(_data);
 
-    for(const {name} of kdm.tables) {
+    for (const { name } of kdm.tables) {
       if (name === "mapDataTable") {
         this.entities.push({
           uid: -1,
@@ -468,12 +448,11 @@ class KDM {
         table: this.createTable(data.name).set(data.table)
       });
 
-      if(data.name === "mapDataTable") {
+      if (data.name === "mapDataTable") {
         this.parameters.push(new KDMU32Parameter(this).set({
           unknown0: 0,
           name: "mapDataTableLen",
-          value: data.table.entries.length + 1,
-          _metadata: ({constructor: "KDMU32Parameter"})
+          value: data.table.entries.length + 1
         }));
       }
     }
