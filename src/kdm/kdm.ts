@@ -26,6 +26,13 @@ import WorldMapData0 from "./worldmap-data/worldmap-data0";
 import WorldMapData1 from "./worldmap-data/worldmap-data1";
 import WorldMapData2 from "./worldmap-data/worldmap-data2";
 import WorldMapData3 from "./worldmap-data/worldmap-data3";
+import KDMBoolean from "./common/primitive/kdm-boolean";
+import LockData from "./pepalyze/lock-data";
+import SecretData from "./pepalyze/secret-data";
+import SecretSealData from "./pepalyze/secret-seal-data";
+import MuseumLockData from "./pepalyze/museum/museum-lock-data";
+import MuseumSecretData from "./pepalyze/museum/museum-secret-data";
+import MuseumSecretSealData from "./pepalyze/museum/museum-secret-seal-data";
 
 const ALL_STRUCTS = [
   // kdm_mapdata.bin
@@ -41,7 +48,15 @@ const ALL_STRUCTS = [
   WorldMapData0,
   WorldMapData1,
   WorldMapData2,
-  WorldMapData3
+  WorldMapData3,
+  // kdm_pepalyze.bin
+  LockData,
+  SecretData,
+  SecretSealData,
+  // kdm_pepalyze_museum.bin
+  MuseumLockData,
+  MuseumSecretData,
+  MuseumSecretSealData
 ] as const;
 
 const IKDM = z.object({
@@ -71,7 +86,11 @@ const IKDM = z.object({
       z.literal("link_data_all"),
       // kdm_worldmap_data.bin
       z.literal("disposWorldMapTable"),
-      z.literal("disposWorldMapConnectTable")
+      z.literal("disposWorldMapConnectTable"),
+      // kdm_pepalyze / kdm_pepalyze_museum.bin
+      z.literal("lockDataTable"),
+      z.literal("secretDataTable"),
+      z.literal("secretSealDataTable")
     ]),
     table: KDMStructArrayPointerArray.schema
   }).array()
@@ -100,6 +119,7 @@ class KDM {
       { uid: 0x00, constructor: KDMF32 },
       { uid: 0x01, constructor: KDMU32 },
       { uid: 0x03, constructor: KDMStringPointer },
+      { uid: 0x04, constructor: KDMBoolean },
       { uid: 0x08, constructor: KDMU16 },
       { uid: 0x0D, constructor: KDMStringPointerArrayPointer },
       { uid: 0x0F, constructor: KDMStructArrayPointer },
@@ -180,6 +200,32 @@ class KDM {
 
     if (kind === "WorldMapData3") {
       return new WorldMapData3(this);
+    }
+
+    // kdm_pepalyze.bin
+    if (kind === "LockData") {
+      return new LockData(this);
+    }
+
+    if (kind === "SecretData") {
+      return new SecretData(this);
+    }
+
+    if (kind === "SecretSealData") {
+      return new SecretSealData(this);
+    }
+
+    // kdm_pepalyze_museum.bin
+    if (kind === "MuseumLockData") {
+      return new MuseumLockData(this);
+    }
+
+    if (kind === "MuseumSecretData") {
+      return new MuseumSecretData(this);
+    }
+
+    if (kind === "MuseumSecretSealData") {
+      return new MuseumSecretSealData(this);
     }
 
     assert.fail();
@@ -327,6 +373,16 @@ class KDM {
     if (name === "disposWorldMapTable" || name === "disposWorldMapConnectTable") {
       return new KDMStructArrayPointerArray(this)
         .hasNULLTerminator();
+    }
+
+    // kdm_pepalyze.bin / kdm_pepalyze_museum.bin
+    if (name === "lockDataTable" || name === "secretDataTable") {
+      return new KDMStructArrayPointerArray(this)
+        .hasNULLTerminator();
+    }
+
+    if (name === "secretSealDataTable") {
+      return new KDMStructArrayPointerArray(this);
     }
 
     assert.fail();
@@ -526,7 +582,7 @@ class KDM {
       }
     });
 
-    if (this.tables.find(({ name }) => name === "disposWorldMapTable")) {
+    if (this.tables.find(({ name }) => name === "disposWorldMapTable" || name === "lockDataTable")) {
       this.tables.forEach(({ table }, i, arr) => {
         const last = (i + 1 === arr.length);
 
@@ -544,7 +600,7 @@ class KDM {
       const last = this.tables.at(-1);
       assert(last !== undefined);
 
-      if(last.table.uid.get() === 0) {
+      if (last.table.uid.get() === 0) {
         last.table.uid.set(assignUID());
       }
     } else {
@@ -603,7 +659,7 @@ class KDM {
   public set(_data: unknown): this {
     const kdm = IKDM.parse(_data);
 
-    for (const { name } of kdm.tables) {
+    for (const { name, table } of kdm.tables) {
       let constructors: Array<KDMEntityConstructor> = [];
 
       // kdm_mapdata.bin
@@ -633,6 +689,24 @@ class KDM {
 
       if (name === "disposWorldMapConnectTable") {
         constructors.push(WorldMapData2, WorldMapData3);
+      }
+
+      // kdm_pepalyze.bin
+      if (name === "lockDataTable") {
+        const reference = table.entries.at(0);
+        assert(reference !== undefined);
+
+        const array = kdm.arrays.find((arr) => arr._refkey === reference.refkey);
+        assert(array !== undefined);
+
+        const entry = array.entries.at(0);
+        assert(entry !== undefined);
+
+        if (entry._kind.includes("Museum")) {
+          constructors.push(MuseumLockData, MuseumSecretData, MuseumSecretSealData);
+        } else {
+          constructors.push(LockData, SecretData, SecretSealData);
+        }
       }
 
       constructors.forEach((constructor) => this.entities.push({ uid: NaN, constructor }));

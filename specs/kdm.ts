@@ -85,4 +85,34 @@ describe("KDM", () => {
       expectSHA256Checksum(built, `${FILE} (rebuilt)`, CHECKSUM);
     });
   });
+
+  describe("kdm_pepalyze.bin", () => {
+    const FILE = "Data/kdm_pepalyze.bin";
+    const CHECKSUM = "c88132e77aa5ba758f3196deea7447939afd3f81384add56b50db0d1d4e4feef";
+
+    test("parsing and building yields the same file", async () => {
+      const data = await fs.readFile(`data/${FILE}`);
+      expectSHA256Checksum(data, FILE, CHECKSUM);
+
+      const parsed = new KDM().parse(data).get();
+      const built = new KDM().set(parsed).build();
+
+      expectSHA256Checksum(built, `${FILE} (rebuilt)`, CHECKSUM);
+    });
+  });
+
+  describe("kdm_pepalyze_museum.bin", () => {
+    const FILE = "Data/kdm_pepalyze_museum.bin";
+    const CHECKSUM = "5e3f77b4ed64e4446e32b3511939a2b4b525d4d0f7cc0bbb501fe01224c83fd1";
+
+    test("parsing and building yields the same file", async () => {
+      const data = await fs.readFile(`data/${FILE}`);
+      expectSHA256Checksum(data, FILE, CHECKSUM);
+
+      const parsed = new KDM().parse(data).get();
+      const built = new KDM().set(parsed).build();
+
+      expectSHA256Checksum(built, `${FILE} (rebuilt)`, CHECKSUM);
+    });
+  });
 });

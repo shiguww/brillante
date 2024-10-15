@@ -3,8 +3,6 @@ import path from "node:path";
 import fs from "node:fs/promises";
 import { Command } from "commander";
 
-Error.stackTraceLimit = Infinity;
-
 const program = new Command()
   .version("v3.0.0")
   .option("-v, --verbose");
