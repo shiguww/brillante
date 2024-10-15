@@ -8,10 +8,8 @@ import type KDMArray from "#/kdm/common/array/kdm-array";
 import KDMStringPointer from "#/kdm/common/primitive/kdm-string-pointer";
 import KDMStringPointerArray from "#/kdm/common/array/kdm-string-pointer-array";
 
-const REF_NULL = "ref: NULL";
-
 class KDMStringPointerArrayPointer extends KDMEntity<IKDMStringPointerArrayPointer> {
-  private _reference: string = REF_NULL;
+  private _reference: null | string = null;
 
   public static get schema(): typeof IKDMStringPointerArrayPointer {
     return IKDMStringPointerArrayPointer;
@@ -21,16 +19,16 @@ class KDMStringPointerArrayPointer extends KDMEntity<IKDMStringPointerArrayPoint
     super(kdm, IKDMStringPointerArrayPointer);
   }
 
-  public get reference(): string {
+  public get reference(): null | string {
     return this._reference;
   }
 
-  private set reference(ref: string) {
+  private set reference(ref: null | string) {
     this._reference = ref;
   }
 
   public override get arrays(): Array<KDMArray> {
-    if(this.reference === REF_NULL) {
+    if (this.reference === null) {
       return [];
     }
 
@@ -42,7 +40,7 @@ class KDMStringPointerArrayPointer extends KDMEntity<IKDMStringPointerArrayPoint
   }
 
   public override get strings(): Array<KDMStringPointer> {
-    if(this.reference === REF_NULL) {
+    if (this.reference === null) {
       return [];
     }
 
@@ -50,27 +48,29 @@ class KDMStringPointerArrayPointer extends KDMEntity<IKDMStringPointerArrayPoint
   }
 
   private get array(): KDMStringPointerArray {
-    const array = this.kdm.arrays.find((arr) => arr.refkey === this.reference.split("ref: ").at(1));
+    const array = this.kdm.arrays.find((arr) => arr.refkey === this.reference);
     assert(array instanceof KDMStringPointerArray);
 
     return array;
   }
 
   protected override _get(): IKDMStringPointerArrayPointer {
-    return this.reference;
+    return IKDMStringPointerArrayPointer.parse({
+      refkey: this.reference
+    });
   }
 
   protected override _set(reference: IKDMStringPointerArrayPointer): void {
-    this.reference = reference;
+    this.reference = reference.refkey;
   }
 
   protected override _build(buffer: WBuffer): void {
-    if (this.reference === REF_NULL) {
+    if (this.reference === null) {
       buffer.setU32(0);
       return;
     }
 
-    const array = this.kdm.arrays.find((arr) => arr.refkey === this.reference.split("ref: ").at(1));
+    const array = this.kdm.arrays.find((arr) => arr.refkey === this.reference);
 
     assert(array !== undefined);
     assert(array.offset !== null);
@@ -82,26 +82,22 @@ class KDMStringPointerArrayPointer extends KDMEntity<IKDMStringPointerArrayPoint
     const pointer = buffer.getU32();
 
     if (pointer === 0) {
-      this.reference = REF_NULL;
+      this.reference = null;
       return;
     }
 
     const array = this.kdm.arrays
       .find((arr) => arr.offset !== null && ((arr.offset + KDMStringPointerArray.HEADING_SIZE) === pointer));
 
-    if (array === undefined) {
-      this.reference = REF_NULL;
-      return;
-    }
-
     assert(array instanceof KDMStringPointerArray);
-    this.reference = `ref: ${array.refkey}`;
+    this.reference = array.refkey;
   }
 }
 
-const IKDMStringPointerArrayPointer = z.string()
-  .min(1)
-  .refine((str) => str.startsWith("ref: "));
+const IKDMStringPointerArrayPointer = z.object({
+  _kind: z.literal("KDMStringPointerArrayPointer").default("KDMStringPointerArrayPointer"),
+  refkey: z.string().nullable()
+});
 
 type IKDMStringPointerArrayPointer = z.infer<typeof IKDMStringPointerArrayPointer>;
 export default KDMStringPointerArrayPointer;

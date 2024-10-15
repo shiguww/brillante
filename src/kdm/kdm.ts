@@ -106,8 +106,16 @@ class KDM {
       return new KDMStructArray(this);
     }
 
+    if(kind === "KDMStructArrayPointer") {
+      return new KDMStructArrayPointer(this);
+    }
+
     if (kind === "KDMStructArrayPointerArray") {
       return new KDMStructArrayPointerArray(this);
+    }
+
+    if(kind === "KDMStringPointerArrayPointer") {
+      return new KDMStringPointerArrayPointer(this);
     }
 
     // kdm_mapdata.bin
