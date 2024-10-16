@@ -1,17 +1,27 @@
 import z from "zod";
-import assert from "node:assert/strict";
-import KDMF32 from "#/kdm/common/kdm-f32";
-import KDMU32 from "#/kdm/common/kdm-u32";
-import KDMStructure from "#/kdm/common/kdm-structure";
-import type KDMStringPointer from "#/kdm/common/pointer/kdm-string-pointer";
+import KDMStruct from "../common/kdm-struct";
+import KDMF32 from "../common/primitive/kdm-f32";
+import KDMEntity from "../common/kdm-entity";
+import KDMU32 from "../common/primitive/kdm-u32";
+import type KDM from "../kdm";
 
-class UnusedSoundData0 extends KDMStructure<never> {
-  public static readonly schema = z.never();
+const IUnusedSoundData0 = z.object({
+  _kind: z.literal("UnusedSoundData0").default("UnusedSoundData0"),
+  unknown0: KDMF32.schema,
+  unknown1: KDMF32.schema,
+  unknown2: KDMF32.schema,
+  unknown3: KDMF32.schema,
+  unknown4: KDMF32.schema,
+  unknown5: KDMU32.schema
+});
+
+type IUnusedSoundData0 = z.infer<typeof IUnusedSoundData0>;
+
+class UnusedSoundData0 extends KDMStruct<IUnusedSoundData0> {
+  public static readonly schema = IUnusedSoundData0;
 
   public override readonly unknownSection4Value0 = 0x00000000;
   public override readonly unknownSection4Value1 = 0x008E1120;
-
-  public override readonly schema = z.never();
 
   public readonly unknown0 = new KDMF32(this.kdm);
   public readonly unknown1 = new KDMF32(this.kdm);
@@ -20,7 +30,11 @@ class UnusedSoundData0 extends KDMStructure<never> {
   public readonly unknown4 = new KDMF32(this.kdm);
   public readonly unknown5 = new KDMU32(this.kdm);
 
-  public override get fields(): Array<KDMStructure> {
+  public constructor(kdm: KDM) {
+    super(kdm, IUnusedSoundData0);
+  }
+
+  public override get fields(): Array<KDMEntity> {
     return [
       this.unknown0,
       this.unknown1,
@@ -31,24 +45,24 @@ class UnusedSoundData0 extends KDMStructure<never> {
     ];
   }
 
-  public override get strings(): KDMStringPointer[] {
-    return [];
+  protected override _get(): IUnusedSoundData0 {
+    return IUnusedSoundData0.parse({
+      unknown0: this.unknown0.get(),
+      unknown1: this.unknown1.get(),
+      unknown2: this.unknown2.get(),
+      unknown3: this.unknown3.get(),
+      unknown4: this.unknown4.get(),
+      unknown5: this.unknown5.get()
+    });
   }
 
-  public override get(): never {
-    assert.fail("unreachable");
-  }
-
-  public override set(): never {
-    assert.fail("unreachable");
-  }
-
-  public override build(): never {
-    assert.fail("unreachable");
-  }
-
-  public override parse(): never {
-    assert.fail("unreachable");
+  protected override _set(sounddata: IUnusedSoundData0): void {
+    this.unknown0.set(sounddata.unknown0);
+    this.unknown1.set(sounddata.unknown1);
+    this.unknown2.set(sounddata.unknown2);
+    this.unknown3.set(sounddata.unknown3);
+    this.unknown4.set(sounddata.unknown4);
+    this.unknown5.set(sounddata.unknown5);
   }
 }
 

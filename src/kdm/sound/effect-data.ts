@@ -1,11 +1,14 @@
 import z from "zod";
-import KDMF32 from "#/kdm/common/kdm-f32";
-import KDMBoolean from "#/kdm/common/kdm-boolean";
-import KDMStructure from "#/kdm/common/kdm-structure";
-import KDMStringPointer from "#/kdm/common/pointer/kdm-string-pointer";
-import KDMU24Padding from "#/kdm/common/padding/kdm-u24-padding";
+import KDMStruct from "../common/kdm-struct";
+import KDMEntity from "../common/kdm-entity";
+import KDMU24Padding from "../common/padding/kdm-u24-padding";
+import KDMBoolean from "../common/primitive/kdm-boolean";
+import KDMF32 from "../common/primitive/kdm-f32";
+import KDMStringPointer from "../common/primitive/kdm-string-pointer";
+import type KDM from "../kdm";
 
 const IEffectData = z.object({
+  _kind: z.literal("EffectData").default("EffectData"),
   unknown1: KDMF32.schema,
   unknown2: KDMF32.schema,
   unknown3: KDMF32.schema,
@@ -14,13 +17,12 @@ const IEffectData = z.object({
   unknown6: KDMF32.schema,
   unknown7: KDMF32.schema,
   unknown8: KDMBoolean.schema,
-  unknown0: KDMStringPointer.schema,
-  _structure: z.literal("EffectData").default("EffectData")
+  unknown0: KDMStringPointer.schema
 });
 
 type IEffectData = z.infer<typeof IEffectData>;
 
-class EffectData extends KDMStructure<IEffectData> {
+class EffectData extends KDMStruct<IEffectData> {
   public static readonly schema = IEffectData;
 
   public override readonly schema = IEffectData;
@@ -37,7 +39,11 @@ class EffectData extends KDMStructure<IEffectData> {
   public readonly unknown8 = new KDMBoolean(this.kdm);
   public readonly unknown0 = new KDMStringPointer(this.kdm);
 
-  public override get fields(): Array<KDMStructure> {
+  public constructor(kdm: KDM) {
+    super(kdm, IEffectData);
+  }
+
+  public override get fields(): Array<KDMEntity> {
     return [
       this.unknown0,
       this.unknown1,
@@ -52,11 +58,7 @@ class EffectData extends KDMStructure<IEffectData> {
     ];
   }
 
-  public override get strings(): KDMStringPointer[] {
-    return this.fields.filter((f) => f instanceof KDMStringPointer);
-  }
-
-  public override get(): IEffectData {
+  protected override _get(): IEffectData {
     return IEffectData.parse({
       unknown0: this.unknown0.get(),
       unknown1: this.unknown1.get(),
@@ -70,9 +72,7 @@ class EffectData extends KDMStructure<IEffectData> {
     });
   }
 
-  public override set(data: IEffectData): this {
-    const effectdata = IEffectData.parse(data);
-
+  protected override _set(effectdata: IEffectData): void {
     this.unknown0.set(effectdata.unknown0);
     this.unknown1.set(effectdata.unknown1);
     this.unknown2.set(effectdata.unknown2);
@@ -82,8 +82,6 @@ class EffectData extends KDMStructure<IEffectData> {
     this.unknown6.set(effectdata.unknown6);
     this.unknown7.set(effectdata.unknown7);
     this.unknown8.set(effectdata.unknown8);
-
-    return this;
   }
 }
 

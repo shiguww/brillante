@@ -1,10 +1,13 @@
 import z from "zod";
-import KDMStructure from "#/kdm/common/kdm-structure";
-import KDMStringPointer from "#/kdm/common/pointer/kdm-string-pointer";
-import KDMU32 from "../common/kdm-u32";
+import KDMEntity from "../common/kdm-entity";
+import KDMStruct from "../common/kdm-struct";
+import KDMStringPointer from "../common/primitive/kdm-string-pointer";
+import KDMU32 from "../common/primitive/kdm-u32";
 import MapObjectData1 from "./mapobject-data1";
+import type KDM from "../kdm";
 
 const IMapObjectData5 = z.object({
+  _kind: z.literal("MapObjectData5").default("MapObjectData5"),
   unknown0: KDMStringPointer.schema,
   unknown1: KDMU32.schema,
   unknown2: MapObjectData1.schema,
@@ -31,18 +34,15 @@ const IMapObjectData5 = z.object({
   unknown23: KDMStringPointer.schema,
   unknown24: KDMStringPointer.schema,
   unknown25: KDMStringPointer.schema,
-  _structure: z.literal("MapObjectData5").default("MapObjectData5")
 });
 
 type IMapObjectData5 = z.infer<typeof IMapObjectData5>;
 
-class MapObjectData5 extends KDMStructure<IMapObjectData5> {
+class MapObjectData5 extends KDMStruct<IMapObjectData5> {
   public static readonly schema = IMapObjectData5;
 
   public override readonly unknownSection4Value1 = 16133576;
   public override readonly unknownSection4Value0 = 0x00000000;
-
-  public override readonly schema = IMapObjectData5;
 
   public readonly unknown0 = new KDMStringPointer(this.kdm);
   public readonly unknown1 = new KDMU32(this.kdm);
@@ -71,7 +71,11 @@ class MapObjectData5 extends KDMStructure<IMapObjectData5> {
   public readonly unknown24 = new KDMStringPointer(this.kdm);
   public readonly unknown25 = new KDMStringPointer(this.kdm);
 
-  public override get fields(): Array<KDMStructure> {
+  public constructor(kdm: KDM) {
+    super(kdm, IMapObjectData5);
+  }
+
+  public override get fields(): Array<KDMEntity> {
     return [
       this.unknown0,
       this.unknown1,
@@ -102,14 +106,7 @@ class MapObjectData5 extends KDMStructure<IMapObjectData5> {
     ];
   }
 
-  public override get strings(): Array<KDMStringPointer> {
-    return [
-      ...this.fields.filter((f) => f instanceof KDMStringPointer),
-      ...this.fields.map((f) => f.strings).flat()
-    ];
-  }
-
-  public override get(): IMapObjectData5 {
+  protected override _get(): IMapObjectData5 {
     return IMapObjectData5.parse({
       unknown0: this.unknown0.get(),
       unknown1: this.unknown1.get(),
@@ -140,9 +137,7 @@ class MapObjectData5 extends KDMStructure<IMapObjectData5> {
     });
   }
 
-  public override set(data: unknown): this {
-    const mapobjectdata = IMapObjectData5.parse(data);
-
+  protected override _set(mapobjectdata: IMapObjectData5): void {
     this.unknown0.set(mapobjectdata.unknown0);
     this.unknown1.set(mapobjectdata.unknown1);
     this.unknown2.set(mapobjectdata.unknown2);
@@ -168,9 +163,7 @@ class MapObjectData5 extends KDMStructure<IMapObjectData5> {
     this.unknown22.set(mapobjectdata.unknown22);
     this.unknown23.set(mapobjectdata.unknown23);
     this.unknown24.set(mapobjectdata.unknown24);
-    this.unknown25.set(mapobjectdata.unknown25);
-    
-    return this;
+    this.unknown25.set(mapobjectdata.unknown25);    
   }
 }
 

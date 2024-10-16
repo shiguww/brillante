@@ -1,9 +1,12 @@
+import type KDMEntity from "#/kdm/common/kdm-entity";
+import KDMStruct from "#/kdm/common/kdm-struct";
+import KDMStringPointer from "#/kdm/common/primitive/kdm-string-pointer";
+import KDMU32 from "#/kdm/common/primitive/kdm-u32";
+import type KDM from "#/kdm/kdm";
 import z from "zod";
-import KDMStructure from "#/kdm/common/kdm-structure";
-import KDMStringPointer from "#/kdm/common/pointer/kdm-string-pointer";
-import KDMU32 from "../../common/kdm-u32";
 
 const IMuseumSecretData = z.object({
+  _kind: z.literal("MuseumSecretData").default("MuseumSecretData"),
   unknown2: KDMU32.schema,
   unknown4: KDMU32.schema,
   unknown6: KDMU32.schema,
@@ -12,16 +15,14 @@ const IMuseumSecretData = z.object({
   unknown1: KDMStringPointer.schema,
   unknown3: KDMStringPointer.schema,
   unknown5: KDMStringPointer.schema,
-  unknown7: KDMStringPointer.schema,
-  _structure: z.literal("MuseumSecretData").default("MuseumSecretData")
+  unknown7: KDMStringPointer.schema
 });
 
 type IMuseumSecretData = z.infer<typeof IMuseumSecretData>;
 
-class MuseumSecretData extends KDMStructure<IMuseumSecretData> {
+class MuseumSecretData extends KDMStruct<IMuseumSecretData> {
   public static readonly schema = IMuseumSecretData;
 
-  public override readonly schema = IMuseumSecretData;
   public override readonly unknownSection4Value0 = 0x00000000;
   public override readonly unknownSection4Value1 = 0x00572BFC;
 
@@ -35,7 +36,11 @@ class MuseumSecretData extends KDMStructure<IMuseumSecretData> {
   public readonly unknown5 = new KDMStringPointer(this.kdm);
   public readonly unknown7 = new KDMStringPointer(this.kdm);
 
-  public override get fields(): Array<KDMStructure> {
+  public constructor(kdm: KDM) {
+    super(kdm, IMuseumSecretData);
+  }
+
+  public override get fields(): Array<KDMEntity> {
     return [
       this.unknown0,
       this.unknown1,
@@ -49,11 +54,7 @@ class MuseumSecretData extends KDMStructure<IMuseumSecretData> {
     ];
   }
 
-  public override get strings(): KDMStringPointer[] {
-    return this.fields.filter((f) => f instanceof KDMStringPointer);
-  }
-
-  public override get(): IMuseumSecretData {
+  protected override _get(): IMuseumSecretData {
     return IMuseumSecretData.parse({
       unknown0: this.unknown0.get(),
       unknown1: this.unknown1.get(),
@@ -67,9 +68,7 @@ class MuseumSecretData extends KDMStructure<IMuseumSecretData> {
     });
   }
 
-  public override set(data: unknown): this {
-    const secretdata = IMuseumSecretData.parse(data);
-
+  protected override _set(secretdata: IMuseumSecretData): void {
     this.unknown0.set(secretdata.unknown0);
     this.unknown1.set(secretdata.unknown1);
     this.unknown2.set(secretdata.unknown2);
@@ -79,8 +78,6 @@ class MuseumSecretData extends KDMStructure<IMuseumSecretData> {
     this.unknown6.set(secretdata.unknown6);
     this.unknown7.set(secretdata.unknown7);
     this.unknown8.set(secretdata.unknown8);
-
-    return this;
   }
 }
 

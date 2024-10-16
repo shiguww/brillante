@@ -1,21 +1,22 @@
 import z from "zod";
-import KDMStructure from "#/kdm/common/kdm-structure";
-import KDMStringPointer from "#/kdm/common/pointer/kdm-string-pointer";
+import type KDMEntity from "../common/kdm-entity";
+import KDMStruct from "../common/kdm-struct";
+import KDMStringPointer from "../common/primitive/kdm-string-pointer";
+import type KDM from "../kdm";
 
 const ISecretSealData = z.object({
+  _kind: z.literal("SecretSealData").default("SecretSealData"),
   unknown0: KDMStringPointer.schema,
   unknown1: KDMStringPointer.schema,
   unknown2: KDMStringPointer.schema,
   unknown3: KDMStringPointer.schema,
-  _structure: z.literal("SecretSealData").default("SecretSealData")
 });
 
 type ISecretSealData = z.infer<typeof ISecretSealData>;
 
-class SecretSealData extends KDMStructure<ISecretSealData> {
+class SecretSealData extends KDMStruct<ISecretSealData> {
   public static readonly schema = ISecretSealData;
 
-  public override readonly schema = ISecretSealData;
   public override readonly unknownSection4Value0 = 0x000000000;
   public override readonly unknownSection4Value1 = 0x000000000;
 
@@ -24,7 +25,11 @@ class SecretSealData extends KDMStructure<ISecretSealData> {
   public readonly unknown2 = new KDMStringPointer(this.kdm);
   public readonly unknown3 = new KDMStringPointer(this.kdm);
 
-  public override get fields(): Array<KDMStructure> {
+  public constructor(kdm: KDM) {
+    super(kdm, ISecretSealData);
+  }
+
+  public override get fields(): Array<KDMEntity> {
     return [
       this.unknown0,
       this.unknown1,
@@ -33,11 +38,7 @@ class SecretSealData extends KDMStructure<ISecretSealData> {
     ];
   }
 
-  public override get strings(): KDMStringPointer[] {
-    return this.fields.filter((f) => f instanceof KDMStringPointer);
-  }
-
-  public override get(): ISecretSealData {
+  protected override _get(): ISecretSealData {
     return ISecretSealData.parse({
       unknown0: this.unknown0.get(),
       unknown1: this.unknown1.get(),
@@ -46,15 +47,11 @@ class SecretSealData extends KDMStructure<ISecretSealData> {
     });
   }
 
-  public override set(data: unknown): this {
-    const secretsealdata = ISecretSealData.parse(data);
-
+  protected override _set(secretsealdata: ISecretSealData): void {
     this.unknown0.set(secretsealdata.unknown0);
     this.unknown1.set(secretsealdata.unknown1);
     this.unknown2.set(secretsealdata.unknown2);
     this.unknown3.set(secretsealdata.unknown3);
-
-    return this;
   }
 }
 
