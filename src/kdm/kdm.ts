@@ -258,7 +258,7 @@ class KDM {
       return new KDMStructArray(this);
     }
 
-    if(kind === "KDMStringPointerArray") {
+    if (kind === "KDMStringPointerArray") {
       return new KDMStringPointerArray(this);
     }
 
@@ -694,7 +694,7 @@ class KDM {
         array = new KDMF32Array(this);
       }
 
-      if(constructor === KDMStringPointer) {
+      if (constructor === KDMStringPointer) {
         array = new KDMStringPointerArray(this);
       }
 
@@ -771,10 +771,7 @@ class KDM {
     this.sections.push(buffer.offset);
 
     buffer.setU32(this.strings.length);
-    this.strings.forEach((s) => {
-      console.log(`${s.constructor.name}: building @ ${buffer.offset}`);
-      s.build(buffer);
-    });
+    this.strings.forEach((s) => s.build(buffer));
   }
 
   private buildSection1(buffer: WBuffer): void {
@@ -823,10 +820,7 @@ class KDM {
     this.sections.push(buffer.offset);
     buffer.setU32(this.arrays.length);
 
-    this.arrays.forEach((arr) => {
-      console.log(`${arr.constructor.name}: Building array #${arr.uid.get()} @ ${buffer.offset}`);
-      arr.build(buffer);
-    });
+    this.arrays.forEach((arr) => arr.build(buffer));
   }
 
   private buildSection6(buffer: WBuffer): void {
@@ -845,45 +839,49 @@ class KDM {
   private prebuild(): void {
     /* ------------------- */
 
-    const registerStringIfNotExists = ((_string: string | KDMStringPointer) => {
-      const string = _string instanceof KDMStringPointer ? _string.string : _string;
-      console.log(`Attempting to register string '${string}' (length: ${string.length})`);
+    (() => {
+      const strings = new Set<string>();
 
-      if (string !== "" && !this.strings.find((s) => s.string === string)) {
-        console.log(`Registering string '${string}' (length: ${string.length})`);
-        this.strings.push(new KDMString(this).set(string));
-      }
-    });
+      const addString = ((_string: string | KDMStringPointer) => {
+        const string = _string instanceof KDMStringPointer ? _string.string : _string;
 
-    if (this.tables.find(({ name }) => name === "SHOP_DOR")) {
-      this.tables.map(({ table }) => table.strings).flat().forEach((s) => registerStringIfNotExists(s));
-      this.tables.forEach(({ name }) => registerStringIfNotExists(name));
-    } else if (this.tables.find(({ name }) => name === "mapDataTable" || name === "link_data_all")) {
-      this.arrays.map((arr) => arr.strings).flat().forEach((s) => registerStringIfNotExists(s));
-      this.tables.forEach(({ name }) => registerStringIfNotExists(name));
-    } else {
-      this.tables.forEach(({ name, table }) => {
-        this.arrays.forEach((arr) => {
-          if (table.arrays.includes(arr)) {
-            arr.strings.forEach((s) => registerStringIfNotExists(s));
-          }
+        if (!strings.has(string)) {
+          strings.add(string);
+          this.strings.push(new KDMString(this).set(string));
+        }
+      });
+
+      if (this.tables.find(({ name }) => name === "SHOP_DOR")) {
+        this.tables.forEach(({ table }) => {
+          table.strings.forEach((s) => addString(s));
         });
 
-        table.strings.forEach((s) => registerStringIfNotExists(s));
-        registerStringIfNotExists(name);
-      });
-    }
+        this.tables.forEach(({ name }) => addString(name));
+      } else if (this.tables.find(({ name }) => name === "mapDataTable" || name === "link_data_all")) {
+        this.arrays.forEach((arr) => arr.strings.forEach((s) => addString(s)));
+        this.tables.forEach(({ name }) => addString(name));
+      } else {
+        this.tables.forEach(({ name, table }) => {
+          const arrays = new Set(table.arrays);
 
-    this.parameters.map((p) => p.strings).flat().forEach((s) => registerStringIfNotExists(s));
+          this.arrays.forEach((arr) => {
+            if (arrays.has(arr)) {
+              arr.strings.forEach((s) => addString(s));
+            }
+          });
+
+          addString(name);
+        });
+      }
+
+      this.parameters.forEach((p) => p.strings.forEach((s) => addString(s)))
+    })();
 
     /* ------------------- */
 
     let uid = 0x15;
 
-    const assignUID = (() => {
-      console.log(`Assigning UID #${uid}`);
-      return uid++;
-    });
+    const assignUID = (() => uid++);
 
     this.entities.forEach((e) => {
       if (Number.isNaN(e.uid)) {
@@ -1037,7 +1035,7 @@ class KDM {
       }
 
       // kdm_dispos_data.bin
-      if(name === "all_disposDataTbl") {
+      if (name === "all_disposDataTbl") {
         constructors.push(
           DisposData0, DisposData1, DisposData2, DisposData3, DisposData4,
           DisposData5, DisposData6, DisposData7, DisposData8, DisposData9,
