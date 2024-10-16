@@ -145,4 +145,19 @@ describe("KDM", () => {
       expectSHA256Checksum(built, `${FILE} (rebuilt)`, CHECKSUM);
     });
   });
+
+  describe("kdm_dispos_data.bin", () => {
+    const FILE = "Data/kdm_dispos_data.bin";
+    const CHECKSUM = "d14e06a172ba53c7913b0debcd27cebd45e13d746106b307411110d93ae58be8";
+
+    test("parsing and building yields the same file", async () => {
+      const data = await fs.readFile(`data/${FILE}`);
+      expectSHA256Checksum(data, FILE, CHECKSUM);
+
+      const parsed = new KDM().parse(data).get();
+      const built = new KDM().set(parsed).build();
+
+      expectSHA256Checksum(built, `${FILE} (rebuilt)`, CHECKSUM);
+    });
+  });
 });

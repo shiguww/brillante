@@ -845,7 +845,7 @@ class KDM {
       const addString = ((_string: string | KDMStringPointer) => {
         const string = _string instanceof KDMStringPointer ? _string.string : _string;
 
-        if (!strings.has(string)) {
+        if (string !== "" && !strings.has(string)) {
           strings.add(string);
           this.strings.push(new KDMString(this).set(string));
         }
@@ -857,7 +857,7 @@ class KDM {
         });
 
         this.tables.forEach(({ name }) => addString(name));
-      } else if (this.tables.find(({ name }) => name === "mapDataTable" || name === "link_data_all")) {
+      } else if (this.tables.find(({ name }) => name === "mapDataTable" || name === "link_data_all" || name === "all_disposDataTbl")) {
         this.arrays.forEach((arr) => arr.strings.forEach((s) => addString(s)));
         this.tables.forEach(({ name }) => addString(name));
       } else {
