@@ -1,18 +1,19 @@
 import z from "zod";
-import KDMStructure from "#/kdm/common/kdm-structure";
-import KDMStringPointer from "#/kdm/common/pointer/kdm-string-pointer";
-import KDMU32 from "../common/kdm-u32";
+import KDMStruct from "#/kdm/common/kdm-struct";
+import KDMStringPointer from "#/kdm/common/primitive/kdm-string-pointer";
+import KDMU32 from "#/kdm/common/primitive/kdm-u32"
+import KDMEntity from "../common/kdm-entity";
+import KDM from "../kdm";
 
 const IDisposData9 = z.object({
   unknown0: KDMStringPointer.schema,
   unknown1: KDMU32.schema,
-  _offset: z.number(),
-  _structure: z.literal("DisposData9").default("DisposData9")
+  _kind:z.literal("DisposData9").default("DisposData9")
 });
 
 type IDisposData9 = z.infer<typeof IDisposData9>;
 
-class DisposData9 extends KDMStructure<IDisposData9> {
+class DisposData9 extends KDMStruct<IDisposData9> {
   public static readonly schema = IDisposData9;
 
   public override readonly unknownSection4Value1 = 14234452;
@@ -22,32 +23,27 @@ class DisposData9 extends KDMStructure<IDisposData9> {
   public readonly unknown0 = new KDMStringPointer(this.kdm);
   public readonly unknown1 = new KDMU32(this.kdm);
 
-  public override get fields(): Array<KDMStructure> {
+  public constructor(kdm: KDM) {
+    super(kdm, IDisposData9);
+  }
+
+  public override get fields(): Array<KDMEntity> {
     return [
       this.unknown0,
       this.unknown1
     ];
   }
 
-  public override get strings(): Array<KDMStringPointer> {
-    return [this.unknown0];
-  }
-
-  public override get(): IDisposData9 {
+  protected override _get(): IDisposData9 {
     return IDisposData9.parse({
       unknown0: this.unknown0.get(),
-      unknown1: this.unknown1.get(),
-      _offset: this.offset
+      unknown1: this.unknown1.get()
     });
   }
 
-  public override set(data: unknown): this {
-    const disposdata = IDisposData9.parse(data);
-
+  protected override _set(disposdata: IDisposData9): void {
     this.unknown0.set(disposdata.unknown0);
     this.unknown1.set(disposdata.unknown1);
-
-    return this;
   }
 }
 

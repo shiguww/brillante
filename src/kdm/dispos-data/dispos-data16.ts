@@ -1,7 +1,9 @@
 import z from "zod";
-import KDMF32 from "../common/kdm-f32";
-import KDMStructure from "#/kdm/common/kdm-structure";
-import KDMStringPointer from "#/kdm/common/pointer/kdm-string-pointer";
+import KDMF32 from "#/kdm/common/primitive/kdm-f32";
+import KDMStruct from "#/kdm/common/kdm-struct";
+import KDMStringPointer from "#/kdm/common/primitive/kdm-string-pointer";
+import KDMEntity from "../common/kdm-entity";
+import type KDM from "../kdm";
 
 const IDisposData16 = z.object({
   unknown0: KDMStringPointer.schema,
@@ -10,18 +12,16 @@ const IDisposData16 = z.object({
   unknown3: KDMF32.schema,
   unknown4: KDMF32.schema,
   unknown5: KDMStringPointer.schema,
-  _structure: z.literal("DisposData16").default("DisposData16")
+  _kind:z.literal("DisposData16").default("DisposData16")
 });
 
 type IDisposData16 = z.infer<typeof IDisposData16>;
 
-class DisposData16 extends KDMStructure<IDisposData16> {
+class DisposData16 extends KDMStruct<IDisposData16> {
   public static readonly schema = IDisposData16;
 
   public override readonly unknownSection4Value1 = 14234856;
   public override readonly unknownSection4Value0 = 0x00000000;
-
-  public override readonly schema = IDisposData16;
   
   public readonly unknown0 = new KDMStringPointer(this.kdm);
   public readonly unknown1 = new KDMStringPointer(this.kdm);
@@ -30,7 +30,11 @@ class DisposData16 extends KDMStructure<IDisposData16> {
   public readonly unknown4 = new KDMF32(this.kdm);
   public readonly unknown5 = new KDMStringPointer(this.kdm);
 
-  public override get fields(): Array<KDMStructure> {
+  public constructor(kdm: KDM) {
+    super(kdm, IDisposData16);
+  }
+
+  public override get fields(): Array<KDMEntity> {
     return [
       this.unknown0,
       this.unknown1,
@@ -41,11 +45,7 @@ class DisposData16 extends KDMStructure<IDisposData16> {
     ];
   }
 
-  public override get strings(): Array<KDMStringPointer> {
-    return this.fields.filter((f) => f instanceof KDMStringPointer);
-  }
-
-  public override get(): IDisposData16 {
+  protected override _get(): IDisposData16 {
     return IDisposData16.parse({
       unknown0: this.unknown0.get(),
       unknown1: this.unknown1.get(),
@@ -56,17 +56,13 @@ class DisposData16 extends KDMStructure<IDisposData16> {
     });
   }
 
-  public override set(data: unknown): this {
-    const disposdata = IDisposData16.parse(data);
-
+  protected override _set(disposdata: IDisposData16): void {
     this.unknown0.set(disposdata.unknown0);
     this.unknown1.set(disposdata.unknown1);
     this.unknown2.set(disposdata.unknown2);
     this.unknown3.set(disposdata.unknown3);
     this.unknown4.set(disposdata.unknown4);
     this.unknown5.set(disposdata.unknown5);
-
-    return this;
   }
 }
 

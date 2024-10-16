@@ -55,6 +55,29 @@ import MapObjectData5 from "./mapobject/mapobject-data5";
 import MapObjectData6 from "./mapobject/mapobject-data6";
 import MapObjectData7 from "./mapobject/mapobject-data7";
 import MapObjectData8 from "./mapobject/mapobject-data8";
+import DisposData0 from "./dispos-data/dispos-data0";
+import DisposData1 from "./dispos-data/dispos-data1";
+import DisposData10 from "./dispos-data/dispos-data10";
+import DisposData11 from "./dispos-data/dispos-data11";
+import DisposData12 from "./dispos-data/dispos-data12";
+import DisposData13 from "./dispos-data/dispos-data13";
+import DisposData14 from "./dispos-data/dispos-data14";
+import DisposData15 from "./dispos-data/dispos-data15";
+import DisposData16 from "./dispos-data/dispos-data16";
+import DisposData17 from "./dispos-data/dispos-data17";
+import DisposData18 from "./dispos-data/dispos-data18";
+import DisposData19 from "./dispos-data/dispos-data19";
+import DisposData2 from "./dispos-data/dispos-data2";
+import DisposData20 from "./dispos-data/dispos-data20";
+import DisposData21 from "./dispos-data/dispos-data21";
+import DisposData3 from "./dispos-data/dispos-data3";
+import DisposData4 from "./dispos-data/dispos-data4";
+import DisposData5 from "./dispos-data/dispos-data5";
+import DisposData6 from "./dispos-data/dispos-data6";
+import DisposData7 from "./dispos-data/dispos-data7";
+import DisposData8 from "./dispos-data/dispos-data8";
+import DisposData9 from "./dispos-data/dispos-data9";
+import KDMStringPointerArray from "./common/array/kdm-string-pointer-array";
 
 const ALL_STRUCTS = [
   // kdm_mapdata.bin
@@ -99,7 +122,30 @@ const ALL_STRUCTS = [
   MapObjectData5,
   MapObjectData6,
   MapObjectData7,
-  MapObjectData8
+  MapObjectData8,
+  // kdm_dispos_data.bin
+  DisposData0,
+  DisposData1,
+  DisposData2,
+  DisposData3,
+  DisposData4,
+  DisposData5,
+  DisposData6,
+  DisposData7,
+  DisposData8,
+  DisposData9,
+  DisposData10,
+  DisposData11,
+  DisposData12,
+  DisposData13,
+  DisposData14,
+  DisposData15,
+  DisposData16,
+  DisposData17,
+  DisposData18,
+  DisposData19,
+  DisposData20,
+  DisposData21
 ] as const;
 
 const IKDM = z.object({
@@ -110,6 +156,7 @@ const IKDM = z.object({
   arrays: z.union([
     KDMF32Array.schema,
     KDMStructArray.schema(),
+    KDMStringPointerArray.schema,
     KDMStructArrayPointerArray.schema
   ]).array(),
   tables: z.object({
@@ -144,7 +191,9 @@ const IKDM = z.object({
       z.literal("effectDataTable"),
       z.literal("changeBGMDataTable"),
       // kdm_mapobject.bin
-      z.literal("map_object_data_tbl")
+      z.literal("map_object_data_tbl"),
+      // kdm_dispos_data.bin
+      z.literal("all_disposDataTbl")
     ]),
     table: KDMStructArrayPointerArray.schema
   }).array()
@@ -207,6 +256,10 @@ class KDM {
 
     if (kind === "KDMStructArray") {
       return new KDMStructArray(this);
+    }
+
+    if(kind === "KDMStringPointerArray") {
+      return new KDMStringPointerArray(this);
     }
 
     if (kind === "KDMStructArrayPointer") {
@@ -314,40 +367,129 @@ class KDM {
     }
 
     // kdm_mapobject.bin
-    if(kind === "MapObjectData0") {
+    if (kind === "MapObjectData0") {
       return new MapObjectData0(this);
     }
 
-    if(kind === "MapObjectData1") {
+    if (kind === "MapObjectData1") {
       return new MapObjectData1(this);
     }
 
-    if(kind === "MapObjectData2") {
+    if (kind === "MapObjectData2") {
       return new MapObjectData2(this);
     }
 
-    if(kind === "MapObjectData3") {
+    if (kind === "MapObjectData3") {
       return new MapObjectData3(this);
     }
 
-    if(kind === "MapObjectData4") {
+    if (kind === "MapObjectData4") {
       return new MapObjectData4(this);
     }
 
-    if(kind === "MapObjectData5") {
+    if (kind === "MapObjectData5") {
       return new MapObjectData5(this);
     }
 
-    if(kind === "MapObjectData6") {
+    if (kind === "MapObjectData6") {
       return new MapObjectData6(this);
     }
 
-    if(kind === "MapObjectData7") {
+    if (kind === "MapObjectData7") {
       return new MapObjectData7(this);
     }
 
-    if(kind === "MapObjectData8") {
+    if (kind === "MapObjectData8") {
       return new MapObjectData8(this);
+    }
+
+    // kdm_dispos_data.bin
+    if (kind === "DisposData0") {
+      return new DisposData0(this);
+    }
+
+    if (kind === "DisposData1") {
+      return new DisposData1(this);
+    }
+
+    if (kind === "DisposData2") {
+      return new DisposData2(this);
+    }
+
+    if (kind === "DisposData3") {
+      return new DisposData3(this);
+    }
+
+    if (kind === "DisposData4") {
+      return new DisposData4(this);
+    }
+
+    if (kind === "DisposData5") {
+      return new DisposData5(this);
+    }
+
+    if (kind === "DisposData6") {
+      return new DisposData6(this);
+    }
+
+    if (kind === "DisposData7") {
+      return new DisposData7(this);
+    }
+
+    if (kind === "DisposData8") {
+      return new DisposData8(this);
+    }
+
+    if (kind === "DisposData9") {
+      return new DisposData9(this);
+    }
+
+    if (kind === "DisposData10") {
+      return new DisposData10(this);
+    }
+
+    if (kind === "DisposData11") {
+      return new DisposData11(this);
+    }
+
+    if (kind === "DisposData12") {
+      return new DisposData12(this);
+    }
+
+    if (kind === "DisposData13") {
+      return new DisposData13(this);
+    }
+
+    if (kind === "DisposData14") {
+      return new DisposData14(this);
+    }
+
+    if (kind === "DisposData15") {
+      return new DisposData15(this);
+    }
+
+    if (kind === "DisposData16") {
+      return new DisposData16(this);
+    }
+
+    if (kind === "DisposData17") {
+      return new DisposData17(this);
+    }
+
+    if (kind === "DisposData18") {
+      return new DisposData18(this);
+    }
+
+    if (kind === "DisposData19") {
+      return new DisposData19(this);
+    }
+
+    if (kind === "DisposData20") {
+      return new DisposData20(this);
+    }
+
+    if (kind === "DisposData21") {
+      return new DisposData21(this);
     }
 
     assert.fail(`${kind}`);
@@ -521,8 +663,15 @@ class KDM {
         .hasNULLTerminator();
     }
 
-    if(name === "map_object_data_tbl") {
+    // kdm_mapobject.bin
+    if (name === "map_object_data_tbl") {
       return new KDMStructArrayPointerArray(this);
+    }
+
+    // kdm_dispos_data.bin
+    if (name === "all_disposDataTbl") {
+      return new KDMStructArrayPointerArray(this)
+        .hasNULLTerminator();
     }
 
     assert.fail();
@@ -543,6 +692,10 @@ class KDM {
 
       if (constructor === KDMF32) {
         array = new KDMF32Array(this);
+      }
+
+      if(constructor === KDMStringPointer) {
+        array = new KDMStringPointerArray(this);
       }
 
       if (constructor === KDMStructArrayPointer) {
@@ -618,7 +771,10 @@ class KDM {
     this.sections.push(buffer.offset);
 
     buffer.setU32(this.strings.length);
-    this.strings.forEach((s) => s.build(buffer));
+    this.strings.forEach((s) => {
+      console.log(`${s.constructor.name}: building @ ${buffer.offset}`);
+      s.build(buffer);
+    });
   }
 
   private buildSection1(buffer: WBuffer): void {
@@ -667,7 +823,10 @@ class KDM {
     this.sections.push(buffer.offset);
     buffer.setU32(this.arrays.length);
 
-    this.arrays.forEach((arr) => arr.build(buffer));
+    this.arrays.forEach((arr) => {
+      console.log(`${arr.constructor.name}: Building array #${arr.uid.get()} @ ${buffer.offset}`);
+      arr.build(buffer);
+    });
   }
 
   private buildSection6(buffer: WBuffer): void {
@@ -688,8 +847,10 @@ class KDM {
 
     const registerStringIfNotExists = ((_string: string | KDMStringPointer) => {
       const string = _string instanceof KDMStringPointer ? _string.string : _string;
+      console.log(`Attempting to register string '${string}' (length: ${string.length})`);
 
       if (string !== "" && !this.strings.find((s) => s.string === string)) {
+        console.log(`Registering string '${string}' (length: ${string.length})`);
         this.strings.push(new KDMString(this).set(string));
       }
     });
@@ -718,7 +879,11 @@ class KDM {
     /* ------------------- */
 
     let uid = 0x15;
-    const assignUID = (() => uid++);
+
+    const assignUID = (() => {
+      console.log(`Assigning UID #${uid}`);
+      return uid++;
+    });
 
     this.entities.forEach((e) => {
       if (Number.isNaN(e.uid)) {
@@ -844,7 +1009,7 @@ class KDM {
         assert(array !== undefined);
 
         const entry = array.entries.at(0);
-        assert(entry !== undefined && typeof entry === "object" && "_kind" in entry);
+        assert(entry && typeof entry === "object" && "_kind" in entry);
 
         if (entry._kind.includes("Museum")) {
           constructors.push(MuseumLockData, MuseumSecretData, MuseumSecretSealData);
@@ -863,11 +1028,22 @@ class KDM {
       }
 
       // kdm_mapobject.bin
-      if(name === "map_object_data_tbl") {
+      if (name === "map_object_data_tbl") {
         constructors.push(
           MapObjectData0, MapObjectData1, MapObjectData2, MapObjectData3,
           MapObjectData4, MapObjectData5, MapObjectData6, MapObjectData7,
           MapObjectData8
+        );
+      }
+
+      // kdm_dispos_data.bin
+      if(name === "all_disposDataTbl") {
+        constructors.push(
+          DisposData0, DisposData1, DisposData2, DisposData3, DisposData4,
+          DisposData5, DisposData6, DisposData7, DisposData8, DisposData9,
+          DisposData10, DisposData11, DisposData12, DisposData13, DisposData14,
+          DisposData15, DisposData16, DisposData17, DisposData18, DisposData19,
+          DisposData20, DisposData21
         );
       }
 
