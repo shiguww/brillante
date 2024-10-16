@@ -6,6 +6,7 @@ import type WBuffer from "#/buffer/w-buffer";
 import LucieMSG from "#/kdm/lucie/lucie-msg";
 import KDMStruct from "#/kdm/common/kdm-struct";
 import KDMArray from "#/kdm/common/array/kdm-array";
+import MapObjectData7 from "#/kdm/mapobject/mapobject-data7";
 import type KDMStringPointer from "#/kdm/common/primitive/kdm-string-pointer";
 
 type KDMStructConstructor = (new (kdm: KDM) => KDMStruct);
@@ -90,6 +91,11 @@ class KDMStructArray extends KDMArray {
 
     this.size0.set((this.sizeof - KDMStructArray.HEADING_SIZE) / 4);
     this.size1.set(((this.sizeof - KDMStructArray.HEADING_SIZE) / this.element.sizeof) * this.element.realfields.length);
+  
+    // what the fuck???
+    if(this.elementConstructor === MapObjectData7) {
+      this.size1.set(this.size0.get());
+    }
   }
 
   protected override _build(buffer: WBuffer): void {

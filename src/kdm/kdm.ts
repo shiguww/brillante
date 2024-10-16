@@ -45,6 +45,16 @@ import TrackVolumeData from "./sound/track-volume-data";
 import UnusedSoundData0 from "./sound/unused-sound-data0";
 import UnusedSoundData1 from "./sound/unused-sound-data1";
 import UnusedSoundData2 from "./sound/unused-sound-data2";
+import KDMUnknownType0 from "./common/primitive/kdm-unknown-type0";
+import MapObjectData0 from "./mapobject/mapobject-data0";
+import MapObjectData1 from "./mapobject/mapobject-data1";
+import MapObjectData2 from "./mapobject/mapobject-data2";
+import MapObjectData3 from "./mapobject/mapobject-data3";
+import MapObjectData4 from "./mapobject/mapobject-data4";
+import MapObjectData5 from "./mapobject/mapobject-data5";
+import MapObjectData6 from "./mapobject/mapobject-data6";
+import MapObjectData7 from "./mapobject/mapobject-data7";
+import MapObjectData8 from "./mapobject/mapobject-data8";
 
 const ALL_STRUCTS = [
   // kdm_mapdata.bin
@@ -79,7 +89,17 @@ const ALL_STRUCTS = [
   TrackVolumeData,
   UnusedSoundData0,
   UnusedSoundData1,
-  UnusedSoundData2
+  UnusedSoundData2,
+  // kdm_mapobject.bin
+  MapObjectData0,
+  MapObjectData1,
+  MapObjectData2,
+  MapObjectData3,
+  MapObjectData4,
+  MapObjectData5,
+  MapObjectData6,
+  MapObjectData7,
+  MapObjectData8
 ] as const;
 
 const IKDM = z.object({
@@ -122,7 +142,9 @@ const IKDM = z.object({
       z.literal("groupDataTable"),
       z.literal("townWorldMapDataTable"),
       z.literal("effectDataTable"),
-      z.literal("changeBGMDataTable")
+      z.literal("changeBGMDataTable"),
+      // kdm_mapobject.bin
+      z.literal("map_object_data_tbl")
     ]),
     table: KDMStructArrayPointerArray.schema
   }).array()
@@ -150,6 +172,7 @@ class KDM {
   }> = [
       { uid: 0x00, constructor: KDMF32 },
       { uid: 0x01, constructor: KDMU32 },
+      { uid: 0x02, constructor: KDMUnknownType0 },
       { uid: 0x03, constructor: KDMStringPointer },
       { uid: 0x04, constructor: KDMBoolean },
       { uid: 0x08, constructor: KDMU16 },
@@ -288,6 +311,43 @@ class KDM {
 
     if (kind === "TrackVolumeData") {
       return new TrackVolumeData(this);
+    }
+
+    // kdm_mapobject.bin
+    if(kind === "MapObjectData0") {
+      return new MapObjectData0(this);
+    }
+
+    if(kind === "MapObjectData1") {
+      return new MapObjectData1(this);
+    }
+
+    if(kind === "MapObjectData2") {
+      return new MapObjectData2(this);
+    }
+
+    if(kind === "MapObjectData3") {
+      return new MapObjectData3(this);
+    }
+
+    if(kind === "MapObjectData4") {
+      return new MapObjectData4(this);
+    }
+
+    if(kind === "MapObjectData5") {
+      return new MapObjectData5(this);
+    }
+
+    if(kind === "MapObjectData6") {
+      return new MapObjectData6(this);
+    }
+
+    if(kind === "MapObjectData7") {
+      return new MapObjectData7(this);
+    }
+
+    if(kind === "MapObjectData8") {
+      return new MapObjectData8(this);
     }
 
     assert.fail(`${kind}`);
@@ -459,6 +519,10 @@ class KDM {
     ) {
       return new KDMStructArrayPointerArray(this)
         .hasNULLTerminator();
+    }
+
+    if(name === "map_object_data_tbl") {
+      return new KDMStructArrayPointerArray(this);
     }
 
     assert.fail();
@@ -795,6 +859,15 @@ class KDM {
           Setup3Data, UnusedSoundData0, UnusedSoundData1,
           UnusedSoundData2, BattleBGMData, TrackVolumeData,
           GroupData, TownWorldMapData, EffectData, ChangeBGMData
+        );
+      }
+
+      // kdm_mapobject.bin
+      if(name === "map_object_data_tbl") {
+        constructors.push(
+          MapObjectData0, MapObjectData1, MapObjectData2, MapObjectData3,
+          MapObjectData4, MapObjectData5, MapObjectData6, MapObjectData7,
+          MapObjectData8
         );
       }
 
