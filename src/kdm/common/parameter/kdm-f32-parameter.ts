@@ -5,29 +5,30 @@ import type RBuffer from "#/buffer/r-buffer";
 import type WBuffer from "#/buffer/w-buffer";
 import KDMEntity from "#/kdm/common/kdm-entity";
 import KDMU16 from "#/kdm/common/primitive/kdm-u16";
+import KDMF32 from "#/kdm/common/primitive/kdm-f32";
 import KDMU32 from "#/kdm/common/primitive/kdm-u32";
 import KDMStringPointer from "#/kdm/common/primitive/kdm-string-pointer";
 import type KDMArray from "../array/kdm-array";
 
-class KDMU32Parameter extends KDMEntity<IKDMU32Parameter> {
-  public static get schema(): typeof IKDMU32Parameter {
-    return IKDMU32Parameter;
-  };
+class KDMF32Parameter extends KDMEntity<IKDMF32Parameter> {
+  public static get schema(): typeof IKDMF32Parameter {
+    return IKDMF32Parameter;
+  }
 
   public readonly uid = new KDMU16(this.kdm);
-  public readonly value = new KDMU32(this.kdm);
+  public readonly value = new KDMF32(this.kdm);
   public readonly typeid = new KDMU16(this.kdm);
   public readonly unknown0 = new KDMU32(this.kdm);
   public readonly name = new KDMStringPointer(this.kdm);
 
   public constructor(kdm: KDM) {
-    super(kdm, IKDMU32Parameter);
+    super(kdm, IKDMF32Parameter);
   }
 
   public override get arrays(): Array<KDMArray> {
     return [];
   }
- 
+
   public override get sizeof(): number {
     return this.uid.sizeof
       + this.typeid.sizeof
@@ -40,15 +41,15 @@ class KDMU32Parameter extends KDMEntity<IKDMU32Parameter> {
     return [this.name];
   }
 
-  protected override _get(): IKDMU32Parameter {
-    return IKDMU32Parameter.parse({
+  protected override _get(): IKDMF32Parameter {
+    return IKDMF32Parameter.parse({
       name: this.name.get(),
       value: this.value.get(),
       unknown0: this.unknown0.get()
     });
   }
 
-  protected override _set(parameter: IKDMU32Parameter): void {
+  protected override _set(parameter: IKDMF32Parameter): void {
     this.name.set(parameter.name);
     this.value.set(parameter.value);
     this.unknown0.set(parameter.unknown0);
@@ -56,7 +57,7 @@ class KDMU32Parameter extends KDMEntity<IKDMU32Parameter> {
 
   protected override _build(buffer: WBuffer): void {
     // @ts-expect-error - wtf typescript?
-    const typeid = this.kdm.entities.find((e) => e.constructor === KDMU32)?.uid;
+    const typeid = this.kdm.entities.find((e) => e.constructor === KDMF32)?.uid;
     assert(typeid !== undefined);
 
     this.typeid.set(typeid);
@@ -66,7 +67,7 @@ class KDMU32Parameter extends KDMEntity<IKDMU32Parameter> {
 
     this.name.build(buffer);
     this.unknown0.build(buffer);
-
+    
     this.value.build(buffer);
   }
 
@@ -81,13 +82,12 @@ class KDMU32Parameter extends KDMEntity<IKDMU32Parameter> {
   }
 }
 
-const IKDMU32Parameter = z.object({
-  _kind: z.literal("KDMU32Parameter").default("KDMU32Parameter"),
-  value: KDMU32.schema,
+const IKDMF32Parameter = z.object({
+  _kind: z.literal("KDMF32Parameter").default("KDMF32Parameter"),
+  value: KDMF32.schema,
   unknown0: KDMU32.schema,
-  name: KDMStringPointer.schema
+  name: KDMStringPointer.schema,
 });
 
-type IKDMU32Parameter = z.infer<typeof IKDMU32Parameter>;
-
-export default KDMU32Parameter;
+type IKDMF32Parameter = z.infer<typeof IKDMF32Parameter>;
+export default KDMF32Parameter;

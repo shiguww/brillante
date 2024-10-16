@@ -1,12 +1,15 @@
 import z from "zod";
-import KDMF32 from "#/kdm/common/kdm-f32";
-import KDMU32 from "#/kdm/common/kdm-u32";
-import KDMArray from "#/kdm/common/array/kdm-array";
-import KDMStructure from "#/kdm/common/kdm-structure";
-import KDMStringPointer from "#/kdm/common/pointer/kdm-string-pointer";
-import KDMF32ArrayPointer from "#/kdm/common/pointer/kdm-f32-array-pointer";
+import KDMArray from "../common/array/kdm-array";
+import KDMF32 from "../common/primitive/kdm-f32";
+import KDMF32ArrayPointer from "../common/primitive/kdm-f32-array-pointer";
+import KDMStringPointer from "../common/primitive/kdm-string-pointer";
+import KDMU32 from "../common/primitive/kdm-u32";
+import KDMEntity from "../common/kdm-entity";
+import KDMStruct from "../common/kdm-struct";
+import type KDM from "../kdm";
 
 const ITrackVolumeData = z.object({
+  _kind: z.literal("TrackVolumeData").default("TrackVolumeData"),
   unknown3: KDMF32.schema,
   unknown4: KDMF32.schema,
   unknown5: KDMU32.schema,
@@ -21,16 +24,14 @@ const ITrackVolumeData = z.object({
   unknown14: KDMF32.schema,
   unknown0: KDMStringPointer.schema,
   unknown1: KDMF32ArrayPointer.schema,
-  unknown2: KDMF32ArrayPointer.schema,
-  _structure: z.literal("TrackVolumeData").default("TrackVolumeData")
+  unknown2: KDMF32ArrayPointer.schema
 });
 
 type ITrackVolumeData = z.infer<typeof ITrackVolumeData>;
 
-class TrackVolumeData extends KDMStructure<ITrackVolumeData> {
+class TrackVolumeData extends KDMStruct<ITrackVolumeData> {
   public static readonly schema = ITrackVolumeData;
 
-  public override readonly schema = ITrackVolumeData;
   public override readonly unknownSection4Value0 = 0x00000000;
   public override readonly unknownSection4Value1 = 0x008E1200;
 
@@ -50,11 +51,15 @@ class TrackVolumeData extends KDMStructure<ITrackVolumeData> {
   public readonly unknown1 = new KDMF32ArrayPointer(this.kdm);
   public readonly unknown2 = new KDMF32ArrayPointer(this.kdm);
 
-  public override get arrays(): KDMArray[] {
-    return [...this.unknown1.array.arrays, ...this.unknown2.array.arrays];
+  public constructor(kdm: KDM) {
+    super(kdm, ITrackVolumeData);
   }
 
-  public override get fields(): Array<KDMStructure> {
+  public override get arrays(): Array<KDMArray> {
+    return [...this.unknown1.arrays, ...this.unknown2.arrays];
+  }
+
+  public override get fields(): Array<KDMEntity> {
     return [
       this.unknown0,
       this.unknown1,
@@ -78,7 +83,7 @@ class TrackVolumeData extends KDMStructure<ITrackVolumeData> {
     return this.fields.filter((f) => f instanceof KDMStringPointer);
   }
 
-  public override get(): ITrackVolumeData {
+  protected override _get(): ITrackVolumeData {
     return ITrackVolumeData.parse({
       unknown0: this.unknown0.get(),
       unknown1: this.unknown1.get(),
@@ -98,9 +103,7 @@ class TrackVolumeData extends KDMStructure<ITrackVolumeData> {
     });
   }
 
-  public override set(data: ITrackVolumeData): this {
-    const trackvolumedata = ITrackVolumeData.parse(data);
-
+  protected override _set(trackvolumedata: ITrackVolumeData): void {
     this.unknown0.set(trackvolumedata.unknown0);
     this.unknown1.set(trackvolumedata.unknown1);
     this.unknown2.set(trackvolumedata.unknown2);
@@ -116,8 +119,6 @@ class TrackVolumeData extends KDMStructure<ITrackVolumeData> {
     this.unknown12.set(trackvolumedata.unknown12);
     this.unknown13.set(trackvolumedata.unknown13);
     this.unknown14.set(trackvolumedata.unknown14);
-
-    return this;
   }
 }
 

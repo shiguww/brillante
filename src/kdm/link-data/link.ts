@@ -1,8 +1,13 @@
 import z from "zod";
 import assert from "node:assert/strict";
-import KDMU32 from "#/kdm/common/kdm-u32";
-import KDMStructure from "#/kdm/common/kdm-structure";
-import KDMStringPointer from "#/kdm/common/pointer/kdm-string-pointer";
+import KDMEntity from "../common/kdm-entity";
+import KDMU32 from "../common/primitive/kdm-u32";
+import type KDM from "../kdm";
+import WBuffer from "#/buffer/w-buffer";
+import RBuffer from "#/buffer/r-buffer";
+import KDMArray from "../common/array/kdm-array";
+import KDMStringPointer from "../common/primitive/kdm-string-pointer";
+import KDMStruct from "../common/kdm-struct";
 
 const ILinkType = z.enum([
   "DOOR", "GOAL", "PIPE",
@@ -12,7 +17,7 @@ const ILinkType = z.enum([
 
 type ILinkType = z.infer<typeof ILinkType>;
 
-class LinkType extends KDMStructure<ILinkType> {
+class LinkType extends KDMEntity<ILinkType> {
   public static readonly schema = ILinkType;
   public static readonly TYPE_DOOR = 0x00000002;
   public static readonly TYPE_GOAL = 0x00000005;
@@ -24,14 +29,24 @@ class LinkType extends KDMStructure<ILinkType> {
 
   public readonly type = new KDMU32(this.kdm);
   public override readonly schema = ILinkType;
-  public override readonly unknownSection4Value0 = null;
-  public override readonly unknownSection4Value1 = null;
 
-  public override get fields(): Array<KDMStructure> {
-    return [this.type];
+  public constructor(kdm: KDM) {
+    super(kdm, ILinkType);
   }
 
-  public override get(): ILinkType {
+  public override get arrays(): Array<KDMArray> {
+    return [];
+  }
+
+  public override get sizeof(): number {
+    return this.type.sizeof;
+  }
+
+  public override get strings(): Array<KDMStringPointer> {
+    return [];
+  }
+
+  protected override _get(): ILinkType {
     const type = this.type.get();
 
     if (type === LinkType.TYPE_DOOR) {
@@ -65,7 +80,7 @@ class LinkType extends KDMStructure<ILinkType> {
     assert.fail("unreachable");
   }
 
-  public override set(type: ILinkType): this {
+  protected override _set(type: ILinkType): this {
     if (type === "DOOR") {
       this.type.set(LinkType.TYPE_DOOR);
       return this;
@@ -103,9 +118,18 @@ class LinkType extends KDMStructure<ILinkType> {
 
     assert.fail("unreachable");
   }
+
+  protected override _build(buffer: WBuffer): void {
+    this.type.build(buffer);
+  }
+
+  protected override _parse(buffer: RBuffer): void {
+    this.type.parse(buffer);
+  }
 }
 
 const ILink = z.object({
+  _kind: z.literal("Link").default("Link"),
   type: LinkType.schema,
   unknown0: KDMU32.schema,
   unknown1: KDMU32.schema,
@@ -120,13 +144,12 @@ const ILink = z.object({
   transitions: z.tuple([
     KDMStringPointer.schema,
     KDMStringPointer.schema
-  ]),
-  _structure: z.literal("Link").default("Link")
+  ])
 });
 
 type ILink = z.infer<typeof ILink>;
 
-class Link extends KDMStructure<ILink> {
+class Link extends KDMStruct<ILink> {
   public static readonly schema = ILink;
 
   public override readonly schema = ILink;
@@ -143,9 +166,13 @@ class Link extends KDMStructure<ILink> {
   public readonly transition0 = new KDMStringPointer(this.kdm);
   public readonly transition1 = new KDMStringPointer(this.kdm);
 
-  public override get fields(): Array<KDMStructure> {
+  public constructor(kdm: KDM) {
+    super(kdm, ILink);
+  }
+
+  public override get fields(): Array<KDMEntity> {
     return [
-      ...this.type.fields,
+      this.type.type,
       this.unknown0,
       this.unknown1,
       this.room1,
@@ -157,11 +184,7 @@ class Link extends KDMStructure<ILink> {
     ];
   }
 
-  public override get strings(): KDMStringPointer[] {
-    return this.fields.filter((f) => f instanceof KDMStringPointer);
-  }
-
-  public override get(): ILink {
+  protected override _get(): ILink {
     return ILink.parse({
       type: this.type.get(),
       unknown0: this.unknown0.get(),
@@ -172,9 +195,7 @@ class Link extends KDMStructure<ILink> {
     });
   }
 
-  public override set(data: unknown): this {
-    const link = ILink.parse(data);
-
+  protected override _set(link: ILink): void {
     this.type.set(link.type);
     this.room0.set(link.rooms[0]);
     this.room1.set(link.rooms[1]);
@@ -184,8 +205,6 @@ class Link extends KDMStructure<ILink> {
     this.unknown1.set(link.unknown1);
     this.transition0.set(link.transitions[0]);
     this.transition1.set(link.transitions[1]);
-
-    return this;
   }
 }
 

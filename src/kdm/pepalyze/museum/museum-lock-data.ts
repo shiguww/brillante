@@ -1,12 +1,15 @@
+import type KDMEntity from "#/kdm/common/kdm-entity";
+import KDMStruct from "#/kdm/common/kdm-struct";
+import KDMU16Padding from "#/kdm/common/padding/kdm-u16-padding";
+import KDMBoolean from "#/kdm/common/primitive/kdm-boolean";
+import KDMF32 from "#/kdm/common/primitive/kdm-f32";
+import KDMStringPointer from "#/kdm/common/primitive/kdm-string-pointer";
+import KDMU32 from "#/kdm/common/primitive/kdm-u32";
+import type KDM from "#/kdm/kdm";
 import z from "zod";
-import KDMStructure from "#/kdm/common/kdm-structure";
-import KDMStringPointer from "#/kdm/common/pointer/kdm-string-pointer";
-import KDMU32 from "../../common/kdm-u32";
-import KDMBoolean from "../../common/kdm-boolean";
-import KDMF32 from "../../common/kdm-f32";
-import KDMU16Padding from "../../common/padding/kdm-u16-padding";
 
 const IMuseumLockData = z.object({
+  _kind: z.literal("MuseumLockData").default("MuseumLockData"),
   unknown0: KDMStringPointer.schema,
   unknown1: KDMU32.schema,
   unknown2: KDMBoolean.schema,
@@ -79,15 +82,13 @@ const IMuseumLockData = z.object({
   unknown69: KDMStringPointer.schema,
   unknown70: KDMStringPointer.schema,
   unknown71: KDMStringPointer.schema,
-  _structure: z.literal("MuseumLockData").default("MuseumLockData")
 });
 
 type IMuseumLockData = z.infer<typeof IMuseumLockData>;
 
-class MuseumLockData extends KDMStructure<IMuseumLockData> {
+class MuseumLockData extends KDMStruct<IMuseumLockData> {
   public static readonly schema = IMuseumLockData;
 
-  public override readonly schema = IMuseumLockData;
   public override readonly unknownSection4Value0 = 0x00000000;
   public override readonly unknownSection4Value1 = 0x00572BCC;
 
@@ -164,7 +165,11 @@ class MuseumLockData extends KDMStructure<IMuseumLockData> {
   public readonly unknown70 = new KDMStringPointer(this.kdm);
   public readonly unknown71 = new KDMStringPointer(this.kdm);
 
-  public override get fields(): Array<KDMStructure> {
+  public constructor(kdm: KDM) {
+    super(kdm, IMuseumLockData);
+  }
+
+  public override get fields(): Array<KDMEntity> {
     return [
       this.unknown0,  // 000
       this.unknown1,  // 004
@@ -242,11 +247,7 @@ class MuseumLockData extends KDMStructure<IMuseumLockData> {
     ];
   }
 
-  public override get strings(): KDMStringPointer[] {
-    return this.fields.filter((f) => f instanceof KDMStringPointer);
-  }
-
-  public override get(): IMuseumLockData {
+  protected override _get(): IMuseumLockData {
     return IMuseumLockData.parse({
       unknown0: this.unknown0.get(),
       unknown1: this.unknown1.get(),
@@ -323,9 +324,7 @@ class MuseumLockData extends KDMStructure<IMuseumLockData> {
     });
   }
 
-  public override set(data: unknown): this {
-    const lockdata = IMuseumLockData.parse(data);
-
+  protected override _set(lockdata: IMuseumLockData): void {
     this.unknown0.set(lockdata.unknown0);
     this.unknown1.set(lockdata.unknown1);
     this.unknown2.set(lockdata.unknown2);
@@ -398,8 +397,6 @@ class MuseumLockData extends KDMStructure<IMuseumLockData> {
     this.unknown69.set(lockdata.unknown69);
     this.unknown70.set(lockdata.unknown70);
     this.unknown71.set(lockdata.unknown71);
-
-    return this;
   }
 }
 

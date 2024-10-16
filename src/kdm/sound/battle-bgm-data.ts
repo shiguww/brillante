@@ -1,9 +1,12 @@
 import z from "zod";
-import KDMF32 from "#/kdm/common/kdm-f32";
-import KDMStructure from "#/kdm/common/kdm-structure";
-import KDMStringPointer from "#/kdm/common/pointer/kdm-string-pointer";
+import KDMEntity from "../common/kdm-entity";
+import KDMStringPointer from "../common/primitive/kdm-string-pointer";
+import KDMF32 from "../common/primitive/kdm-f32";
+import KDMStruct from "../common/kdm-struct";
+import type KDM from "../kdm";
 
 const IBattleBGMData = z.object({
+  _kind: z.literal("BattleBGMData").default("BattleBGMData"),
   unknown2: KDMF32.schema,
   unknown4: KDMF32.schema,
   unknown6: KDMF32.schema,
@@ -21,16 +24,14 @@ const IBattleBGMData = z.object({
   unknown14: KDMStringPointer.schema,
   unknown15: KDMStringPointer.schema,
   unknown16: KDMStringPointer.schema,
-  unknown17: KDMStringPointer.schema,
-  _structure: z.literal("BattleBGMData").default("BattleBGMData")
+  unknown17: KDMStringPointer.schema
 });
 
 type IBattleBGMData = z.infer<typeof IBattleBGMData>;
 
-class BattleBGMData extends KDMStructure<IBattleBGMData> {
+class BattleBGMData extends KDMStruct<IBattleBGMData> {
   public static readonly schema = IBattleBGMData;
 
-  public override readonly schema = IBattleBGMData;
   public override readonly unknownSection4Value0 = 0x00000000;
   public override readonly unknownSection4Value1 = 0x008E11B8;
 
@@ -53,7 +54,11 @@ class BattleBGMData extends KDMStructure<IBattleBGMData> {
   public readonly unknown16 = new KDMStringPointer(this.kdm);
   public readonly unknown17 = new KDMStringPointer(this.kdm);
 
-  public override get fields(): Array<KDMStructure> {
+  public constructor(kdm: KDM) {
+    super(kdm, IBattleBGMData);
+  }
+
+  public override get fields(): Array<KDMEntity> {
     return [
       this.unknown0,
       this.unknown1,
@@ -76,11 +81,7 @@ class BattleBGMData extends KDMStructure<IBattleBGMData> {
     ];
   }
 
-  public override get strings(): KDMStringPointer[] {
-    return this.fields.filter((f) => f instanceof KDMStringPointer);
-  }
-
-  public override get(): IBattleBGMData {
+  protected override _get(): IBattleBGMData {
     return IBattleBGMData.parse({
       unknown0: this.unknown0.get(),
       unknown1: this.unknown1.get(),
@@ -103,9 +104,7 @@ class BattleBGMData extends KDMStructure<IBattleBGMData> {
     });
   }
 
-  public override set(data: unknown): this {
-    const battlebgmdata = IBattleBGMData.parse(data);
-
+  protected override _set(battlebgmdata: IBattleBGMData): void {
     this.unknown0.set(battlebgmdata.unknown0);
     this.unknown1.set(battlebgmdata.unknown1);
     this.unknown2.set(battlebgmdata.unknown2);
@@ -124,8 +123,6 @@ class BattleBGMData extends KDMStructure<IBattleBGMData> {
     this.unknown15.set(battlebgmdata.unknown15);
     this.unknown16.set(battlebgmdata.unknown16);
     this.unknown17.set(battlebgmdata.unknown17);
-
-    return this;
   }
 }
 

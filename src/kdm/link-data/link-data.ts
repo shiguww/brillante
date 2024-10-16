@@ -1,20 +1,21 @@
 import z from "zod";
-import Link from "#/kdm/link-data/link";
-import KDMU32 from "#/kdm/common/kdm-u32";
 import KDMArray from "#/kdm/common/array/kdm-array";
-import KDMStructure from "#/kdm/common/kdm-structure";
-import KDMStringPointer from "#/kdm/common/pointer/kdm-string-pointer";
-import KDMGenericPointerArrayPointer from "#/kdm/common/pointer/kdm-generic-pointer-array-pointer";
+import KDMStruct from "../common/kdm-struct";
+import KDMStringPointer from "../common/primitive/kdm-string-pointer";
+import KDMU32 from "../common/primitive/kdm-u32";
+import KDMEntity from "../common/kdm-entity";
+import type KDM from "../kdm";
+import KDMStructArrayPointerArrayPointer from "../common/primitive/kdm-struct-array-pointer-array-pointer";
 
 const ILinkData = z.object({
+  _kind: z.literal("LinkData").default("LinkData"),
   name: KDMStringPointer.schema,
-  links: Link.schema.array().array(),
-  _structure: z.literal("LinkData").default("LinkData")
+  links: KDMStructArrayPointerArrayPointer.schema
 });
 
 type ILinkData = z.infer<typeof ILinkData>;
 
-class LinkData extends KDMStructure<ILinkData> {
+class LinkData extends KDMStruct<ILinkData> {
   public static readonly schema = ILinkData;
 
   public override readonly schema = ILinkData;
@@ -23,14 +24,17 @@ class LinkData extends KDMStructure<ILinkData> {
 
   public readonly count = new KDMU32(this.kdm);
   public readonly name = new KDMStringPointer(this.kdm);
-  public readonly links = new KDMGenericPointerArrayPointer(this.kdm)
-    .useNullTerminator(false);
+  public readonly links = new KDMStructArrayPointerArrayPointer(this.kdm);
+
+  public constructor(kdm: KDM) {
+    super(kdm, ILinkData);
+  }
 
   public override get arrays(): Array<KDMArray> {
     return this.links.arrays;
   }
  
-  public override get fields(): Array<KDMStructure> {
+  public override get fields(): Array<KDMEntity> {
     return [
       this.name,
       this.links,
@@ -40,26 +44,22 @@ class LinkData extends KDMStructure<ILinkData> {
   
   public override get strings(): KDMStringPointer[] {
     return [
-      ...this.links.array.entries.map((l) => l.strings).flat(),
-      ...this.fields.filter((f) => f instanceof KDMStringPointer)
+      ...this.links.strings,
+      this.name
     ];
   }
 
-  public override get(): ILinkData {
+  protected override _get(): ILinkData {
     return ILinkData.parse({
       name: this.name.get(),
       links: this.links.get()
     });
   }
 
-  public override set(data: unknown): this {
-    const linkdata = ILinkData.parse(data);
-
+  protected override _set(linkdata: ILinkData): void {
     this.name.set(linkdata.name);
     this.links.set(linkdata.links);
-    this.count.set(linkdata.links.length);
-
-    return this;
+    this.count.set(this.links.array.entries.length);
   }
 }
 
