@@ -33,6 +33,18 @@ import SecretSealData from "./pepalyze/secret-seal-data";
 import MuseumLockData from "./pepalyze/museum/museum-lock-data";
 import MuseumSecretData from "./pepalyze/museum/museum-secret-data";
 import MuseumSecretSealData from "./pepalyze/museum/museum-secret-seal-data";
+import KDMF32ArrayPointer from "./common/primitive/kdm-f32-array-pointer";
+import KDMF32Array from "./common/array/kdm-f32-array";
+import BattleBGMData from "./sound/battle-bgm-data";
+import ChangeBGMData from "./sound/change-bgm-data";
+import EffectData from "./sound/effect-data";
+import GroupData from "./sound/group-data";
+import Setup3Data from "./sound/setup3-data";
+import TownWorldMapData from "./sound/town-worldmap-data";
+import TrackVolumeData from "./sound/track-volume-data";
+import UnusedSoundData0 from "./sound/unused-sound-data0";
+import UnusedSoundData1 from "./sound/unused-sound-data1";
+import UnusedSoundData2 from "./sound/unused-sound-data2";
 
 const ALL_STRUCTS = [
   // kdm_mapdata.bin
@@ -56,7 +68,18 @@ const ALL_STRUCTS = [
   // kdm_pepalyze_museum.bin
   MuseumLockData,
   MuseumSecretData,
-  MuseumSecretSealData
+  MuseumSecretSealData,
+  // kdm_sound.bin
+  BattleBGMData,
+  ChangeBGMData,
+  EffectData,
+  GroupData,
+  Setup3Data,
+  TownWorldMapData,
+  TrackVolumeData,
+  UnusedSoundData0,
+  UnusedSoundData1,
+  UnusedSoundData2
 ] as const;
 
 const IKDM = z.object({
@@ -65,6 +88,7 @@ const IKDM = z.object({
     KDMU32Parameter.schema
   ]).array(),
   arrays: z.union([
+    KDMF32Array.schema,
     KDMStructArray.schema(),
     KDMStructArrayPointerArray.schema
   ]).array(),
@@ -90,7 +114,15 @@ const IKDM = z.object({
       // kdm_pepalyze / kdm_pepalyze_museum.bin
       z.literal("lockDataTable"),
       z.literal("secretDataTable"),
-      z.literal("secretSealDataTable")
+      z.literal("secretSealDataTable"),
+      // kdm_sound.bin
+      z.literal("setup3DDataTable"),
+      z.literal("battleBgmDataTable"),
+      z.literal("trackVolumeDataTable"),
+      z.literal("groupDataTable"),
+      z.literal("townWorldMapDataTable"),
+      z.literal("effectDataTable"),
+      z.literal("changeBGMDataTable")
     ]),
     table: KDMStructArrayPointerArray.schema
   }).array()
@@ -121,6 +153,7 @@ class KDM {
       { uid: 0x03, constructor: KDMStringPointer },
       { uid: 0x04, constructor: KDMBoolean },
       { uid: 0x08, constructor: KDMU16 },
+      { uid: 0x0A, constructor: KDMF32ArrayPointer },
       { uid: 0x0D, constructor: KDMStringPointerArrayPointer },
       { uid: 0x0F, constructor: KDMStructArrayPointer },
       { uid: 0x14, constructor: KDMStructArrayPointerArrayPointer }
@@ -137,6 +170,10 @@ class KDM {
     const kind = (Object(data) as { _kind: unknown })._kind;
 
     // Global
+    if (kind === "KDMF32Array") {
+      return new KDMF32Array(this);
+    }
+
     if (kind === "KDMF32Parameter") {
       return new KDMF32Parameter(this);
     }
@@ -228,7 +265,32 @@ class KDM {
       return new MuseumSecretSealData(this);
     }
 
-    assert.fail();
+    // kdm_sound.bin
+    if (kind === "BattleBGMData") {
+      return new BattleBGMData(this);
+    }
+
+    if (kind === "ChangeBGMData") {
+      return new ChangeBGMData(this);
+    }
+
+    if (kind === "EffectData") {
+      return new EffectData(this);
+    }
+
+    if (kind === "Setup3Data") {
+      return new Setup3Data(this);
+    }
+
+    if (kind === "TownWorldMapData") {
+      return new TownWorldMapData(this);
+    }
+
+    if (kind === "TrackVolumeData") {
+      return new TrackVolumeData(this);
+    }
+
+    assert.fail(`${kind}`);
   }
 
   private parseHeading(buffer: RBuffer): void {
@@ -385,6 +447,20 @@ class KDM {
       return new KDMStructArrayPointerArray(this);
     }
 
+    // kdm_sound.bin
+    if (
+      name === "battleBgmDataTable" ||
+      name === "changeBGMDataTable" ||
+      name === "effectDataTable" ||
+      name === "groupDataTable" ||
+      name === "setup3DDataTable" ||
+      name === "townWorldMapDataTable" ||
+      name === "trackVolumeDataTable"
+    ) {
+      return new KDMStructArrayPointerArray(this)
+        .hasNULLTerminator();
+    }
+
     assert.fail();
   }
 
@@ -400,6 +476,10 @@ class KDM {
     } else {
       const constructor = this.entities.find((e) => e.uid === tid)?.constructor;
       assert(constructor !== undefined);
+
+      if (constructor === KDMF32) {
+        array = new KDMF32Array(this);
+      }
 
       if (constructor === KDMStructArrayPointer) {
         array = new KDMStructArrayPointerArray(this);
@@ -582,7 +662,7 @@ class KDM {
       }
     });
 
-    if (this.tables.find(({ name }) => name === "disposWorldMapTable" || name === "lockDataTable")) {
+    if (this.tables.find(({ name }) => name === "disposWorldMapTable" || name === "lockDataTable" || name === "battleBgmDataTable")) {
       this.tables.forEach(({ table }, i, arr) => {
         const last = (i + 1 === arr.length);
 
@@ -700,13 +780,22 @@ class KDM {
         assert(array !== undefined);
 
         const entry = array.entries.at(0);
-        assert(entry !== undefined);
+        assert(entry !== undefined && typeof entry === "object" && "_kind" in entry);
 
         if (entry._kind.includes("Museum")) {
           constructors.push(MuseumLockData, MuseumSecretData, MuseumSecretSealData);
         } else {
           constructors.push(LockData, SecretData, SecretSealData);
         }
+      }
+
+      // kdm_sound.bin
+      if (name === "battleBgmDataTable") {
+        constructors.push(
+          Setup3Data, UnusedSoundData0, UnusedSoundData1,
+          UnusedSoundData2, BattleBGMData, TrackVolumeData,
+          GroupData, TownWorldMapData, EffectData, ChangeBGMData
+        );
       }
 
       constructors.forEach((constructor) => this.entities.push({ uid: NaN, constructor }));
