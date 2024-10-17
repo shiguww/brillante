@@ -18,8 +18,11 @@ class DisposData20 extends KDMStruct<IDisposData20> {
   public override readonly unknownSection4Value1 = 14234976;
   public override readonly unknownSection4Value0 = 0x00000000;
 
-  public readonly unknown0 = new KDMStringPointerArrayPointer(this.kdm);
-  public readonly unknown1 = new KDMStringPointerArrayPointer(this.kdm);
+  public readonly unknown0 = new KDMStringPointerArrayPointer(this.kdm)
+    .hasNULLTerminator();
+
+  public readonly unknown1 = new KDMStringPointerArrayPointer(this.kdm)
+    .hasNULLTerminator();
 
   public constructor(kdm: KDM) {
     super(kdm, IDisposData20);

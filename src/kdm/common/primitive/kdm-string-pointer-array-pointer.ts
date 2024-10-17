@@ -9,6 +9,7 @@ import KDMStringPointer from "#/kdm/common/primitive/kdm-string-pointer";
 import KDMStringPointerArray from "#/kdm/common/array/kdm-string-pointer-array";
 
 class KDMStringPointerArrayPointer extends KDMEntity<IKDMStringPointerArrayPointer> {
+  private nullTerminatorFlag = false;
   private _reference: null | string = null;
 
   public static get schema(): typeof IKDMStringPointerArrayPointer {
@@ -70,12 +71,12 @@ class KDMStringPointerArrayPointer extends KDMEntity<IKDMStringPointerArrayPoint
       return;
     }
 
-    const array = this.kdm.arrays.find((arr) => arr.refkey === this.reference);
+    if(this.nullTerminatorFlag) {
+      this.array.hasNULLTerminator();
+    }
 
-    assert(array !== undefined);
-    assert(array.offset !== null);
-
-    buffer.setU32(array.offset + KDMStringPointerArray.HEADING_SIZE);
+    assert(this.array.offset !== null);
+    buffer.setU32(this.array.offset + KDMStringPointerArray.HEADING_SIZE);
   }
 
   protected override _parse(buffer: RBuffer): void {
@@ -90,6 +91,11 @@ class KDMStringPointerArrayPointer extends KDMEntity<IKDMStringPointerArrayPoint
       .find((arr) => arr.offset !== null && ((arr.offset + KDMStringPointerArray.HEADING_SIZE) === pointer));
 
     assert(array instanceof KDMStringPointerArray);
+
+    if(this.nullTerminatorFlag) {
+      array.hasNULLTerminator();
+    }
+
     this.reference = array.refkey;
   }
 
@@ -99,6 +105,11 @@ class KDMStringPointerArrayPointer extends KDMEntity<IKDMStringPointerArrayPoint
     }
 
     return ({ ...super.toJSON(), _pointer: this.array.offset });
+  }
+
+  public hasNULLTerminator(): this {
+    this.nullTerminatorFlag = true;
+    return this;
   }
 }
 
