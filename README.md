@@ -20,7 +20,7 @@ pnpm install
 ```
 
 ## Manipulating KDM files
-The tool has four possible actions:
+The tool has three possible actions:
 * `build` - Create a KDM binary file from a JSON export
 * `parse` - Export a KDM binary file into an editable JSON format
 * `inspect` - Export a KDM binary file into a verbose, readonly JSON format
@@ -62,11 +62,6 @@ pnpm brillante kdm-build -i kdm_mapdata.kdm.json -o file.bin # Builds to file.bi
 | `kdm_battle_common.bin`   | ❌       |
 | `kdm_worldmap_data.bin`   | ✅       |
 | `kdm_pepalyze_museum.bin` | ✅       |
-
-* `✅`: fully supported, parsing and building loses no data
-* `🧪`: fully supported, parsing and building loses unused data
-* `🚧`: partially supported
-* `❌`: not supported
 
 ## Running tests
 To run the tests, create a `data` directory and copy a dump of the game's romFS in it. Then run `pnpm test`.
