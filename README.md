@@ -69,3 +69,8 @@ To run the tests, create a `data` directory and copy a dump of the game's romFS 
 ## Other tools
 - [`kdm_battle_set_*.bin` editor (by Longboost)](https://github.com/Longboost/battle-set-exporter/releases)
 - [`Lang/*.bin` & `NWTexture/*.bin` editor (by Darxoon)](https://github.com/Darxoon/nw-tex)
+
+## Contributors
+- [Darxoon](https://github.com/Darxoon): Research on the KDM file format
+- [HunterXuman](https://x.com/HunterXuman): Naming of unknown fields in various KDM files
+- [Longboost](https://github.com/Longboost): Research on `kdm_link_data.bin`, `kdm_dispos_data.bin`, section 3 and section 4 of KDM files
