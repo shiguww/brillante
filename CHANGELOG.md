@@ -1,5 +1,16 @@
 # Changelog
 
+## [v4.0.0 (2024-10-17)](https//github.com/shiguww/brillante/releases/tag/v4.0.0)
+
+### Added
+- Added support for `kdm_mapobject.bin`
+- Added support for `kdm_dispos_data.bin`
+- Added support for `kdm_worldmap_data.bin`
+
+### Changed
+- KDM: renamed `_structure` to `_kind`
+- KDM: complete rewrite of the export format to allow aliasing
+
 ## [v3.0.0 (2024-10-09)](https//github.com/shiguww/brillante/releases/tag/v3.0.0)
 
 ### Added
