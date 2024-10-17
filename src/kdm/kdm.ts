@@ -755,6 +755,8 @@ class KDM {
     this.parseSection6(buffer);
     this.parseSection7(buffer);
 
+    console.log(this.tables.map((t) => [t.name, t.table.entries.length]));
+
     return this;
   }
 
@@ -957,7 +959,8 @@ class KDM {
 
     const parameters = this.parameters.filter((p) => ![
       "mapDataTableLen",
-      "link_data_all_len"
+      "link_data_all_len",
+      "all_disposDataTblLen"
     ].includes(p.name.string)).map((p) => p.get());
 
     return IKDM.parse({ arrays, tables, parameters });
@@ -1078,6 +1081,15 @@ class KDM {
           unknown0: 0,
           name: "link_data_all_len",
           value: data.table.entries.length
+        }));
+      }
+
+
+      if(data.name === "all_disposDataTbl") {
+        this.parameters.push(new KDMU32Parameter(this).set({
+          unknown0: 0,
+          name: "all_disposDataTblLen",
+          value: data.table.entries.length + 1
         }));
       }
 
