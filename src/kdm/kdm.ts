@@ -755,8 +755,6 @@ class KDM {
     this.parseSection6(buffer);
     this.parseSection7(buffer);
 
-    console.log(this.tables.map((t) => [t.name, t.table.entries.length]));
-
     return this;
   }
 
