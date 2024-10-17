@@ -45,14 +45,25 @@ class KDMStringPointer extends KDMEntity<IKDMStringPointer> {
     this.string = data || "";
   }
 
+  private get pointer(): number {
+    return this.kdm.strings.find((s) => s.string === this.string)?.offset || 0;
+  }
+
   protected override _build(buffer: WBuffer): void {
-    const pointer = this.kdm.strings.find((s) => s.string === this.string)?.offset;
-    buffer.setU32(pointer || 0);
+    buffer.setU32(this.pointer);
   }
 
   protected override _parse(buffer: RBuffer): void {
     const pointer = buffer.getU32();
     this.string = this.kdm.strings.find((s) => s.offset === pointer)?.string || "";
+  }
+
+  public override toJSON(): object {
+    if(this.pointer === 0) {
+      return ({ ...super.toJSON(), _pointer: null});
+    }
+
+    return ({ ...super.toJSON(), _pointer: this.pointer });
   }
 }
 

@@ -92,6 +92,14 @@ class KDMF32ArrayPointer extends KDMEntity<IKDMF32ArrayPointer> {
     assert(array instanceof KDMF32Array);
     this.reference = array.refkey;
   }
+
+  public override toJSON(): object {
+    if (this.reference === null) {
+      return ({ ...super.toJSON(), _pointer: null });
+    }
+
+    return ({ ...super.toJSON(), _pointer: this.array.offset });
+  }
 }
 
 const IKDMF32ArrayPointer = z.object({

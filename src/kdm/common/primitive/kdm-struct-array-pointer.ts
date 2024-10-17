@@ -91,6 +91,14 @@ class KDMStructArrayPointer extends KDMEntity<IKDMStructArrayPointer> {
     assert(array instanceof KDMStructArray);
     this.reference = array.refkey;
   }
+
+  public override toJSON(): object {
+    if (this.reference === null) {
+      return ({ ...super.toJSON(), _pointer: null });
+    }
+
+    return ({ ...super.toJSON(), _pointer: this.array.offset });
+  }
 }
 
 const IKDMStructArrayPointer = z.object({

@@ -150,6 +150,10 @@ class KDMStructArray extends KDMArray {
       this.element.parse(buffer);
     }
   }
+
+  public override toJSON(): object {
+    return ({ ...super.toJSON(), _item_kind: this.elementConstructor.name });
+  }
 }
 
 type IKDMStruct = z.infer<typeof KDMStruct.baseschema>;

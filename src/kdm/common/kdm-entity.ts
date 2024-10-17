@@ -51,6 +51,17 @@ abstract class KDMEntity<T = unknown> {
     assert.equal(buffer.offset - this.sizeof, this.offset);
     return this;
   }
+
+  public toJSON(): object {
+    return ({
+      ...this,
+      kdm: undefined,
+      offset: undefined,
+      schema: undefined,
+      _offset: this.offset,
+      _constructor: this.constructor.name
+    });
+  }
 }
 
 export default KDMEntity;
