@@ -1,83 +1,83 @@
 import z from "zod";
 import RBuffer from "#/buffer/r-buffer";
 import assert from "node:assert/strict";
-import MapData from "#/kdm/global/mapdata/mapdata";
-import KDMArray from "#/kdm/global/common/array/kdm-array";
-import KDMF32 from "#/kdm/global/common/primitive/kdm-f32";
-import KDMU32 from "#/kdm/global/common/primitive/kdm-u32";
-import type KDMEntity from "#/kdm/global/common/kdm-entity";
-import KDMString from "#/kdm/global/common/primitive/kdm-string";
-import KDMStructArray from "#/kdm/global/common/array/kdm-struct-array";
-import KDMF32Parameter from "#/kdm/global/common/parameter/kdm-f32-parameter";
-import KDMU32Parameter from "#/kdm/global/common/parameter/kdm-u32-parameter";
-import KDMStringPointer from "#/kdm/global/common/primitive/kdm-string-pointer";
-import KDMStructArrayPointer from "#/kdm/global/common/primitive/kdm-struct-array-pointer";
-import KDMStructArrayPointerArray from "#/kdm/global/common/array/kdm-struct-array-pointer-array";
+import MapData from "#/kdm/mapdata/mapdata";
+import KDMArray from "#/kdm/common/array/kdm-array";
+import KDMF32 from "#/kdm/common/primitive/kdm-f32";
+import KDMU32 from "#/kdm/common/primitive/kdm-u32";
+import type KDMEntity from "#/kdm/common/kdm-entity";
+import KDMString from "#/kdm/common/primitive/kdm-string";
+import KDMStructArray from "#/kdm/common/array/kdm-struct-array";
+import KDMF32Parameter from "#/kdm/common/parameter/kdm-f32-parameter";
+import KDMU32Parameter from "#/kdm/common/parameter/kdm-u32-parameter";
+import KDMStringPointer from "#/kdm/common/primitive/kdm-string-pointer";
+import KDMStructArrayPointer from "#/kdm/common/primitive/kdm-struct-array-pointer";
+import KDMStructArrayPointerArray from "#/kdm/common/array/kdm-struct-array-pointer-array";
 import WBuffer from "#/buffer/w-buffer";
-import KDMStruct from "#/kdm/global/common/kdm-struct";
-import LucieMSG from "#/kdm/global/lucie/lucie-msg";
-import KDMStringPointerArrayPointer from "#/kdm/global/common/primitive/kdm-string-pointer-array-pointer";
-import ShopListing from "#/kdm/global/shop/shop-listing";
-import KDMU16 from "#/kdm/global/common/primitive/kdm-u16";
-import Link from "#/kdm/global/link-data/link";
-import LinkData from "#/kdm/global/link-data/link-data";
-import KDMStructArrayPointerArrayPointer from "#/kdm/global/common/primitive/kdm-struct-array-pointer-array-pointer";
-import WorldMapData0 from "#/kdm/global/worldmap-data/worldmap-data0";
-import WorldMapData1 from "#/kdm/global/worldmap-data/worldmap-data1";
-import WorldMapData2 from "#/kdm/global/worldmap-data/worldmap-data2";
-import WorldMapData3 from "#/kdm/global/worldmap-data/worldmap-data3";
-import KDMBoolean from "#/kdm/global/common/primitive/kdm-boolean";
-import LockData from "#/kdm/global/pepalyze/lock-data";
-import SecretData from "#/kdm/global/pepalyze/secret-data";
-import SecretSealData from "#/kdm/global/pepalyze/secret-seal-data";
-import MuseumLockData from "#/kdm/global/pepalyze/museum/museum-lock-data";
-import MuseumSecretData from "#/kdm/global/pepalyze/museum/museum-secret-data";
-import MuseumSecretSealData from "#/kdm/global/pepalyze/museum/museum-secret-seal-data";
-import KDMF32ArrayPointer from "#/kdm/global/common/primitive/kdm-f32-array-pointer";
-import KDMF32Array from "#/kdm/global/common/array/kdm-f32-array";
-import BattleBGMData from "#/kdm/global/sound/battle-bgm-data";
-import ChangeBGMData from "#/kdm/global/sound/change-bgm-data";
-import EffectData from "#/kdm/global/sound/effect-data";
-import GroupData from "#/kdm/global/sound/group-data";
-import Setup3Data from "#/kdm/global/sound/setup3-data";
-import TownWorldMapData from "#/kdm/global/sound/town-worldmap-data";
-import TrackVolumeData from "#/kdm/global/sound/track-volume-data";
-import UnusedSoundData0 from "#/kdm/global/sound/unused-sound-data0";
-import UnusedSoundData1 from "#/kdm/global/sound/unused-sound-data1";
-import UnusedSoundData2 from "#/kdm/global/sound/unused-sound-data2";
-import KDMUnknownType0 from "#/kdm/global/common/primitive/kdm-unknown-type0";
-import MapObjectData0 from "#/kdm/global/mapobject/mapobject-data0";
-import MapObjectData1 from "#/kdm/global/mapobject/mapobject-data1";
-import MapObjectData2 from "#/kdm/global/mapobject/mapobject-data2";
-import MapObjectData3 from "#/kdm/global/mapobject/mapobject-data3";
-import MapObjectData4 from "#/kdm/global/mapobject/mapobject-data4";
-import MapObjectData5 from "#/kdm/global/mapobject/mapobject-data5";
-import MapObjectData6 from "#/kdm/global/mapobject/mapobject-data6";
-import MapObjectData7 from "#/kdm/global/mapobject/mapobject-data7";
-import MapObjectData8 from "#/kdm/global/mapobject/mapobject-data8";
-import DisposData0 from "#/kdm/global/dispos-data/dispos-data0";
-import DisposData1 from "#/kdm/global/dispos-data/dispos-data1";
-import DisposData10 from "#/kdm/global/dispos-data/dispos-data10";
-import DisposData11 from "#/kdm/global/dispos-data/dispos-data11";
-import DisposData12 from "#/kdm/global/dispos-data/dispos-data12";
-import DisposData13 from "#/kdm/global/dispos-data/dispos-data13";
-import DisposData14 from "#/kdm/global/dispos-data/dispos-data14";
-import DisposData15 from "#/kdm/global/dispos-data/dispos-data15";
-import DisposData16 from "#/kdm/global/dispos-data/dispos-data16";
-import DisposData17 from "#/kdm/global/dispos-data/dispos-data17";
-import DisposData18 from "#/kdm/global/dispos-data/dispos-data18";
-import DisposData19 from "#/kdm/global/dispos-data/dispos-data19";
-import DisposData2 from "#/kdm/global/dispos-data/dispos-data2";
-import DisposData20 from "#/kdm/global/dispos-data/dispos-data20";
-import DisposData21 from "#/kdm/global/dispos-data/dispos-data21";
-import DisposData3 from "#/kdm/global/dispos-data/dispos-data3";
-import DisposData4 from "#/kdm/global/dispos-data/dispos-data4";
-import DisposData5 from "#/kdm/global/dispos-data/dispos-data5";
-import DisposData6 from "#/kdm/global/dispos-data/dispos-data6";
-import DisposData7 from "#/kdm/global/dispos-data/dispos-data7";
-import DisposData8 from "#/kdm/global/dispos-data/dispos-data8";
-import DisposData9 from "#/kdm/global/dispos-data/dispos-data9";
-import KDMStringPointerArray from "#/kdm/global/common/array/kdm-string-pointer-array";
+import KDMStruct from "#/kdm/common/kdm-struct";
+import LucieMSG from "#/kdm/lucie/lucie-msg";
+import KDMStringPointerArrayPointer from "#/kdm/common/primitive/kdm-string-pointer-array-pointer";
+import ShopListing from "#/kdm/shop/shop-listing";
+import KDMU16 from "#/kdm/common/primitive/kdm-u16";
+import Link from "#/kdm/link-data/link";
+import LinkData from "#/kdm/link-data/link-data";
+import KDMStructArrayPointerArrayPointer from "#/kdm/common/primitive/kdm-struct-array-pointer-array-pointer";
+import WorldMapData0 from "#/kdm/worldmap-data/worldmap-data0";
+import WorldMapData1 from "#/kdm/worldmap-data/worldmap-data1";
+import WorldMapData2 from "#/kdm/worldmap-data/worldmap-data2";
+import WorldMapData3 from "#/kdm/worldmap-data/worldmap-data3";
+import KDMBoolean from "#/kdm/common/primitive/kdm-boolean";
+import LockData from "#/kdm/pepalyze/lock-data";
+import SecretData from "#/kdm/pepalyze/secret-data";
+import SecretSealData from "#/kdm/pepalyze/secret-seal-data";
+import MuseumLockData from "#/kdm/pepalyze/museum/museum-lock-data";
+import MuseumSecretData from "#/kdm/pepalyze/museum/museum-secret-data";
+import MuseumSecretSealData from "#/kdm/pepalyze/museum/museum-secret-seal-data";
+import KDMF32ArrayPointer from "#/kdm/common/primitive/kdm-f32-array-pointer";
+import KDMF32Array from "#/kdm/common/array/kdm-f32-array";
+import BattleBGMData from "#/kdm/sound/battle-bgm-data";
+import ChangeBGMData from "#/kdm/sound/change-bgm-data";
+import EffectData from "#/kdm/sound/effect-data";
+import GroupData from "#/kdm/sound/group-data";
+import Setup3Data from "#/kdm/sound/setup3-data";
+import TownWorldMapData from "#/kdm/sound/town-worldmap-data";
+import TrackVolumeData from "#/kdm/sound/track-volume-data";
+import UnusedSoundData0 from "#/kdm/sound/unused-sound-data0";
+import UnusedSoundData1 from "#/kdm/sound/unused-sound-data1";
+import UnusedSoundData2 from "#/kdm/sound/unused-sound-data2";
+import KDMUnknownType0 from "#/kdm/common/primitive/kdm-unknown-type0";
+import MapObjectData0 from "#/kdm/mapobject/mapobject-data0";
+import MapObjectData1 from "#/kdm/mapobject/mapobject-data1";
+import MapObjectData2 from "#/kdm/mapobject/mapobject-data2";
+import MapObjectData3 from "#/kdm/mapobject/mapobject-data3";
+import MapObjectData4 from "#/kdm/mapobject/mapobject-data4";
+import MapObjectData5 from "#/kdm/mapobject/mapobject-data5";
+import MapObjectData6 from "#/kdm/mapobject/mapobject-data6";
+import MapObjectData7 from "#/kdm/mapobject/mapobject-data7";
+import MapObjectData8 from "#/kdm/mapobject/mapobject-data8";
+import DisposData0 from "#/kdm/dispos-data/dispos-data0";
+import DisposData1 from "#/kdm/dispos-data/dispos-data1";
+import DisposData10 from "#/kdm/dispos-data/dispos-data10";
+import DisposData11 from "#/kdm/dispos-data/dispos-data11";
+import DisposData12 from "#/kdm/dispos-data/dispos-data12";
+import DisposData13 from "#/kdm/dispos-data/dispos-data13";
+import DisposData14 from "#/kdm/dispos-data/dispos-data14";
+import DisposData15 from "#/kdm/dispos-data/dispos-data15";
+import DisposData16 from "#/kdm/dispos-data/dispos-data16";
+import DisposData17 from "#/kdm/dispos-data/dispos-data17";
+import DisposData18 from "#/kdm/dispos-data/dispos-data18";
+import DisposData19 from "#/kdm/dispos-data/dispos-data19";
+import DisposData2 from "#/kdm/dispos-data/dispos-data2";
+import DisposData20 from "#/kdm/dispos-data/dispos-data20";
+import DisposData21 from "#/kdm/dispos-data/dispos-data21";
+import DisposData3 from "#/kdm/dispos-data/dispos-data3";
+import DisposData4 from "#/kdm/dispos-data/dispos-data4";
+import DisposData5 from "#/kdm/dispos-data/dispos-data5";
+import DisposData6 from "#/kdm/dispos-data/dispos-data6";
+import DisposData7 from "#/kdm/dispos-data/dispos-data7";
+import DisposData8 from "#/kdm/dispos-data/dispos-data8";
+import DisposData9 from "#/kdm/dispos-data/dispos-data9";
+import KDMStringPointerArray from "#/kdm/common/array/kdm-string-pointer-array";
 
 const ALL_STRUCTS = [
   // kdm_mapdata.bin
@@ -149,6 +149,13 @@ const ALL_STRUCTS = [
 ] as const;
 
 const IKDM = z.object({
+  region: z.union([
+    z.literal("CHN"),
+    z.literal("EUR"),
+    z.literal("JPN"),
+    z.literal("KOR"),
+    z.literal("USA")
+  ]).optional(),
   parameters: z.union([
     KDMF32Parameter.schema,
     KDMU32Parameter.schema
@@ -200,6 +207,8 @@ const IKDM = z.object({
 });
 
 type IKDM = z.infer<typeof IKDM>;
+
+type IKDMRegion = IKDM["region"];
 type IKDMTableName = IKDM["tables"][number]["name"];
 
 interface KDMTable {
@@ -232,6 +241,7 @@ class KDM {
     ];
 
   private _counter = 0;
+  public region: IKDMRegion = undefined;
   public readonly tables: Array<KDMTable> = [];
   public readonly arrays: Array<KDMArray> = [];
   public readonly sections: Array<number> = [];
@@ -580,9 +590,7 @@ class KDM {
       }
 
       const constructor = ALL_STRUCTS.find((constructor) => {
-        const instance = new constructor(this);
-
-        return (
+        const isValid = (instance: KDMStruct) => (
           instance.realfields.length === size &&
           instance.unknownSection4Value0 === unknownSection4Value0 &&
           instance.unknownSection4Value1 === unknownSection4Value1 &&
@@ -591,8 +599,32 @@ class KDM {
             assert(e !== undefined);
 
             return (e.uid === fields.at(i));
-          })
-        );
+          }));
+
+        const instance = new constructor(this);
+
+        if(isValid(instance)) {
+          return true;
+        }
+
+        /*
+          If this is the first type that we're parsing, we will try to determine
+          the region of this file.
+        */
+
+        if (i == 0) {
+          const REGIONS = ["CHN", "EUR", "JPN", "KOR", "USA"] as const;
+
+          for(const region of REGIONS) {
+            this.region = region;
+
+            if(isValid(instance)) {
+              return true;
+            }
+          }
+        }
+
+        return false;
       });
 
       assert(constructor !== undefined);
@@ -952,6 +984,7 @@ class KDM {
   }
 
   public get(): IKDM {
+    const region = this.region;
     const arrays = this.arrays.map((a) => a.get());
     const tables = this.tables.map((t) => ({ ...t, table: t.table.get() }));
 
@@ -961,11 +994,12 @@ class KDM {
       "all_disposDataTblLen"
     ].includes(p.name.string)).map((p) => p.get());
 
-    return IKDM.parse({ arrays, tables, parameters });
+    return IKDM.parse({ arrays, region, tables, parameters });
   }
 
   public set(_data: unknown): this {
     const kdm = IKDM.parse(_data);
+    this.region = kdm.region;
 
     for (const { name, table } of kdm.tables) {
       let constructors: Array<KDMEntityConstructor> = [];
@@ -1083,7 +1117,7 @@ class KDM {
       }
 
 
-      if(data.name === "all_disposDataTbl") {
+      if (data.name === "all_disposDataTbl") {
         this.parameters.push(new KDMU32Parameter(this).set({
           unknown0: 0,
           name: "all_disposDataTblLen",
