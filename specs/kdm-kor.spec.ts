@@ -1,14 +1,10 @@
 import fs from "node:fs";
 import KDM from "#/kdm/kdm";
-import crypto from "node:crypto";
+import sha256 from "./utils/sha256";
 import { test, expect, describe } from "vitest";
 
-const sha256 = (buffer: Buffer) => crypto.createHash("sha256").update(buffer).digest("hex");
-
-// CHN
-
-describe("KDM (CHN)", () => {
-  const TITLE_ID = "00040000000C8100";
+describe("KDM (KOR)", () => {
+  const TITLE_ID = "00040000000C6800";
 
   test("kdm_shop.bin", () => {
     const checksum = "f800563d0b182297ec469a94497c59cf08070c87f3ff7b6c3ad4eb0613a3f472";
