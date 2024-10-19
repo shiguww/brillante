@@ -4,19 +4,28 @@
 	"version": "4.0.0",
 	"name": "brillante",
 	"dependencies": {
-		"commander": "^12.1.0",
+		"zod": "^3.23.8",
 		"vitest": "^2.1.2",
 		"winston": "^3.15.0",
-		"zod": "^3.23.8"
+		"commander": "^12.1.0"
 	},
 	"devDependencies": {
-		"@types/node": "^22.5.1",
+		"pkg": "^5.8.1",
 		"tsx": "^4.19.0",
-		"typescript": "^5.5.4"
+		"tslib": "^2.8.0",
+		"rollup": "^4.24.0",
+		"typescript": "^5.6.2",
+		"@types/node": "^22.5.1",
+		"@rollup/plugin-commonjs": "^28.0.1",
+		"@rollup/plugin-typescript": "^12.1.1",
+		"@rollup/plugin-node-resolve": "^15.3.0"
 	},
 	"scripts": {
 		"test": "vitest --run",
-		"brillante": "tsx src/index.ts"
+    "build:js": "rollup -c",
+		"brillante": "tsx src/index.ts",
+		"build": "pnpm build:js && pnpm build:exe",
+    "build:exe": "pkg build/index.js -o build/brillante -t latest-linux,latest-windows"
 	},
 	"packageManager": "pnpm@9.12.0"
 }
