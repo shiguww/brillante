@@ -1,5 +1,10 @@
 # Changelog
 
+## [v5.1.1 (2024-10-19)](https//github.com/shiguww/brillante/releases/tag/v5.1.1)
+
+### Fixed
+- KDM (`kdm_link_data.bin`): Fixed a mistake in the order of the fields of the `Link` type
+
 ## [v5.1.0 (2024-10-19)](https//github.com/shiguww/brillante/releases/tag/v5.1.0)
 
 ### Added

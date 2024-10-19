@@ -175,12 +175,12 @@ class Link extends KDMStruct<ILink> {
       this.type.type,
       this.unknown0,
       this.unknown1,
-      this.room1,
-      this.event1,
       this.room0,
-      this.event0,
+      this.transition0,
+      this.room1,
       this.transition1,
-      this.transition0
+      this.event0,
+      this.event1
     ];
   }
 
