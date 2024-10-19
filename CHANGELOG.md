@@ -1,5 +1,10 @@
 # Changelog
 
+## [v5.1.0 (2024-10-19)](https//github.com/shiguww/brillante/releases/tag/v5.1.0)
+
+### Added
+- KDM: Added support for `kdm_battle_model.bin`
+
 ## [v5.0.0 (2024-10-19)](https//github.com/shiguww/brillante/releases/tag/v4.0.0)
 
 ### Fixed
