@@ -9,6 +9,7 @@ import KDMArray from "#/kdm/common/array/kdm-array";
 import MapObjectData7 from "#/kdm/mapobject/mapobject-data7";
 import type KDMStringPointer from "#/kdm/common/primitive/kdm-string-pointer";
 import DisposData13 from "#/kdm/dispos-data/dispos-data13";
+import BattleModel0 from "#/kdm/battle-model/battle-model0";
 
 type KDMStructConstructor = (new (kdm: KDM) => KDMStruct);
 
@@ -46,6 +47,10 @@ class KDMStructArray extends KDMArray {
 
   private set elementConstructor(constructor: KDMStructConstructor) {
     if (constructor === LucieMSG) {
+      this.hasNULLTerminator();
+    }
+
+    if(constructor === BattleModel0) {
       this.hasNULLTerminator();
     }
 

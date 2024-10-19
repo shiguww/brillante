@@ -46,7 +46,7 @@ class KDMStringPointer extends KDMEntity<IKDMStringPointer> {
   }
 
   private get pointer(): number {
-    return this.kdm.strings.find((s) => s.string === this.string)?.offset || 0;
+    return this.kdm.strings.find((s) => s.string === this.string)?.offset || 0;
   }
 
   protected override _build(buffer: WBuffer): void {
@@ -59,8 +59,8 @@ class KDMStringPointer extends KDMEntity<IKDMStringPointer> {
   }
 
   public override toJSON(): object {
-    if(this.pointer === 0) {
-      return ({ ...super.toJSON(), _pointer: null});
+    if (this.pointer === 0) {
+      return ({ ...super.toJSON(), _pointer: null });
     }
 
     return ({ ...super.toJSON(), _pointer: this.pointer });

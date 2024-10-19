@@ -18,6 +18,7 @@ The following KDM files are supported:
 - `kdm_link_data.bin`
 - `kdm_mapobject.bin`
 - `kdm_dispos_data.bin`
+- `kdm_battle_model.bin`
 - `kdm_worldmap_data.bin`
 - `kdm_pepalyze.bin` / `kdm_pepalyze_museum.bin`
 

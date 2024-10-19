@@ -75,6 +75,8 @@ import DisposData7 from "./dispos-data/dispos-data7";
 import DisposData8 from "./dispos-data/dispos-data8";
 import DisposData9 from "./dispos-data/dispos-data9";
 import KDMStringPointerArray from "./common/array/kdm-string-pointer-array";
+import BattleModel0 from "./battle-model/battle-model0";
+import BattleModel1 from "./battle-model/battle-model1";
 
 const IKDM = z.object({
   constant: z.number(),
@@ -122,7 +124,9 @@ const IKDM = z.object({
       // kdm_mapobject.bin
       z.literal("map_object_data_tbl"),
       // kdm_dispos_data.bin
-      z.literal("all_disposDataTbl")
+      z.literal("all_disposDataTbl"),
+      // kdm_battle_model.bin
+      z.literal("unitModelTable")
     ]),
     table: KDMStructArrayPointerArray.schema
   }).array()
@@ -409,6 +413,15 @@ class KDM {
       return new DisposData21(this);
     }
 
+    // kdm_battle_model.bin
+    if(kind === "BattleModel0") {
+      return new BattleModel0(this);
+    }
+
+    if(kind === "BattleModel1") {
+      return new BattleModel1(this);
+    }
+
     assert.fail(`${kind}`);
   }
 
@@ -477,6 +490,11 @@ class KDM {
           DisposData15, DisposData16, DisposData17, DisposData18, DisposData19,
           DisposData20, DisposData21
         );
+      }
+
+      // kdm_battle_model
+      if(name === "unitModelTable") {
+        constructors.push(BattleModel0, BattleModel1);
       }
     });
 
@@ -557,6 +575,12 @@ class KDM {
         .hasNULLTerminator();
     }
 
+    // kdm_battle_model.bin    
+    if(name === "unitModelTable") {
+      return new KDMStructArrayPointerArray(this)
+        .hasNULLTerminator();
+    }
+ 
     assert.fail();
   }
 
@@ -765,7 +789,7 @@ class KDM {
     this.parseSection7(buffer);
 
     buffer.offset = this.sections.at(6)!;
-    
+
     buffer.offset += RBuffer.U32_SIZE;
     buffer.offset += new KDMStringPointer(this).sizeof * this.tables.length;
 
