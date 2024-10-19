@@ -2,7 +2,7 @@
 **WIP**: Modding tools for `Paper Mario: Sticker Star`.
 
 ## Installation
-Brillante is distributed as a standalone executable which you can download [here](https://github.com/shiguww/brillante/releases).
+Since v5.0.0, Brillante is distributed as a standalone executable which you can download [here](https://github.com/shiguww/brillante/releases).
 
 ### KDM files
 ```shell
