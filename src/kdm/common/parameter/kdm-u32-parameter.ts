@@ -43,15 +43,13 @@ class KDMU32Parameter extends KDMEntity<IKDMU32Parameter> {
   protected override _get(): IKDMU32Parameter {
     return IKDMU32Parameter.parse({
       name: this.name.get(),
-      value: this.value.get(),
-      unknown0: this.unknown0.get()
+      value: this.value.get()
     });
   }
 
   protected override _set(parameter: IKDMU32Parameter): void {
     this.name.set(parameter.name);
     this.value.set(parameter.value);
-    this.unknown0.set(parameter.unknown0);
   }
 
   protected override _build(buffer: WBuffer): void {
@@ -65,6 +63,11 @@ class KDMU32Parameter extends KDMEntity<IKDMU32Parameter> {
     this.typeid.build(buffer);
 
     this.name.build(buffer);
+
+    if(this.kdm.parameters.at(-1) !== this) {
+      this.unknown0.set(this.kdm.constant + buffer.offset);
+    }
+
     this.unknown0.build(buffer);
 
     this.value.build(buffer);
@@ -84,7 +87,6 @@ class KDMU32Parameter extends KDMEntity<IKDMU32Parameter> {
 const IKDMU32Parameter = z.object({
   _kind: z.literal("KDMU32Parameter").default("KDMU32Parameter"),
   value: KDMU32.schema,
-  unknown0: KDMU32.schema,
   name: KDMStringPointer.schema
 });
 
