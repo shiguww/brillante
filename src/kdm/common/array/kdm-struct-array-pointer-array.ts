@@ -94,7 +94,7 @@ class KDMStructArrayPointerArray extends KDMArray<IKDMStructArrayPointer> {
     this.size1.parse(buffer);
 
     const constructor = this.kdm.entities.find((e) => e.uid === this.tid.get())?.constructor;
-    assert(constructor === KDMStructArrayPointer);
+    assert(constructor === KDMStructArrayPointer, `${this.offset}`);
 
     const count = (this.nullTerminatorFlag
       ? this.size0.get() - 1

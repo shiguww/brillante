@@ -30,9 +30,6 @@ import KDMBoolean from "./common/primitive/kdm-boolean";
 import LockData from "./pepalyze/lock-data";
 import SecretData from "./pepalyze/secret-data";
 import SecretSealData from "./pepalyze/secret-seal-data";
-import MuseumLockData from "./pepalyze/museum/museum-lock-data";
-import MuseumSecretData from "./pepalyze/museum/museum-secret-data";
-import MuseumSecretSealData from "./pepalyze/museum/museum-secret-seal-data";
 import KDMF32ArrayPointer from "./common/primitive/kdm-f32-array-pointer";
 import KDMF32Array from "./common/array/kdm-f32-array";
 import BattleBGMData from "./sound/battle-bgm-data";
@@ -78,75 +75,6 @@ import DisposData7 from "./dispos-data/dispos-data7";
 import DisposData8 from "./dispos-data/dispos-data8";
 import DisposData9 from "./dispos-data/dispos-data9";
 import KDMStringPointerArray from "./common/array/kdm-string-pointer-array";
-
-const ALL_STRUCTS = [
-  // kdm_mapdata.bin
-  MapData,
-  // kdm_lucie.bin
-  LucieMSG,
-  // kdm_shop.bin
-  ShopListing,
-  // kdm_link_data.bin
-  Link,
-  LinkData,
-  // kdm_worldmap_data.bin
-  WorldMapData0,
-  WorldMapData1,
-  WorldMapData2,
-  WorldMapData3,
-  // kdm_pepalyze.bin
-  LockData,
-  SecretData,
-  SecretSealData,
-  // kdm_pepalyze_museum.bin
-  MuseumLockData,
-  MuseumSecretData,
-  MuseumSecretSealData,
-  // kdm_sound.bin
-  BattleBGMData,
-  ChangeBGMData,
-  EffectData,
-  GroupData,
-  Setup3Data,
-  TownWorldMapData,
-  TrackVolumeData,
-  UnusedSoundData0,
-  UnusedSoundData1,
-  UnusedSoundData2,
-  // kdm_mapobject.bin
-  MapObjectData0,
-  MapObjectData1,
-  MapObjectData2,
-  MapObjectData3,
-  MapObjectData4,
-  MapObjectData5,
-  MapObjectData6,
-  MapObjectData7,
-  MapObjectData8,
-  // kdm_dispos_data.bin
-  DisposData0,
-  DisposData1,
-  DisposData2,
-  DisposData3,
-  DisposData4,
-  DisposData5,
-  DisposData6,
-  DisposData7,
-  DisposData8,
-  DisposData9,
-  DisposData10,
-  DisposData11,
-  DisposData12,
-  DisposData13,
-  DisposData14,
-  DisposData15,
-  DisposData16,
-  DisposData17,
-  DisposData18,
-  DisposData19,
-  DisposData20,
-  DisposData21
-] as const;
 
 const IKDM = z.object({
   constant: z.number(),
@@ -317,7 +245,7 @@ class KDM {
       return new WorldMapData3(this);
     }
 
-    // kdm_pepalyze.bin
+    // kdm_pepalyze.bin / kdm_pepalyze_museum.bin
     if (kind === "LockData") {
       return new LockData(this);
     }
@@ -328,19 +256,6 @@ class KDM {
 
     if (kind === "SecretSealData") {
       return new SecretSealData(this);
-    }
-
-    // kdm_pepalyze_museum.bin
-    if (kind === "MuseumLockData") {
-      return new MuseumLockData(this);
-    }
-
-    if (kind === "MuseumSecretData") {
-      return new MuseumSecretData(this);
-    }
-
-    if (kind === "MuseumSecretSealData") {
-      return new MuseumSecretSealData(this);
     }
 
     // kdm_sound.bin
@@ -497,6 +412,154 @@ class KDM {
     assert.fail(`${kind}`);
   }
 
+  private addEntities(): void {
+    let constructors: Array<KDMEntityConstructor> = [];
+
+    this.tables.forEach(({ name }) => {
+      // kdm_mapdata.bin
+      if (name === "mapDataTable") {
+        constructors.push(MapData);
+      }
+
+      // kdm_lucie.bin
+      if (name === "lucieMsgTbl") {
+        constructors.push(LucieMSG);
+      }
+
+      // kdm_shop.bin
+      if (name === "SHOP_DOR") {
+        constructors.push(ShopListing);
+      }
+
+      // kdm_link_data.bin
+      if (name === "link_data_all") {
+        constructors.push(Link, LinkData);
+      }
+
+      // kdm_worldmap_data.bin
+      if (name === "disposWorldMapTable") {
+        constructors.push(WorldMapData0, WorldMapData1);
+      }
+
+      if (name === "disposWorldMapConnectTable") {
+        constructors.push(WorldMapData2, WorldMapData3);
+      }
+
+      // kdm_pepalyze.bin
+      if (name === "lockDataTable") {
+        constructors.push(LockData, SecretData, SecretSealData);
+      }
+
+      // kdm_sound.bin
+      if (name === "battleBgmDataTable") {
+        constructors.push(
+          Setup3Data, UnusedSoundData0, UnusedSoundData1,
+          UnusedSoundData2, BattleBGMData, TrackVolumeData,
+          GroupData, TownWorldMapData, EffectData, ChangeBGMData
+        );
+      }
+
+      // kdm_mapobject.bin
+      if (name === "map_object_data_tbl") {
+        constructors.push(
+          MapObjectData0, MapObjectData1, MapObjectData2, MapObjectData3,
+          MapObjectData4, MapObjectData5, MapObjectData6, MapObjectData7,
+          MapObjectData8
+        );
+      }
+
+      // kdm_dispos_data.bin
+      if (name === "all_disposDataTbl") {
+        constructors.push(
+          DisposData0, DisposData1, DisposData2, DisposData3, DisposData4,
+          DisposData5, DisposData6, DisposData7, DisposData8, DisposData9,
+          DisposData10, DisposData11, DisposData12, DisposData13, DisposData14,
+          DisposData15, DisposData16, DisposData17, DisposData18, DisposData19,
+          DisposData20, DisposData21
+        );
+      }
+    });
+
+    constructors.forEach((constructor) => this.entities.push({ uid: NaN, constructor }));
+  }
+
+  private createTable(_name: string): KDMArray {
+    const name = _name as IKDMTableName;
+
+    // kdm_mapdata.bin
+    if (name === "mapDataTable") {
+      return new KDMStructArrayPointerArray(this)
+        .hasNULLTerminator();
+    }
+
+    // kdm_lucie.bin
+    if (name === "lucieMsgTbl") {
+      return new KDMStructArrayPointerArray(this);
+    }
+
+    // kdm_shop.bin
+    if (
+      name === "SHOP_DOR" ||
+      name === "SHOP_IWA" ||
+      name === "SHOP_MONO" ||
+      name === "SHOP_SNOW" ||
+      name === "SHOP_TOWN" ||
+      name === "SHOP_KAZAN" ||
+      name === "SHOP_KOOPA"
+    ) {
+      return new KDMStructArrayPointerArray(this)
+        .hasNULLTerminator();
+    }
+
+    // kdm_link_data.bin
+    if (name === "link_data_all") {
+      return new KDMStructArrayPointerArray(this);
+    }
+
+    // kdm_worldmap_data.bin
+    if (name === "disposWorldMapTable" || name === "disposWorldMapConnectTable") {
+      return new KDMStructArrayPointerArray(this)
+        .hasNULLTerminator();
+    }
+
+    // kdm_pepalyze.bin / kdm_pepalyze_museum.bin
+    if (name === "lockDataTable" || name === "secretDataTable") {
+      return new KDMStructArrayPointerArray(this)
+        .hasNULLTerminator();
+    }
+
+    if (name === "secretSealDataTable") {
+      return new KDMStructArrayPointerArray(this);
+    }
+
+    // kdm_sound.bin
+    if (
+      name === "battleBgmDataTable" ||
+      name === "changeBGMDataTable" ||
+      name === "effectDataTable" ||
+      name === "groupDataTable" ||
+      name === "setup3DDataTable" ||
+      name === "townWorldMapDataTable" ||
+      name === "trackVolumeDataTable"
+    ) {
+      return new KDMStructArrayPointerArray(this)
+        .hasNULLTerminator();
+    }
+
+    // kdm_mapobject.bin
+    if (name === "map_object_data_tbl") {
+      return new KDMStructArrayPointerArray(this);
+    }
+
+    // kdm_dispos_data.bin
+    if (name === "all_disposDataTbl") {
+      return new KDMStructArrayPointerArray(this)
+        .hasNULLTerminator();
+    }
+
+    assert.fail();
+  }
+
   private parseHeading(buffer: RBuffer): void {
     assert.equal(buffer.getU32(), KDM.SIGNATURE_0);
     assert.equal(buffer.getU32(), KDM.SIGNATURE_1);
@@ -583,16 +646,13 @@ class KDM {
 
   private parseSection4(buffer: RBuffer): void {
     buffer.offset = this.sections.at(4)!;
-
     const count = buffer.getU32();
 
     for (let i = 0; i < count; i += 1) {
       const left = count - i - 1;
 
-      const uid = new KDMU16(this).parse(buffer);
+      new KDMU16(this).parse(buffer);
       const size = new KDMU16(this).parse(buffer);
-
-      const fields: number[] = [];
 
       assert(size.offset !== null);
       assert.equal(buffer.getU32(), 0x00000000);
@@ -612,104 +672,18 @@ class KDM {
         assert.equal(constant, this.constant);
       }
 
-      for (let j = 0; j < size.number; j += 1) {
-        fields.push(buffer.getU32());
+      for (let i = 0; i < size.number; i += 1) {
+        new KDMU32(this).parse(buffer);
       }
-
-      const constructor = ALL_STRUCTS.find((constructor) => {
-        const instance = new constructor(this);
-
-        return (
-          instance.realfields.length === size.number &&
-          instance.realfields.every((f, i) => {
-            const e = this.entities.find((e) => e.constructor === f.constructor);
-            assert(e !== undefined);
-
-            return (e.uid === fields.at(i));
-          })
-        );
-      });
-
-      assert(constructor !== undefined);
-      this.entities.push({ uid: uid.number, constructor });
-    }
-  }
-
-  private createTable(_name: string): KDMArray {
-    const name = _name as IKDMTableName;
-
-    // kdm_mapdata.bin
-    if (name === "mapDataTable") {
-      return new KDMStructArrayPointerArray(this)
-        .hasNULLTerminator();
     }
 
-    // kdm_lucie.bin
-    if (name === "lucieMsgTbl") {
-      return new KDMStructArrayPointerArray(this);
-    }
+    this.addEntities();
 
-    // kdm_shop.bin
-    if (
-      name === "SHOP_DOR" ||
-      name === "SHOP_IWA" ||
-      name === "SHOP_MONO" ||
-      name === "SHOP_SNOW" ||
-      name === "SHOP_TOWN" ||
-      name === "SHOP_KAZAN" ||
-      name === "SHOP_KOOPA"
-    ) {
-      return new KDMStructArrayPointerArray(this)
-        .hasNULLTerminator();
-    }
+    let id = 0x15;
 
-    // kdm_link_data.bin
-    if (name === "link_data_all") {
-      return new KDMStructArrayPointerArray(this);
-    }
-
-    // kdm_worldmap_data.bin
-    if (name === "disposWorldMapTable" || name === "disposWorldMapConnectTable") {
-      return new KDMStructArrayPointerArray(this)
-        .hasNULLTerminator();
-    }
-
-    // kdm_pepalyze.bin / kdm_pepalyze_museum.bin
-    if (name === "lockDataTable" || name === "secretDataTable") {
-      return new KDMStructArrayPointerArray(this)
-        .hasNULLTerminator();
-    }
-
-    if (name === "secretSealDataTable") {
-      return new KDMStructArrayPointerArray(this);
-    }
-
-    // kdm_sound.bin
-    if (
-      name === "battleBgmDataTable" ||
-      name === "changeBGMDataTable" ||
-      name === "effectDataTable" ||
-      name === "groupDataTable" ||
-      name === "setup3DDataTable" ||
-      name === "townWorldMapDataTable" ||
-      name === "trackVolumeDataTable"
-    ) {
-      return new KDMStructArrayPointerArray(this)
-        .hasNULLTerminator();
-    }
-
-    // kdm_mapobject.bin
-    if (name === "map_object_data_tbl") {
-      return new KDMStructArrayPointerArray(this);
-    }
-
-    // kdm_dispos_data.bin
-    if (name === "all_disposDataTbl") {
-      return new KDMStructArrayPointerArray(this)
-        .hasNULLTerminator();
-    }
-
-    assert.fail();
+    this.entities
+      .filter((e) => Number.isNaN(e.uid))
+      .forEach((e) => e.uid = id++);
   }
 
   private parseArray(buffer: RBuffer): KDMArray {
@@ -766,7 +740,7 @@ class KDM {
     }
 
     names.forEach((name) => this.tables.push({
-      name: name, table: this.createTable(name).parse(buffer)
+      name: name, table: this.createTable(name)
     }));
   }
 
@@ -782,14 +756,20 @@ class KDM {
 
     this.parseHeading(buffer);
     this.parseSection0(buffer);
+    this.parseSection6(buffer);
     this.parseSection1(buffer);
     this.parseSection2(buffer);
     this.parseSection3(buffer);
     this.parseSection4(buffer);
     this.parseSection5(buffer);
-    this.parseSection6(buffer);
     this.parseSection7(buffer);
 
+    buffer.offset = this.sections.at(6)!;
+    
+    buffer.offset += RBuffer.U32_SIZE;
+    buffer.offset += new KDMStringPointer(this).sizeof * this.tables.length;
+
+    this.tables.forEach(({ table }) => table.parse(buffer));
     return this;
   }
 
@@ -841,7 +821,7 @@ class KDM {
 
       buffer.setU32(0x00000000);
 
-      if(entities.at(-1) !== e) {
+      if (entities.at(-1) !== e) {
         const sizeof = 2 + 2 + 4 + 4 + (instance.realfields.length * 4);
         buffer.setU32(this.constant + sizeof + 16 + buffer.offset);
       } else {
@@ -1010,104 +990,6 @@ class KDM {
     const kdm = IKDM.parse(_data);
     this.constant = kdm.constant;
 
-    for (const { name, table } of kdm.tables) {
-      let constructors: Array<KDMEntityConstructor> = [];
-
-      // kdm_mapdata.bin
-      if (name === "mapDataTable") {
-        constructors.push(MapData);
-      }
-
-      // kdm_lucie.bin
-      if (name === "lucieMsgTbl") {
-        constructors.push(LucieMSG);
-      }
-
-      // kdm_mapdata.bin
-      if (name === "SHOP_DOR") {
-        constructors.push(ShopListing);
-      }
-
-      // kdm_link_data.bin
-      if (name === "link_data_all") {
-        constructors.push(Link, LinkData);
-      }
-
-      // kdm_worldmap_data.bin
-      if (name === "disposWorldMapTable") {
-        constructors.push(WorldMapData0, WorldMapData1);
-      }
-
-      if (name === "disposWorldMapConnectTable") {
-        constructors.push(WorldMapData2, WorldMapData3);
-      }
-
-      // kdm_pepalyze.bin
-      if (name === "lockDataTable") {
-        const reference = table.entries.at(0);
-        assert(reference !== undefined);
-
-        const array = kdm.arrays.find((arr) => arr._refkey === reference.refkey);
-        assert(array !== undefined);
-
-        const entry = array.entries.at(0);
-        assert(entry && typeof entry === "object" && "_kind" in entry);
-
-        if (entry._kind.includes("Museum")) {
-          constructors.push(MuseumLockData, MuseumSecretData, MuseumSecretSealData);
-        } else {
-          constructors.push(LockData, SecretData, SecretSealData);
-        }
-      }
-
-      // kdm_sound.bin
-      if (name === "battleBgmDataTable") {
-        constructors.push(
-          Setup3Data, UnusedSoundData0, UnusedSoundData1,
-          UnusedSoundData2, BattleBGMData, TrackVolumeData,
-          GroupData, TownWorldMapData, EffectData, ChangeBGMData
-        );
-      }
-
-      // kdm_mapobject.bin
-      if (name === "map_object_data_tbl") {
-        constructors.push(
-          MapObjectData0, MapObjectData1, MapObjectData2, MapObjectData3,
-          MapObjectData4, MapObjectData5, MapObjectData6, MapObjectData7,
-          MapObjectData8
-        );
-      }
-
-      // kdm_dispos_data.bin
-      if (name === "all_disposDataTbl") {
-        constructors.push(
-          DisposData0, DisposData1, DisposData2, DisposData3, DisposData4,
-          DisposData5, DisposData6, DisposData7, DisposData8, DisposData9,
-          DisposData10, DisposData11, DisposData12, DisposData13, DisposData14,
-          DisposData15, DisposData16, DisposData17, DisposData18, DisposData19,
-          DisposData20, DisposData21
-        );
-      }
-
-      constructors.forEach((constructor) => this.entities.push({ uid: NaN, constructor }));
-    }
-
-    for (const data of kdm.parameters) {
-      const parameter = this.createEntity(data);
-      assert(parameter instanceof KDMF32Parameter || parameter instanceof KDMU32Parameter);
-
-      this.parameters.push(parameter);
-      parameter.set(data);
-    }
-
-    for (const data of kdm.arrays) {
-      const array = this.createEntity(data);
-      assert(array instanceof KDMArray);
-
-      this.arrays.push(array);
-      array.set(data);
-    }
-
     for (const data of kdm.tables) {
       if (data.name === "mapDataTable") {
         this.parameters.push(new KDMU32Parameter(this).set({
@@ -1134,10 +1016,32 @@ class KDM {
         }));
       }
 
-      this.tables.push({
-        name: data.name,
-        table: this.createTable(data.name).set(data.table)
-      });
+      this.tables.push({ name: data.name, table: this.createTable(data.name) });
+    }
+
+    this.addEntities();
+
+    for (const data of kdm.parameters) {
+      const parameter = this.createEntity(data);
+      assert(parameter instanceof KDMF32Parameter || parameter instanceof KDMU32Parameter);
+
+      this.parameters.push(parameter);
+      parameter.set(data);
+    }
+
+    for (const data of kdm.arrays) {
+      const array = this.createEntity(data);
+      assert(array instanceof KDMArray);
+
+      this.arrays.push(array);
+      array.set(data);
+    }
+
+    for (const data of kdm.tables) {
+      const table = this.tables.find((t) => t.name === data.name);
+      assert(table !== undefined);
+
+      table.table.set(data.table);
     }
 
     return this;
