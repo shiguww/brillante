@@ -2,66 +2,24 @@
 **WIP**: Modding tools for `Paper Mario: Sticker Star`.
 
 ## Installation
-First, begin by download the latest version of the tool [here](https://github.com/shiguww/brillante/releases) (or [here](https://github.com/shiguww/brillante/archive/refs/heads/develop.zip) for the `develop` branch).
+Brillante is distributed as a standalone executable which you can download [here](https://github.com/shiguww/brillante/releases).
 
-You will also need node.js v22. The preferred installation method may vary depending on your OS.
-
-Additionally, you need to install pnpm which can be done via corepack (bundled with node.js):
+### KDM files
 ```shell
-corepack enable
-corepack use pnpm@9.12.0
+brillante.exe kdm-parse -i kdm_mapdata.bin -o kdm_mapdata.json # Export kdm_mapdata.bin to kdm_mapdata.json
+brillante.exe kdm-build -i kdm_mapdata.json -o kdm_mapdata.bin # Build kdm_mapdata.json to kdm_mapdata.bin
 ```
 
-If you're running into an "Operation Not Permitted" Error, run the shell as Administrator (Windows) or use `sudo` (Linux).
-
-Finally, install the dependencies by running:
-```shell
-pnpm install
-```
-
-## Manipulating KDM files
-The tool has three possible actions:
-* `build` - Create a KDM binary file from a JSON export
-* `parse` - Export a KDM binary file into an editable JSON format
-* `inspect` - Export a KDM binary file into a verbose, readonly JSON format
-
-Usage:
-
-``` shell
-pnpm brillante kdm-parse -i kdm_mapdata.bin # Exports to kdm_mapdata.kdm.json
-pnpm brillante kdm-inspect -i kdm_mapdata.bin # Inspects to kdm_mapdata.kdm.json
-pnpm brillante kdm-build -i kdm_mapdata.kdm.json -o file.bin # Builds to file.bin
-```
-
-**KDM file support table**
-| File                      | Support |
-| ------------------------- | ------- |
-| `kdm_shop.bin`            | ✅       |
-| `kdm_lucie.bin`           | ✅       |
-| `kdm_sound.bin`           | ✅       |
-| `kdm_battle.bin`          | ❌       |
-| `kdm_sample.bin`          | ❌       |
-| `kdm_switch.bin`          | ❌       |
-| `kdm_mapdata.bin`         | ✅       |
-| `kdm_texture.bin`         | ❌       |
-| `kdm_pepalyze.bin`        | ✅       |
-| `kdm_char_data.bin`       | ❌       |
-| `kdm_item_data.bin`       | ❌       |
-| `kdm_link_data.bin`       | ✅       |
-| `kdm_mapobject.bin`       | ✅       |
-| `kdm_sound_env.bin`       | ❌       |
-| `kdm_battle_map.bin`      | ❌       |
-| `kdm_map_viewer.bin`      | ❌       |
-| `kdm_paper_data.bin`      | ❌       |
-| `kdm_char_viewer.bin`     | ❌       |
-| `kdm_dispos_data.bin`     | ✅       |
-| `kdm_sound_anime.bin`     | ❌       |
-| `kdm_battle_model.bin`    | ❌       |
-| `kdm_battle_set_*.bin`    | ❌       |
-| `kdm_battle_camera.bin`   | ❌       |
-| `kdm_battle_common.bin`   | ❌       |
-| `kdm_worldmap_data.bin`   | ✅       |
-| `kdm_pepalyze_museum.bin` | ✅       |
+The following KDM files are supported:
+- `kdm_shop.bin`
+- `kdm_lucie.bin`
+- `kdm_sound.bin`
+- `kdm_mapdata.bin`
+- `kdm_link_data.bin`
+- `kdm_mapobject.bin`
+- `kdm_dispos_data.bin`
+- `kdm_worldmap_data.bin`
+- `kdm_pepalyze.bin` / `kdm_pepalyze_museum.bin`
 
 ## Other tools
 - [`kdm_battle_set_*.bin` editor (by Longboost)](https://github.com/Longboost/battle-set-exporter/releases)
