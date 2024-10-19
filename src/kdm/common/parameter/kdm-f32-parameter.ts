@@ -66,6 +66,11 @@ class KDMF32Parameter extends KDMEntity<IKDMF32Parameter> {
     this.typeid.build(buffer);
 
     this.name.build(buffer);
+    
+    if(this.kdm.parameters.at(-1) !== this) {
+      this.unknown0.set(this.kdm.constant + buffer.offset);
+    }
+
     this.unknown0.build(buffer);
     
     this.value.build(buffer);

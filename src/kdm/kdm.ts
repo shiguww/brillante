@@ -149,6 +149,7 @@ const ALL_STRUCTS = [
 ] as const;
 
 const IKDM = z.object({
+  constant: z.number(),
   parameters: z.union([
     KDMF32Parameter.schema,
     KDMU32Parameter.schema
@@ -231,6 +232,7 @@ class KDM {
       { uid: 0x14, constructor: KDMStructArrayPointerArrayPointer }
     ];
 
+  public constant = 0;
   private _counter = 0;
   public readonly tables: Array<KDMTable> = [];
   public readonly arrays: Array<KDMArray> = [];
@@ -538,6 +540,7 @@ class KDM {
     const count = buffer.getU32();
 
     for (let i = 0; i < count; i += 1) {
+      const left = count - i - 1;
       let parameter: null | KDMF32Parameter | KDMU32Parameter = null;
 
       const uid = buffer.getU16();
@@ -559,6 +562,22 @@ class KDM {
       parameter.parse(buffer);
 
       assert.equal(parameter.uid.get(), uid);
+
+      if (this.constant === 0 && left !== 0) {
+        assert(parameter.unknown0.offset !== null);
+        this.constant = parameter.unknown0.number - parameter.unknown0.offset;
+      }
+
+      if (parameter.unknown0.number !== 0) {
+        assert(parameter.unknown0.offset !== null);
+        const constant = parameter.unknown0.number - parameter.unknown0.offset;
+
+        if (this.constant === 0 && left !== 0) {
+          this.constant = constant;
+        }
+
+        assert.equal(constant, this.constant);
+      }
     }
   }
 
@@ -568,14 +587,32 @@ class KDM {
     const count = buffer.getU32();
 
     for (let i = 0; i < count; i += 1) {
-      const uid = buffer.getU16();
-      const size = buffer.getU16();
+      const left = count - i - 1;
+
+      const uid = new KDMU16(this).parse(buffer);
+      const size = new KDMU16(this).parse(buffer);
 
       const fields: number[] = [];
-      const unknownSection4Value0 = buffer.getU32();
-      const unknownSection4Value1 = buffer.getU32();
 
-      for (let j = 0; j < size; j += 1) {
+      assert(size.offset !== null);
+      assert.equal(buffer.getU32(), 0x00000000);
+
+      const unknown0 = new KDMU32(this).parse(buffer);
+
+      if (unknown0.number !== 0) {
+        assert(unknown0.offset !== null);
+
+        const sizeof = 2 + 2 + 4 + 4 + (size.number * 4);
+        const constant = unknown0.number - sizeof - 16 - unknown0.offset;
+
+        if (this.constant === 0 && left !== 0) {
+          this.constant = constant;
+        }
+
+        assert.equal(constant, this.constant);
+      }
+
+      for (let j = 0; j < size.number; j += 1) {
         fields.push(buffer.getU32());
       }
 
@@ -583,9 +620,7 @@ class KDM {
         const instance = new constructor(this);
 
         return (
-          instance.realfields.length === size &&
-          instance.unknownSection4Value0 === unknownSection4Value0 &&
-          instance.unknownSection4Value1 === unknownSection4Value1 &&
+          instance.realfields.length === size.number &&
           instance.realfields.every((f, i) => {
             const e = this.entities.find((e) => e.constructor === f.constructor);
             assert(e !== undefined);
@@ -596,7 +631,7 @@ class KDM {
       });
 
       assert(constructor !== undefined);
-      this.entities.push({ uid, constructor });
+      this.entities.push({ uid: uid.number, constructor });
     }
   }
 
@@ -804,8 +839,14 @@ class KDM {
       buffer.setU16(e.uid);
       buffer.setU16(instance.realfields.length);
 
-      buffer.setU32(instance.unknownSection4Value0);
-      buffer.setU32(instance.unknownSection4Value1);
+      buffer.setU32(0x00000000);
+
+      if(entities.at(-1) !== e) {
+        const sizeof = 2 + 2 + 4 + 4 + (instance.realfields.length * 4);
+        buffer.setU32(this.constant + sizeof + 16 + buffer.offset);
+      } else {
+        buffer.setU32(0x00000000);
+      }
 
       instance.realfields.forEach((f) => {
         const uid = this.entities.find((e) => e.constructor === f.constructor)?.uid;
@@ -952,6 +993,7 @@ class KDM {
   }
 
   public get(): IKDM {
+    const constant = this.constant;
     const arrays = this.arrays.map((a) => a.get());
     const tables = this.tables.map((t) => ({ ...t, table: t.table.get() }));
 
@@ -961,11 +1003,12 @@ class KDM {
       "all_disposDataTblLen"
     ].includes(p.name.string)).map((p) => p.get());
 
-    return IKDM.parse({ arrays, tables, parameters });
+    return IKDM.parse({ arrays, tables, constant, parameters });
   }
 
   public set(_data: unknown): this {
     const kdm = IKDM.parse(_data);
+    this.constant = kdm.constant;
 
     for (const { name, table } of kdm.tables) {
       let constructors: Array<KDMEntityConstructor> = [];
@@ -1083,7 +1126,7 @@ class KDM {
       }
 
 
-      if(data.name === "all_disposDataTbl") {
+      if (data.name === "all_disposDataTbl") {
         this.parameters.push(new KDMU32Parameter(this).set({
           unknown0: 0,
           name: "all_disposDataTblLen",
