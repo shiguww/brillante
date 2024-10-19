@@ -993,7 +993,6 @@ class KDM {
     for (const data of kdm.tables) {
       if (data.name === "mapDataTable") {
         this.parameters.push(new KDMU32Parameter(this).set({
-          unknown0: 0,
           name: "mapDataTableLen",
           value: data.table.entries.length + 1
         }));
@@ -1001,7 +1000,6 @@ class KDM {
 
       if (data.name === "link_data_all") {
         this.parameters.push(new KDMU32Parameter(this).set({
-          unknown0: 0,
           name: "link_data_all_len",
           value: data.table.entries.length
         }));
@@ -1010,7 +1008,6 @@ class KDM {
 
       if (data.name === "all_disposDataTbl") {
         this.parameters.push(new KDMU32Parameter(this).set({
-          unknown0: 0,
           name: "all_disposDataTblLen",
           value: data.table.entries.length + 1
         }));
