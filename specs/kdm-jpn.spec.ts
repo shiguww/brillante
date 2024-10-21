@@ -126,6 +126,18 @@ describe("KDM (JPN)", () => {
     expect(sha256(built)).to.be.equal(checksum);
   });
 
+  test("kdm_battle_common.bin", () => {
+    const checksum = "c6907bbcafdc59cc58682ee86f9db71a19365df0f5d24dc301365dd423f5a849";
+    const file = fs.readFileSync(`${TITLE_ID}/Data/kdm_battle_common.bin`);
+ 
+    expect(sha256(file)).to.be.equal(checksum);
+
+    const parsed = new KDM().parse(file).get();
+    const built = new KDM().set(parsed).build();
+
+    expect(sha256(built)).to.be.equal(checksum);
+  });
+
   test("kdm_worldmap_data.bin", () => {
     const checksum = "6fbbaedf27aeb939491a031197daf107c8afce22df3c6978453244f47ccddb80";
     const file = fs.readFileSync(`${TITLE_ID}/Data/kdm_worldmap_data.bin`);
