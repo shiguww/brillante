@@ -114,6 +114,18 @@ describe("KDM (EUR)", () => {
     expect(sha256(built)).to.be.equal(checksum);
   });
 
+  test("kdm_battle_camera.bin", () => {
+    const checksum = "8cc582e25187fb4f7fd48892b5b2ae91f5a71dfb309cba0ad49aad609908e07e";
+    const file = fs.readFileSync(`${TITLE_ID}/Data/kdm_battle_camera.bin`);
+ 
+    expect(sha256(file)).to.be.equal(checksum);
+
+    const parsed = new KDM().parse(file).get();
+    const built = new KDM().set(parsed).build();
+
+    expect(sha256(built)).to.be.equal(checksum);
+  });
+
   test("kdm_worldmap_data.bin", () => {
     const checksum = "2c9ce3e5aa841b77a499397e03cada69021f9f85eaaa15b25ffdec737048ca88";
     const file = fs.readFileSync(`${TITLE_ID}/Data/kdm_worldmap_data.bin`);
