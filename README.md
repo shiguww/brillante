@@ -20,6 +20,7 @@ The following KDM files are supported:
 - `kdm_dispos_data.bin`
 - `kdm_battle_model.bin`
 - `kdm_battle_camera.bin`
+- `kdm_battle_common.bin`
 - `kdm_worldmap_data.bin`
 - `kdm_pepalyze.bin` / `kdm_pepalyze_museum.bin`
 
