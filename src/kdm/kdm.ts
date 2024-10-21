@@ -77,6 +77,8 @@ import DisposData9 from "./dispos-data/dispos-data9";
 import KDMStringPointerArray from "./common/array/kdm-string-pointer-array";
 import BattleModel0 from "./battle-model/battle-model0";
 import BattleModel1 from "./battle-model/battle-model1";
+import BattleCamera0 from "./battle-camera/battle-camera0";
+import BattleCamera1 from "./battle-camera/battle-camera1";
 
 const IKDM = z.object({
   constant: z.number(),
@@ -126,7 +128,9 @@ const IKDM = z.object({
       // kdm_dispos_data.bin
       z.literal("all_disposDataTbl"),
       // kdm_battle_model.bin
-      z.literal("unitModelTable")
+      z.literal("unitModelTable"),
+      // kdm_battle_camera.bin
+      z.literal("eventCameraDataTable")
     ]),
     table: KDMStructArrayPointerArray.schema
   }).array()
@@ -414,12 +418,21 @@ class KDM {
     }
 
     // kdm_battle_model.bin
-    if(kind === "BattleModel0") {
+    if (kind === "BattleModel0") {
       return new BattleModel0(this);
     }
 
-    if(kind === "BattleModel1") {
+    if (kind === "BattleModel1") {
       return new BattleModel1(this);
+    }
+
+    // kdm_battle_camera.bin
+    if (kind === "BattleCamera0") {
+      return new BattleCamera0(this);
+    }
+
+    if (kind === "BattleCamera1") {
+      return new BattleCamera1(this);
     }
 
     assert.fail(`${kind}`);
@@ -492,9 +505,13 @@ class KDM {
         );
       }
 
-      // kdm_battle_model
-      if(name === "unitModelTable") {
+      // kdm_battle_model.bin
+      if (name === "unitModelTable") {
         constructors.push(BattleModel0, BattleModel1);
+      }
+
+      if (name === "eventCameraDataTable") {
+        constructors.push(BattleCamera0, BattleCamera1);
       }
     });
 
@@ -576,11 +593,17 @@ class KDM {
     }
 
     // kdm_battle_model.bin    
-    if(name === "unitModelTable") {
+    if (name === "unitModelTable") {
       return new KDMStructArrayPointerArray(this)
         .hasNULLTerminator();
     }
- 
+
+    // kdm_battle_camera.bin    
+    if (name === "eventCameraDataTable") {
+      return new KDMStructArrayPointerArray(this)
+        .hasNULLTerminator();
+    }
+
     assert.fail();
   }
 
