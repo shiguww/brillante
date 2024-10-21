@@ -79,6 +79,7 @@ import BattleModel0 from "./battle-model/battle-model0";
 import BattleModel1 from "./battle-model/battle-model1";
 import BattleCamera0 from "./battle-camera/battle-camera0";
 import BattleCamera1 from "./battle-camera/battle-camera1";
+import BattleCommon0 from "./battle-common/battle-common0";
 
 const IKDM = z.object({
   constant: z.number(),
@@ -130,7 +131,9 @@ const IKDM = z.object({
       // kdm_battle_model.bin
       z.literal("unitModelTable"),
       // kdm_battle_camera.bin
-      z.literal("eventCameraDataTable")
+      z.literal("eventCameraDataTable"),
+      // kdm_battle_common.bin
+      z.literal("commonModelDataTable")
     ]),
     table: KDMStructArrayPointerArray.schema
   }).array()
@@ -435,6 +438,11 @@ class KDM {
       return new BattleCamera1(this);
     }
 
+    // kdm_battle_common.bin
+    if(kind === "BattleCommon0") {
+      return new BattleCommon0(this);
+    }
+
     assert.fail(`${kind}`);
   }
 
@@ -510,8 +518,14 @@ class KDM {
         constructors.push(BattleModel0, BattleModel1);
       }
 
+      // kdm_battle_camera.bin
       if (name === "eventCameraDataTable") {
         constructors.push(BattleCamera0, BattleCamera1);
+      }
+
+      // kdm_battle_common.bin
+      if (name === "commonModelDataTable") {
+        constructors.push(BattleCommon0);
       }
     });
 
@@ -600,6 +614,12 @@ class KDM {
 
     // kdm_battle_camera.bin    
     if (name === "eventCameraDataTable") {
+      return new KDMStructArrayPointerArray(this)
+        .hasNULLTerminator();
+    }
+
+    // kdm_battle_common.bin
+    if (name === "commonModelDataTable") {
       return new KDMStructArrayPointerArray(this)
         .hasNULLTerminator();
     }
