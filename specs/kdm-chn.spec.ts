@@ -102,6 +102,18 @@ describe("KDM (CHN)", () => {
     expect(sha256(built)).to.be.equal(checksum);
   });
 
+  test("kdm_battle_map.bin", () => {
+    const checksum = "e6934d02a8829e386c889ccfd12069383cba7120ec87e666731945bc4f67f40c";
+    const file = fs.readFileSync(`${TITLE_ID}/Data/kdm_battle_map.bin`);
+ 
+    expect(sha256(file)).to.be.equal(checksum);
+
+    const parsed = new KDM().parse(file).get();
+    const built = new KDM().set(parsed).build();
+
+    expect(sha256(built)).to.be.equal(checksum);
+  });
+
   test("kdm_dispos_data.bin", () => {
     const checksum = "d14e06a172ba53c7913b0debcd27cebd45e13d746106b307411110d93ae58be8";
     const file = fs.readFileSync(`${TITLE_ID}/Data/kdm_dispos_data.bin`);

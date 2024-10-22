@@ -85,6 +85,8 @@ import SoundAnime1 from "./sound-anime/sound-anime1";
 import SoundEnv0 from "./sound-env/sound-env0";
 import SoundEnv1 from "./sound-env/sound-env1";
 import SoundEnv2 from "./sound-env/sound-env2";
+import BattleMap0 from "./battle-map/battle-map0";
+import BattleMap1 from "./battle-map/battle-map1";
 
 const IKDM = z.object({
   constant: z.number(),
@@ -142,7 +144,9 @@ const IKDM = z.object({
       // kdm_sound_anime.bin
       z.literal("animeSoundDataTable"),
       // kdm_sound_env.bin
-      z.literal("envDataTable")
+      z.literal("envDataTable"),
+      // kdm_battle_map.bin
+      z.literal("bmapDataTable")
     ]),
     table: KDMStructArrayPointerArray.schema
   }).array()
@@ -474,6 +478,15 @@ class KDM {
       return new SoundEnv2(this);
     }
 
+    // kdm_battle_map.bin
+    if (kind === "BattleMap0") {
+      return new BattleMap0(this);
+    }
+
+    if (kind === "BattleMap1") {
+      return new BattleMap1(this);
+    }
+
     assert.fail(`${kind}`);
   }
 
@@ -567,6 +580,11 @@ class KDM {
       // kdm_sound_env.bin
       if (name === "envDataTable") {
         constructors.push(SoundEnv0, SoundEnv1, SoundEnv2);
+      }
+
+      // kdm_battle_map.bin
+      if (name === "bmapDataTable") {
+        constructors.push(BattleMap0, BattleMap1);
       }
     });
 
@@ -673,6 +691,12 @@ class KDM {
 
     // kdm_sound_env.bin
     if (name === "envDataTable") {
+      return new KDMStructArrayPointerArray(this)
+        .hasNULLTerminator();
+    }
+
+    // kdm_battle_map.bin
+    if (name === "bmapDataTable") {
       return new KDMStructArrayPointerArray(this)
         .hasNULLTerminator();
     }
@@ -890,6 +914,7 @@ class KDM {
     buffer.offset += new KDMStringPointer(this).sizeof * this.tables.length;
 
     this.tables.forEach(({ table }) => table.parse(buffer));
+
     return this;
   }
 
@@ -998,7 +1023,12 @@ class KDM {
         });
 
         this.tables.forEach(({ name }) => addString(name));
-      } else if (this.tables.find(({ name }) => name === "mapDataTable" || name === "link_data_all" || name === "all_disposDataTbl")) {
+      } else if (this.tables.find(({ name }) => (
+        name === "mapDataTable" ||
+        name === "bmapDataTable" ||
+        name === "link_data_all" ||
+        name === "all_disposDataTbl"
+      ))) {
         this.arrays.forEach((arr) => arr.strings.forEach((s) => addString(s)));
         this.tables.forEach(({ name }) => addString(name));
       } else {
