@@ -10,6 +10,7 @@ import MapObjectData7 from "#/kdm/mapobject/mapobject-data7";
 import type KDMStringPointer from "#/kdm/common/primitive/kdm-string-pointer";
 import DisposData13 from "#/kdm/dispos-data/dispos-data13";
 import BattleModel0 from "#/kdm/battle-model/battle-model0";
+import SoundAnime0 from "#/kdm/sound-anime/sound-anime0";
 
 type KDMStructConstructor = (new (kdm: KDM) => KDMStruct);
 
@@ -51,6 +52,10 @@ class KDMStructArray extends KDMArray {
     }
 
     if(constructor === BattleModel0) {
+      this.hasNULLTerminator();
+    }
+
+    if(constructor === SoundAnime0) {
       this.hasNULLTerminator();
     }
 
@@ -148,6 +153,8 @@ class KDMStructArray extends KDMArray {
       const instance = this.element;
 
       this.entries.push(instance);
+
+      console.log(buffer.offset, instance.sizeof);
       instance.parse(buffer);
     }
 
