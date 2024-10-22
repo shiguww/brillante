@@ -90,6 +90,18 @@ describe("KDM (CHN)", () => {
     expect(sha256(built)).to.be.equal(checksum);
   });
 
+  test("kdm_sound_env.bin", () => {
+    const checksum = "300b038b17c2f66c677ee3d407de18011a794fec31110fff8507aa73b8471019";
+    const file = fs.readFileSync(`${TITLE_ID}/Data/kdm_sound_env.bin`);
+ 
+    expect(sha256(file)).to.be.equal(checksum);
+
+    const parsed = new KDM().parse(file).get();
+    const built = new KDM().set(parsed).build();
+
+    expect(sha256(built)).to.be.equal(checksum);
+  });
+
   test("kdm_dispos_data.bin", () => {
     const checksum = "d14e06a172ba53c7913b0debcd27cebd45e13d746106b307411110d93ae58be8";
     const file = fs.readFileSync(`${TITLE_ID}/Data/kdm_dispos_data.bin`);

@@ -90,6 +90,18 @@ describe("KDM (JPN)", () => {
     expect(sha256(built)).to.be.equal(checksum);
   });
 
+  test("kdm_sound_env.bin", () => {
+    const checksum = "77a022d1518aaf88f6bfcb0e3be4bb851aa6a54e78f273566f4396cfbeeefe3d";
+    const file = fs.readFileSync(`${TITLE_ID}/Data/kdm_sound_env.bin`);
+ 
+    expect(sha256(file)).to.be.equal(checksum);
+
+    const parsed = new KDM().parse(file).get();
+    const built = new KDM().set(parsed).build();
+
+    expect(sha256(built)).to.be.equal(checksum);
+  });
+
   test("kdm_dispos_data.bin", () => {
     const checksum = "28abd916a8b784649fcd3793c53822a9ac6c284dc34054a7fed724a51fc24fc2";
     const file = fs.readFileSync(`${TITLE_ID}/Data/kdm_dispos_data.bin`);
