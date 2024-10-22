@@ -90,6 +90,18 @@ describe("KDM (USA)", () => {
     expect(sha256(built)).to.be.equal(checksum);
   });
 
+  test("kdm_sound_env.bin", () => {
+    const checksum = "fd5fdd28a51d74c25087253d63fad5203999092e0328b007b79737996f12e3b8";
+    const file = fs.readFileSync(`${TITLE_ID}/Data/kdm_sound_env.bin`);
+ 
+    expect(sha256(file)).to.be.equal(checksum);
+
+    const parsed = new KDM().parse(file).get();
+    const built = new KDM().set(parsed).build();
+
+    expect(sha256(built)).to.be.equal(checksum);
+  });
+
   test("kdm_dispos_data.bin", () => {
     const checksum = "e532588ca4c51665434e6dbd25f42d3ff15e2c0ed051a742141818d8f1328a0f";
     const file = fs.readFileSync(`${TITLE_ID}/Data/kdm_dispos_data.bin`);
