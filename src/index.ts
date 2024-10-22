@@ -4,7 +4,7 @@ import fs from "node:fs/promises";
 import { Command } from "commander";
 
 const program = new Command()
-  .version("v5.1.1")
+  .version("v5.2.0")
   .option("-v, --verbose");
 
 program

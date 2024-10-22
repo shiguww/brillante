@@ -1,5 +1,14 @@
 # Changelog
 
+## [v5.2.0 (2024-10-22)](https//github.com/shiguww/brillante/releases/tag/v5.2.0)
+
+### Added
+- KDM: Added support for `kdm_sound_env.bin`
+- KDM: Added support for `kdm_battle_map.bin`
+- KDM: Added support for `kdm_sound_anime.bin`
+- KDM: Added support for `kdm_battle_common.bin`
+- KDM: Added support for `kdm_battle_camera.bin`
+
 ## [v5.1.1 (2024-10-19)](https//github.com/shiguww/brillante/releases/tag/v5.1.1)
 
 ### Fixed
