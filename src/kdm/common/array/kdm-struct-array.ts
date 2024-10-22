@@ -153,8 +153,6 @@ class KDMStructArray extends KDMArray {
       const instance = this.element;
 
       this.entries.push(instance);
-
-      console.log(buffer.offset, instance.sizeof);
       instance.parse(buffer);
     }
 

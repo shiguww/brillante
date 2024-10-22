@@ -102,6 +102,18 @@ describe("KDM (CHN)", () => {
     expect(sha256(built)).to.be.equal(checksum);
   });
 
+  test("kdm_sound_anime.bin", () => {
+    const checksum = "f0e147542ce30e46cbde36a511b20857bbfed39bee63f1b71a2a7c6b16b77bc4";
+    const file = fs.readFileSync(`${TITLE_ID}/Data/kdm_sound_anime.bin`);
+ 
+    expect(sha256(file)).to.be.equal(checksum);
+
+    const parsed = new KDM().parse(file).get();
+    const built = new KDM().set(parsed).build();
+
+    expect(sha256(built)).to.be.equal(checksum);
+  });
+
   test("kdm_battle_model.bin", () => {
     const checksum = "bf42cf442440afcc8f8ab8e93340aed4fe1ad663885f799b67280473b165f8d0";
     const file = fs.readFileSync(`${TITLE_ID}/Data/kdm_battle_model.bin`);
