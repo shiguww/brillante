@@ -102,6 +102,18 @@ describe("KDM (EUR)", () => {
     expect(sha256(built)).to.be.equal(checksum);
   });
 
+  test("kdm_sound_anime.bin", () => {
+    const checksum = "095e84ca57b4901500f9b9a2bb17afbd9f5425102be5c0ec6615c00a8bed4dc1";
+    const file = fs.readFileSync(`${TITLE_ID}/Data/kdm_sound_anime.bin`);
+ 
+    expect(sha256(file)).to.be.equal(checksum);
+
+    const parsed = new KDM().parse(file).get();
+    const built = new KDM().set(parsed).build();
+
+    expect(sha256(built)).to.be.equal(checksum);
+  });
+
   test("kdm_battle_model.bin", () => {
     const checksum = "0c78986b908db13d5d9cad16b8777d185eedbf03bdd1a29409dc7ca260e7acee";
     const file = fs.readFileSync(`${TITLE_ID}/Data/kdm_battle_model.bin`);

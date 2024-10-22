@@ -80,6 +80,8 @@ import BattleModel1 from "./battle-model/battle-model1";
 import BattleCamera0 from "./battle-camera/battle-camera0";
 import BattleCamera1 from "./battle-camera/battle-camera1";
 import BattleCommon0 from "./battle-common/battle-common0";
+import SoundAnime0 from "./sound-anime/sound-anime0";
+import SoundAnime1 from "./sound-anime/sound-anime1";
 
 const IKDM = z.object({
   constant: z.number(),
@@ -133,7 +135,9 @@ const IKDM = z.object({
       // kdm_battle_camera.bin
       z.literal("eventCameraDataTable"),
       // kdm_battle_common.bin
-      z.literal("commonModelDataTable")
+      z.literal("commonModelDataTable"),
+      // kdm_sound_anime
+      z.literal("animeSoundDataTable")
     ]),
     table: KDMStructArrayPointerArray.schema
   }).array()
@@ -439,8 +443,17 @@ class KDM {
     }
 
     // kdm_battle_common.bin
-    if(kind === "BattleCommon0") {
+    if (kind === "BattleCommon0") {
       return new BattleCommon0(this);
+    }
+
+    // kdm_sound_anime.bin
+    if (kind === "SoundAnime0") {
+      return new SoundAnime0(this);
+    }
+
+    if (kind === "SoundAnime1") {
+      return new SoundAnime1(this);
     }
 
     assert.fail(`${kind}`);
@@ -526,6 +539,11 @@ class KDM {
       // kdm_battle_common.bin
       if (name === "commonModelDataTable") {
         constructors.push(BattleCommon0);
+      }
+
+      // kdm_sound_anime.bin
+      if (name === "animeSoundDataTable") {
+        constructors.push(SoundAnime0, SoundAnime1);
       }
     });
 
@@ -620,6 +638,12 @@ class KDM {
 
     // kdm_battle_common.bin
     if (name === "commonModelDataTable") {
+      return new KDMStructArrayPointerArray(this)
+        .hasNULLTerminator();
+    }
+
+    // kdm_sound_anime.bin
+    if (name === "animeSoundDataTable") {
       return new KDMStructArrayPointerArray(this)
         .hasNULLTerminator();
     }

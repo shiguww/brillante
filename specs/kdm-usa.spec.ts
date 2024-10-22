@@ -102,6 +102,18 @@ describe("KDM (USA)", () => {
     expect(sha256(built)).to.be.equal(checksum);
   });
 
+  test("kdm_sound_anime.bin", () => {
+    const checksum = "9ad6da46aa6373df31d82696adb2e86da569e31f8a58ae36f4955213853f1248";
+    const file = fs.readFileSync(`${TITLE_ID}/Data/kdm_sound_anime.bin`);
+ 
+    expect(sha256(file)).to.be.equal(checksum);
+
+    const parsed = new KDM().parse(file).get();
+    const built = new KDM().set(parsed).build();
+
+    expect(sha256(built)).to.be.equal(checksum);
+  });
+
   test("kdm_battle_model.bin", () => {
     const checksum = "a28580ef632d97bf9b47bca88958ea1e80876a274ab469efa9fdaeb7e19eecc9";
     const file = fs.readFileSync(`${TITLE_ID}/Data/kdm_battle_model.bin`);
