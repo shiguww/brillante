@@ -162,7 +162,7 @@ describe("KDM (EUR)", () => {
     expect(sha256(built)).to.be.equal(checksum);
   });
 
-  test.only("kdm_paper_data.bin", () => {
+  test("kdm_paper_data.bin", () => {
     const checksum = "c05288f1cbfe39fb3cae34d8a3141149f43a4a3298cb45e357fba9612633e271";
     const file = fs.readFileSync(`${TITLE_ID}/Data/kdm_paper_data.bin`);
  

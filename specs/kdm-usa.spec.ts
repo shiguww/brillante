@@ -162,7 +162,7 @@ describe("KDM (USA)", () => {
     expect(sha256(built)).to.be.equal(checksum);
   });
 
-  test.only("kdm_paper_data.bin", () => {
+  test("kdm_paper_data.bin", () => {
     const checksum = "19a9f19c975b67b09847e19479febd92763d5e99a880ae5349173b1baf1c91ff";
     const file = fs.readFileSync(`${TITLE_ID}/Data/kdm_paper_data.bin`);
  

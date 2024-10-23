@@ -162,7 +162,7 @@ describe("KDM (KOR)", () => {
     expect(sha256(built)).to.be.equal(checksum);
   });
 
-  test.only("kdm_paper_data.bin", () => {
+  test("kdm_paper_data.bin", () => {
     const checksum = "64862a456488120a22140550f8de567ef7b1d07594666243d781850609c47692";
     const file = fs.readFileSync(`${TITLE_ID}/Data/kdm_paper_data.bin`);
  

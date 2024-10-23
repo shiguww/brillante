@@ -162,7 +162,7 @@ describe("KDM (JPN)", () => {
     expect(sha256(built)).to.be.equal(checksum);
   });
 
-  test.only("kdm_paper_data.bin", () => {
+  test("kdm_paper_data.bin", () => {
     const checksum = "8f12bf7c283ae827c29c68f2bbf9119d29a5ca47d3c0d3bc628c1654b1cca90b";
     const file = fs.readFileSync(`${TITLE_ID}/Data/kdm_paper_data.bin`);
  
