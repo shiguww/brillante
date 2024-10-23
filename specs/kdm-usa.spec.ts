@@ -66,6 +66,18 @@ describe("KDM (USA)", () => {
     expect(sha256(built)).to.be.equal(checksum);
   });
 
+  test("kdm_item_data.bin", () => {
+    const checksum = "ce82a7d69994de220aae9424c7418745fc02f988616b67dec9827f84d01ac3e2";
+    const file = fs.readFileSync(`${TITLE_ID}/Data/kdm_item_data.bin`);
+ 
+    expect(sha256(file)).to.be.equal(checksum);
+
+    const parsed = new KDM().parse(file).get();
+    const built = new KDM().set(parsed).build();
+
+    expect(sha256(built)).to.be.equal(checksum);
+  });
+
   test("kdm_link_data.bin", () => {
     const checksum = "a2ea2342f26012781ee7394fc32c8713d22a2bede87aeb010f91865145104341";
     const file = fs.readFileSync(`${TITLE_ID}/Data/kdm_link_data.bin`);
