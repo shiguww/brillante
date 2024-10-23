@@ -1362,7 +1362,9 @@ class KDM {
             parameter.strings.forEach((s) => addString(s));
           }
         }
-      } else if (this.tables.find(({ name }) => name === "gsSwitchTable")) {
+      } else if (this.tables.find(({ name }) => name === "gsSwitchTable" || name === "xml_type_data_list")) {
+        this.arrays.forEach((arr) => arr.strings.forEach((s) => addString(s)));
+        
         this.tables.forEach(({ name, table }) => {
           addString(name);
           table.strings.forEach((s) => addString(s));
