@@ -1128,10 +1128,13 @@ class KDM {
         const count = Math.max(this.tables.length, this.parameters.length);
 
         for (let i = 0; i < count; i += 1) {
-          const parameter = this.parameters.at(i - 1);
-          const name = this.tables.map((t) => t.name).at(i);
+          const parameter = this.parameters.at(i);
+          
+          const name = this.tables
+            .filter((t) => t.name !== "seal_sizeTable")
+            .map((t) => t.name).at(i);
 
-          if(name === "seal_sizeTable") {
+          if (name === "seal_sizeTable") {
             continue;
           }
 
@@ -1199,7 +1202,10 @@ class KDM {
 
       for (let i = 0; i < count; i += 1) {
         const parameter = this.parameters.at(i);
-        const table = this.tables.map((t) => t.table).at(i);
+
+        const table = this.tables
+          .filter((t) => t.name !== "seal_sizeTable")
+          .map((t) => t.table).at(i);
 
         if (table === undefined && parameter === undefined) {
           break;
