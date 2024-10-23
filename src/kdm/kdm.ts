@@ -593,15 +593,15 @@ class KDM {
     }
 
     // kdm_texture.bin
-    if(kind === "Texture0") {
+    if (kind === "Texture0") {
       return new Texture0(this);
-    }    
+    }
 
-    if(kind === "Texture1") {
+    if (kind === "Texture1") {
       return new Texture1(this);
     }
 
-    if(kind === "Texture2") {
+    if (kind === "Texture2") {
       return new Texture2(this);
     }
 
@@ -722,7 +722,7 @@ class KDM {
       }
 
       // kdm_texture.bin
-      if(name === "textureResourceDataTable") {
+      if (name === "textureResourceDataTable") {
         constructors.push(Texture0, Texture1, Texture2);
       }
     });
@@ -1310,7 +1310,7 @@ class KDM {
             }
           });
 
-          if(table.table.uid.get() === 0) {
+          if (table.table.uid.get() === 0) {
             table.table.uid.set(assignUID());
           }
         }
@@ -1381,7 +1381,8 @@ class KDM {
     } else if (this.tables.find(({ name }) => (
       name === "battleBgmDataTable" ||
       name === "all_modelDataTable" ||
-      name === "disposWorldMapTable"
+      name === "disposWorldMapTable" ||
+      name === "textureResourceDataTable"
     ))) {
       this.tables.forEach(({ table }, i, arr) => {
         const last = (i + 1 === arr.length);
