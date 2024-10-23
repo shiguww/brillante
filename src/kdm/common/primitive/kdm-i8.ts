@@ -6,7 +6,13 @@ import KDMEntity from "#/kdm/common/kdm-entity";
 import type KDMStringPointer from "#/kdm/common/primitive/kdm-string-pointer";
 import type KDMArray from "../array/kdm-array";
 
-const IKDMI8 = z.number().int();
+const I8_MAX = 127;
+const I8_MIN = -128;
+
+const IKDMI8 = z.number().int()
+  .max(I8_MAX, `Value must be at most ${I8_MAX}`)
+  .min(I8_MIN, `Value must be at least ${I8_MIN}`);
+
 type IKDMI8 = z.infer<typeof IKDMI8>;
 
 class KDMI8 extends KDMEntity<IKDMI8> {
@@ -28,7 +34,7 @@ class KDMI8 extends KDMEntity<IKDMI8> {
   public override get sizeof(): number {
     return WBuffer.I8_SIZE;
   }
-  
+
   public override get arrays(): Array<KDMArray> {
     return [];
   }

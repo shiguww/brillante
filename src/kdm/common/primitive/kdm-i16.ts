@@ -6,7 +6,13 @@ import KDMEntity from "#/kdm/common/kdm-entity";
 import type KDMStringPointer from "#/kdm/common/primitive/kdm-string-pointer";
 import type KDMArray from "../array/kdm-array";
 
-const IKDMI16 = z.number().int();
+const I16_MAX = 32767;
+const I16_MIN = -32768;
+
+const IKDMI16 = z.number().int()
+  .max(I16_MAX, `Value must be at most ${I16_MAX}`)
+  .min(I16_MIN, `Value must be at least ${I16_MIN}`);
+
 type IKDMI16 = z.infer<typeof IKDMI16>;
 
 class KDMI16 extends KDMEntity<IKDMI16> {
@@ -28,7 +34,7 @@ class KDMI16 extends KDMEntity<IKDMI16> {
   public override get sizeof(): number {
     return WBuffer.I16_SIZE;
   }
-  
+
   public override get arrays(): Array<KDMArray> {
     return [];
   }

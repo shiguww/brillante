@@ -6,12 +6,18 @@ import type KDM from "#/kdm/kdm";
 import type KDMArray from "../array/kdm-array";
 import type KDMStringPointer from "./kdm-string-pointer";
 
-const IKDMUnknownType0 = z.number().int();
+const UNKNOWN_TYPE0_MIN = 0;
+const UNKNOWN_TYPE0_MAX = 4294967295;
+
+const IKDMUnknownType0 = z.number().int()
+  .max(UNKNOWN_TYPE0_MAX, `Value must be at most ${UNKNOWN_TYPE0_MAX}`)
+  .min(UNKNOWN_TYPE0_MIN, `Value must be at least ${UNKNOWN_TYPE0_MIN}`);
+
 type IKDMUnknownType0 = z.infer<typeof IKDMUnknownType0>;
 
 class KDMUnknownType0 extends KDMEntity<IKDMUnknownType0> {
   public static readonly schema = IKDMUnknownType0;
-  
+
   private state = 0;
 
   public constructor(kdm: KDM) {

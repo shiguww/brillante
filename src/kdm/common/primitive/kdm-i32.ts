@@ -6,7 +6,13 @@ import KDMEntity from "#/kdm/common/kdm-entity";
 import type KDMStringPointer from "#/kdm/common/primitive/kdm-string-pointer";
 import type KDMArray from "../array/kdm-array";
 
-const IKDMI32 = z.number().int();
+const I32_MAX = 2147483647;
+const I32_MIN = -2147483648;
+
+const IKDMI32 = z.number().int()
+  .max(I32_MAX, `Value must be at most ${I32_MAX}`)
+  .min(I32_MIN, `Value must be at least ${I32_MIN}`);
+
 type IKDMI32 = z.infer<typeof IKDMI32>;
 
 class KDMI32 extends KDMEntity<IKDMI32> {
