@@ -53,6 +53,18 @@ describe("KDM (JPN)", () => {
 
     expect(sha256(built)).to.be.equal(checksum);
   });
+  
+  test("kdm_texture.bin", () => {
+    const checksum = "a116c7a7b4a2ab8a36450beba1a7f5b6817f9299b037bb821458858e8a8ace48";
+    const file = fs.readFileSync(`${TITLE_ID}/Data/kdm_texture.bin`);
+ 
+    expect(sha256(file)).to.be.equal(checksum);
+
+    const parsed = new KDM().parse(file).get();
+    const built = new KDM().set(parsed).build();
+
+    expect(sha256(built)).to.be.equal(checksum);
+  });
 
   test("kdm_pepalyze.bin", () => {
     const checksum = "545fa6893217d5e65cedac7489696d112262b1a01fd43f8e638370995ea73356";
