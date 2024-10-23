@@ -1209,6 +1209,29 @@ class KDM {
             parameter.strings.forEach((s) => addString(s));
           }
         }
+      } else if (this.tables.find(({ name }) => name === "all_modelDataTable")) {
+        const count = Math.max(this.tables.length, this.parameters.length);
+
+        for (let i = 0; i < count; i += 1) {
+          const parameter = this.parameters.at(i);
+          const table = this.tables.at(i);
+
+          if (table !== undefined) {
+            const arrays = new Set(table.table.arrays);
+
+            this.arrays.forEach((arr) => {
+              if (arrays.has(arr)) {
+                arr.strings.forEach((s) => addString(s));
+              }
+            });
+
+            addString(table.name);
+          }
+
+          if (parameter !== undefined) {
+            parameter.strings.forEach((s) => addString(s));
+          }
+        }
       } else {
         this.tables.forEach(({ name, table }) => {
           const arrays = new Set(table.arrays);
