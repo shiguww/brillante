@@ -162,6 +162,18 @@ describe("KDM (JPN)", () => {
     expect(sha256(built)).to.be.equal(checksum);
   });
 
+  test.only("kdm_paper_data.bin", () => {
+    const checksum = "8f12bf7c283ae827c29c68f2bbf9119d29a5ca47d3c0d3bc628c1654b1cca90b";
+    const file = fs.readFileSync(`${TITLE_ID}/Data/kdm_paper_data.bin`);
+ 
+    expect(sha256(file)).to.be.equal(checksum);
+
+    const parsed = new KDM().parse(file).get();
+    const built = new KDM().set(parsed).build();
+
+    expect(sha256(built)).to.be.equal(checksum);
+  });
+
   test("kdm_dispos_data.bin", () => {
     const checksum = "28abd916a8b784649fcd3793c53822a9ac6c284dc34054a7fed724a51fc24fc2";
     const file = fs.readFileSync(`${TITLE_ID}/Data/kdm_dispos_data.bin`);

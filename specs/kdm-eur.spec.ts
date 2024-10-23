@@ -162,6 +162,18 @@ describe("KDM (EUR)", () => {
     expect(sha256(built)).to.be.equal(checksum);
   });
 
+  test.only("kdm_paper_data.bin", () => {
+    const checksum = "c05288f1cbfe39fb3cae34d8a3141149f43a4a3298cb45e357fba9612633e271";
+    const file = fs.readFileSync(`${TITLE_ID}/Data/kdm_paper_data.bin`);
+ 
+    expect(sha256(file)).to.be.equal(checksum);
+
+    const parsed = new KDM().parse(file).get();
+    const built = new KDM().set(parsed).build();
+
+    expect(sha256(built)).to.be.equal(checksum);
+  });
+
   test("kdm_dispos_data.bin", () => {
     const checksum = "07e25f1d0d730730cec46cd41b565e9bc82b8cdb17bf2ee7daf7c7e5516d33fd";
     const file = fs.readFileSync(`${TITLE_ID}/Data/kdm_dispos_data.bin`);

@@ -162,6 +162,18 @@ describe("KDM (KOR)", () => {
     expect(sha256(built)).to.be.equal(checksum);
   });
 
+  test.only("kdm_paper_data.bin", () => {
+    const checksum = "64862a456488120a22140550f8de567ef7b1d07594666243d781850609c47692";
+    const file = fs.readFileSync(`${TITLE_ID}/Data/kdm_paper_data.bin`);
+ 
+    expect(sha256(file)).to.be.equal(checksum);
+
+    const parsed = new KDM().parse(file).get();
+    const built = new KDM().set(parsed).build();
+
+    expect(sha256(built)).to.be.equal(checksum);
+  });
+
   test("kdm_dispos_data.bin", () => {
     const checksum = "d14e06a172ba53c7913b0debcd27cebd45e13d746106b307411110d93ae58be8";
     const file = fs.readFileSync(`${TITLE_ID}/Data/kdm_dispos_data.bin`);

@@ -109,6 +109,8 @@ import Texture0 from "./texture/texture0";
 import Texture1 from "./texture/texture1";
 import Texture2 from "./texture/texture2";
 import Switch0 from "./switch/switch0";
+import PaperData0 from "./paper-data/paper-data0";
+import PaperData1 from "./paper-data/paper-data1";
 
 const IKDM = z.object({
   constant: z.number(),
@@ -182,7 +184,10 @@ const IKDM = z.object({
         z.literal("all_modelDataTable"),
         // kdm_texture.bin
         z.literal("textureCaptureDataTable"),
-        z.literal("textureResourceDataTable")
+        z.literal("textureResourceDataTable"),
+        // kdm_paper_data.bin
+        z.literal("paperDataTbl"),
+        z.literal("pasteDataTbl")
       ]),
       table: KDMStructArrayPointerArray.schema
     }),
@@ -619,10 +624,19 @@ class KDM {
     if (kind === "Texture2") {
       return new Texture2(this);
     }
-    
+
     // kdm_switch.bin
     if (kind === "Switch0") {
       return new Switch0(this);
+    }
+
+    // kdm_paper_data.bin
+    if (kind === "PaperData0") {
+      return new PaperData0(this);
+    }
+
+    if (kind === "PaperData1") {
+      return new PaperData1(this);
     }
 
     assert.fail(`${kind}`);
@@ -745,10 +759,15 @@ class KDM {
       if (name === "textureResourceDataTable") {
         constructors.push(Texture0, Texture1, Texture2);
       }
-      
+
       // kdm_switch.bin
       if (name === "gsseqSwitchTable") {
         constructors.push(Switch0);
+      }
+
+      // kdm_paper_data.bin
+      if (name === "pasteDataTbl") {
+        constructors.push(PaperData0, PaperData1);
       }
     });
 
@@ -910,6 +929,14 @@ class KDM {
       name === "gsseqSwitchTable"
     ) {
       return new KDMStructArray(this);
+    }
+
+    // kdm_paper_data.bin
+    if (
+      name === "paperDataTbl" ||
+      name === "pasteDataTbl"
+    ) {
+      return new KDMStructArrayPointerArray(this);
     }
 
     assert.fail();
@@ -1280,7 +1307,7 @@ class KDM {
             parameter.strings.forEach((s) => addString(s));
           }
         }
-      } else if (this.tables.find(({ name }) => name === "all_modelDataTable")) {
+      } else if (this.tables.find(({ name }) => name === "all_modelDataTable" || name === "pasteDataTbl")) {
         const count = Math.max(this.tables.length, this.parameters.length);
 
         for (let i = 0; i < count; i += 1) {
@@ -1339,7 +1366,7 @@ class KDM {
       }
     });
 
-    if (this.tables.find(({ name }) => name === "all_modelDataTable")) {
+    if (this.tables.find(({ name }) => name === "all_modelDataTable" || name === "pasteDataTbl")) {
       const count = Math.max(this.tables.length, this.parameters.length);
 
       for (let i = 0; i < count; i += 1) {
