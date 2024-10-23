@@ -14,6 +14,7 @@ The following KDM files are supported:
 - `kdm_shop.bin`
 - `kdm_lucie.bin`
 - `kdm_sound.bin`
+- `kdm_switch.bin`
 - `kdm_mapdata.bin`
 - `kdm_texture.bin`
 - `kdm_char_data.bin`
