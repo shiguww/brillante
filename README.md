@@ -23,7 +23,9 @@ The following KDM files are supported:
 - `kdm_mapobject.bin`
 - `kdm_sound_env.bin`
 - `kdm_battle_map.bin`
+- `kdm_map_viewer.bin`
 - `kdm_paper_data.bin`
+- `kdm_char_viewer.bin`
 - `kdm_dispos_data.bin`
 - `kdm_sound_anime.bin`
 - `kdm_battle_model.bin`
