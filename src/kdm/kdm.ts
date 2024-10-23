@@ -1103,6 +1103,46 @@ class KDM {
       ))) {
         this.arrays.forEach((arr) => arr.strings.forEach((s) => addString(s)));
         this.tables.forEach(({ name }) => addString(name));
+      } else if (this.tables.find(({ name }) => name === "seal_sizeTable")) {
+        this.tables.forEach(({ name }) => {
+          if (name !== "seal_sizeTable") {
+            return;
+          }
+
+          this.arrays.forEach((arr) => {
+            if (arr instanceof KDMStructArray && (
+              arr.element instanceof ItemData0 ||
+              arr.element instanceof ItemData1 ||
+              arr.element instanceof ItemData2 ||
+              arr.element instanceof ItemData3
+            )) {
+              arr.strings.forEach((s) => addString(s));
+            }
+          });
+
+          addString(name);
+        });
+
+        this.arrays.forEach((arr) => arr.strings.forEach((s) => addString(s)));
+
+        const count = Math.max(this.tables.length, this.parameters.length);
+
+        for (let i = 0; i < count; i += 1) {
+          const parameter = this.parameters.at(i - 1);
+          const name = this.tables.map((t) => t.name).at(i);
+
+          if(name === "seal_sizeTable") {
+            continue;
+          }
+
+          if (name !== undefined) {
+            addString(name);
+          }
+
+          if (parameter !== undefined) {
+            parameter.strings.forEach((s) => addString(s));
+          }
+        }
       } else {
         this.tables.forEach(({ name, table }) => {
           const arrays = new Set(table.arrays);
@@ -1117,7 +1157,7 @@ class KDM {
         });
       }
 
-      this.parameters.forEach((p) => p.strings.forEach((s) => addString(s)))
+      this.parameters.forEach((p) => p.strings.forEach((s) => addString(s)));
     })();
 
     /* ------------------- */
@@ -1132,7 +1172,52 @@ class KDM {
       }
     });
 
-    if (this.tables.find(({ name }) => name === "disposWorldMapTable" || name === "lockDataTable" || name === "battleBgmDataTable")) {
+    if (this.tables.find(({ name }) => name === "seal_sizeTable")) {
+      this.tables.forEach(({ name, table }) => {
+        if (name !== "seal_sizeTable") {
+          return;
+        }
+
+        this.arrays.forEach((arr) => {
+          if (arr.uid.get() === 0 && table.arrays.includes(arr)) {
+            arr.uid.set(assignUID());
+          }
+        });
+
+        if (table.uid.get() === 0) {
+          table.uid.set(assignUID());
+        }
+      });
+
+      this.arrays.map((arr) => arr.arrays).flat().forEach((arr) => {
+        if (arr.uid.get() === 0) {
+          arr.uid.set(assignUID());
+        }
+      });
+
+      const count = Math.max(this.tables.length, this.parameters.length);
+
+      for (let i = 0; i < count; i += 1) {
+        const parameter = this.parameters.at(i);
+        const table = this.tables.map((t) => t.table).at(i);
+
+        if (table === undefined && parameter === undefined) {
+          break;
+        }
+
+        if (table !== undefined && table.uid.get() !== 0) {
+          continue;
+        }
+
+        if (table !== undefined) {
+          table.uid.set(assignUID());
+        }
+
+        if (parameter !== undefined && parameter.uid.get() === 0) {
+          parameter.uid.set(assignUID());
+        }
+      }
+    } else if (this.tables.find(({ name }) => name === "disposWorldMapTable" || name === "lockDataTable" || name === "battleBgmDataTable")) {
       this.tables.forEach(({ table }, i, arr) => {
         const last = (i + 1 === arr.length);
 
