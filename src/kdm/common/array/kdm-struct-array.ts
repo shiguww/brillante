@@ -11,6 +11,7 @@ import type KDMStringPointer from "#/kdm/common/primitive/kdm-string-pointer";
 import DisposData13 from "#/kdm/dispos-data/dispos-data13";
 import BattleModel0 from "#/kdm/battle-model/battle-model0";
 import SoundAnime0 from "#/kdm/sound-anime/sound-anime0";
+import ItemData9 from "#/kdm/item-data/item-data9";
 
 type KDMStructConstructor = (new (kdm: KDM) => KDMStruct);
 
@@ -110,6 +111,10 @@ class KDMStructArray extends KDMArray {
     // dude, what the fuck is going on here
     if(this.elementConstructor === DisposData13) {
       this.size1.set(Math.ceil(this.size0.get() * 1.025));
+    }
+
+    if(this.elementConstructor === ItemData9) {
+      this.size1.set(this.size1.get() + 1);
     }
   }
 

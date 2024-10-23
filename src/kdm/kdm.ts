@@ -87,6 +87,17 @@ import SoundEnv1 from "./sound-env/sound-env1";
 import SoundEnv2 from "./sound-env/sound-env2";
 import BattleMap0 from "./battle-map/battle-map0";
 import BattleMap1 from "./battle-map/battle-map1";
+import KDMU8 from "./common/primitive/kdm-u8";
+import ItemData0 from "./item-data/item-data0";
+import ItemData1 from "./item-data/item-data1";
+import ItemData2 from "./item-data/item-data2";
+import ItemData3 from "./item-data/item-data3";
+import ItemData4 from "./item-data/item-data4";
+import ItemData5 from "./item-data/item-data5";
+import ItemData6 from "./item-data/item-data6";
+import ItemData7 from "./item-data/item-data7";
+import ItemData8 from "./item-data/item-data8";
+import ItemData9 from "./item-data/item-data9";
 
 const IKDM = z.object({
   constant: z.number(),
@@ -146,7 +157,11 @@ const IKDM = z.object({
       // kdm_sound_env.bin
       z.literal("envDataTable"),
       // kdm_battle_map.bin
-      z.literal("bmapDataTable")
+      z.literal("bmapDataTable"),
+      // kdm_item_data.bin
+      z.literal("ItemDataList"),
+      z.literal("seal_sizeTable"),
+      z.literal("ItemDataSaveList")
     ]),
     table: KDMStructArrayPointerArray.schema
   }).array()
@@ -177,6 +192,7 @@ class KDM {
       { uid: 0x02, constructor: KDMUnknownType0 },
       { uid: 0x03, constructor: KDMStringPointer },
       { uid: 0x04, constructor: KDMBoolean },
+      { uid: 0x07, constructor: KDMU8 },
       { uid: 0x08, constructor: KDMU16 },
       { uid: 0x0A, constructor: KDMF32ArrayPointer },
       { uid: 0x0D, constructor: KDMStringPointerArrayPointer },
@@ -487,6 +503,47 @@ class KDM {
       return new BattleMap1(this);
     }
 
+    // kdm_item_data.bin
+    if (kind === "ItemData0") {
+      return new ItemData0(this);
+    }
+
+    if (kind === "ItemData1") {
+      return new ItemData1(this);
+    }
+
+    if (kind === "ItemData2") {
+      return new ItemData2(this);
+    }
+
+    if (kind === "ItemData3") {
+      return new ItemData3(this);
+    }
+
+    if (kind === "ItemData4") {
+      return new ItemData4(this);
+    }
+
+    if (kind === "ItemData5") {
+      return new ItemData5(this);
+    }
+
+    if (kind === "ItemData6") {
+      return new ItemData6(this);
+    }
+
+    if (kind === "ItemData7") {
+      return new ItemData7(this);
+    }
+
+    if (kind === "ItemData8") {
+      return new ItemData8(this);
+    }
+
+    if (kind === "ItemData9") {
+      return new ItemData9(this);
+    }
+
     assert.fail(`${kind}`);
   }
 
@@ -585,6 +642,16 @@ class KDM {
       // kdm_battle_map.bin
       if (name === "bmapDataTable") {
         constructors.push(BattleMap0, BattleMap1);
+      }
+
+      // kdm_item_data.bin
+      if (
+        name === "seal_sizeTable"
+      ) {
+        constructors.push(
+          ItemData0, ItemData1, ItemData2, ItemData3, ItemData4,
+          ItemData5, ItemData6, ItemData7, ItemData8, ItemData9
+        );
       }
     });
 
@@ -701,6 +768,16 @@ class KDM {
         .hasNULLTerminator();
     }
 
+    // kdm_item_data.bin
+    if (
+      name === "ItemDataList" ||
+      name === "seal_sizeTable" ||
+      name === "ItemDataSaveList"
+    ) {
+      return new KDMStructArrayPointerArray(this)
+        .hasNULLTerminator();
+    }
+
     assert.fail();
   }
 
@@ -770,14 +847,9 @@ class KDM {
 
       assert.equal(parameter.uid.get(), uid);
 
-      if (this.constant === 0 && left !== 0) {
-        assert(parameter.unknown0.offset !== null);
-        this.constant = parameter.unknown0.number - parameter.unknown0.offset;
-      }
-
       if (parameter.unknown0.number !== 0) {
         assert(parameter.unknown0.offset !== null);
-        const constant = parameter.unknown0.number - parameter.unknown0.offset;
+        const constant = parameter.unknown0.number - parameter.unknown0.offset - 32;
 
         if (this.constant === 0 && left !== 0) {
           this.constant = constant;
@@ -1031,6 +1103,49 @@ class KDM {
       ))) {
         this.arrays.forEach((arr) => arr.strings.forEach((s) => addString(s)));
         this.tables.forEach(({ name }) => addString(name));
+      } else if (this.tables.find(({ name }) => name === "seal_sizeTable")) {
+        this.tables.forEach(({ name }) => {
+          if (name !== "seal_sizeTable") {
+            return;
+          }
+
+          this.arrays.forEach((arr) => {
+            if (arr instanceof KDMStructArray && (
+              arr.element instanceof ItemData0 ||
+              arr.element instanceof ItemData1 ||
+              arr.element instanceof ItemData2 ||
+              arr.element instanceof ItemData3
+            )) {
+              arr.strings.forEach((s) => addString(s));
+            }
+          });
+
+          addString(name);
+        });
+
+        this.arrays.forEach((arr) => arr.strings.forEach((s) => addString(s)));
+
+        const count = Math.max(this.tables.length, this.parameters.length);
+
+        for (let i = 0; i < count; i += 1) {
+          const parameter = this.parameters.at(i);
+
+          const name = this.tables
+            .filter((t) => t.name !== "seal_sizeTable")
+            .map((t) => t.name).at(i);
+
+          if (name === "seal_sizeTable") {
+            continue;
+          }
+
+          if (name !== undefined) {
+            addString(name);
+          }
+
+          if (parameter !== undefined) {
+            parameter.strings.forEach((s) => addString(s));
+          }
+        }
       } else {
         this.tables.forEach(({ name, table }) => {
           const arrays = new Set(table.arrays);
@@ -1045,7 +1160,7 @@ class KDM {
         });
       }
 
-      this.parameters.forEach((p) => p.strings.forEach((s) => addString(s)))
+      this.parameters.forEach((p) => p.strings.forEach((s) => addString(s)));
     })();
 
     /* ------------------- */
@@ -1060,7 +1175,66 @@ class KDM {
       }
     });
 
-    if (this.tables.find(({ name }) => name === "disposWorldMapTable" || name === "lockDataTable" || name === "battleBgmDataTable")) {
+    if (this.tables.find(({ name }) => name === "seal_sizeTable")) {
+      this.tables.forEach(({ name, table }) => {
+        if (name !== "seal_sizeTable") {
+          return;
+        }
+
+        this.arrays.forEach((arr) => {
+          if (arr instanceof KDMStructArray && arr.uid.get() === 0 && (
+            arr.element instanceof ItemData0 ||
+            arr.element instanceof ItemData1 ||
+            arr.element instanceof ItemData2 ||
+            arr.element instanceof ItemData3
+          )) {
+            arr.uid.set(assignUID());
+          }
+        });
+
+        /*this.arrays.forEach((arr) => {
+          if (arr.uid.get() === 0 && table.arrays.includes(arr)) {
+            arr.uid.set(assignUID());
+          }
+        });*/
+
+        if (table.uid.get() === 0) {
+          table.uid.set(assignUID());
+        }
+      });
+
+      this.arrays.map((arr) => arr.arrays).flat().forEach((arr) => {
+        if (arr.uid.get() === 0) {
+          arr.uid.set(assignUID());
+        }
+      });
+
+      const count = Math.max(this.tables.length, this.parameters.length);
+
+      for (let i = 0; i < count; i += 1) {
+        const parameter = this.parameters.at(i);
+
+        const table = this.tables
+          .filter((t) => t.name !== "seal_sizeTable")
+          .map((t) => t.table).at(i);
+
+        if (table === undefined && parameter === undefined) {
+          break;
+        }
+
+        if (table !== undefined && table.uid.get() !== 0) {
+          continue;
+        }
+
+        if (table !== undefined) {
+          table.uid.set(assignUID());
+        }
+
+        if (parameter !== undefined && parameter.uid.get() === 0) {
+          parameter.uid.set(assignUID());
+        }
+      }
+    } else if (this.tables.find(({ name }) => name === "disposWorldMapTable" || name === "lockDataTable" || name === "battleBgmDataTable")) {
       this.tables.forEach(({ table }, i, arr) => {
         const last = (i + 1 === arr.length);
 
@@ -1196,6 +1370,13 @@ class KDM {
 
   public generateID(): string {
     return `refkey-${this._counter++}`;
+  }
+
+  public toJSON(): object {
+    return ({
+      ...this,
+      entities: this.entities.map((e) => ({ uid: e.uid, name: e.constructor.name }))
+    });
   }
 }
 

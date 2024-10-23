@@ -15,6 +15,7 @@ The following KDM files are supported:
 - `kdm_lucie.bin`
 - `kdm_sound.bin`
 - `kdm_mapdata.bin`
+- `kdm_item_data.bin`
 - `kdm_link_data.bin`
 - `kdm_mapobject.bin`
 - `kdm_sound_env.bin`
