@@ -646,9 +646,7 @@ class KDM {
 
       // kdm_item_data.bin
       if (
-        name === "ItemDataList" ||
-        name === "seal_sizeTable" ||
-        name === "ItemDataSaveList"
+        name === "seal_sizeTable"
       ) {
         constructors.push(
           ItemData0, ItemData1, ItemData2, ItemData3, ItemData4,
@@ -1270,6 +1268,13 @@ class KDM {
 
   public generateID(): string {
     return `refkey-${this._counter++}`;
+  }
+
+  public toJSON(): object {
+    return ({
+      ...this,
+      entities: this.entities.map((e) => ({ uid: e.uid, name: e.constructor.name }))
+    });
   }
 }
 
