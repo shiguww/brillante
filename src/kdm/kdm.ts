@@ -1307,7 +1307,7 @@ class KDM {
             parameter.strings.forEach((s) => addString(s));
           }
         }
-      } else if (this.tables.find(({ name }) => name === "all_modelDataTable")) {
+      } else if (this.tables.find(({ name }) => name === "all_modelDataTable" || name === "pasteDataTbl")) {
         const count = Math.max(this.tables.length, this.parameters.length);
 
         for (let i = 0; i < count; i += 1) {
@@ -1366,7 +1366,7 @@ class KDM {
       }
     });
 
-    if (this.tables.find(({ name }) => name === "all_modelDataTable")) {
+    if (this.tables.find(({ name }) => name === "all_modelDataTable" || name === "pasteDataTbl")) {
       const count = Math.max(this.tables.length, this.parameters.length);
 
       for (let i = 0; i < count; i += 1) {
