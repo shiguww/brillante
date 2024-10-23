@@ -1,5 +1,17 @@
 # Changelog
 
+## [v6.0.0 (2024-10-23)](https//github.com/shiguww/brillante/releases/tag/v6.0.0)
+
+### Added
+- KDM: Added support for `kdm_switch.bin`
+- KDM: Added support for `kdm_texture.bin`
+- KDM: Added support for `kdm_char_data.bin`
+- KDM: Added support for `kdm_item_data.bin`
+- KDM: Added support for `kdm_paper_data.bin`
+
+### Changed
+- KDM: Changed the types `u8`, `u16` and `u32` to their signed counterparts
+
 ## [v5.2.0 (2024-10-22)](https//github.com/shiguww/brillante/releases/tag/v5.2.0)
 
 ### Added

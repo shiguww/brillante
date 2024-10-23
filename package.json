@@ -1,7 +1,7 @@
 {
 	"private": true,
 	"type": "module",
-	"version": "5.2.0",
+	"version": "6.0.0",
 	"name": "brillante",
 	"dependencies": {
 		"zod": "^3.23.8",
