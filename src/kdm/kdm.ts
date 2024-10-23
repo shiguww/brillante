@@ -1129,7 +1129,7 @@ class KDM {
 
         for (let i = 0; i < count; i += 1) {
           const parameter = this.parameters.at(i);
-          
+
           const name = this.tables
             .filter((t) => t.name !== "seal_sizeTable")
             .map((t) => t.name).at(i);
@@ -1182,10 +1182,21 @@ class KDM {
         }
 
         this.arrays.forEach((arr) => {
-          if (arr.uid.get() === 0 && table.arrays.includes(arr)) {
+          if (arr instanceof KDMStructArray && arr.uid.get() === 0 && (
+            arr.element instanceof ItemData0 ||
+            arr.element instanceof ItemData1 ||
+            arr.element instanceof ItemData2 ||
+            arr.element instanceof ItemData3
+          )) {
             arr.uid.set(assignUID());
           }
         });
+
+        /*this.arrays.forEach((arr) => {
+          if (arr.uid.get() === 0 && table.arrays.includes(arr)) {
+            arr.uid.set(assignUID());
+          }
+        });*/
 
         if (table.uid.get() === 0) {
           table.uid.set(assignUID());
