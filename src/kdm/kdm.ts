@@ -619,7 +619,7 @@ class KDM {
     if (kind === "Texture2") {
       return new Texture2(this);
     }
-
+    
     // kdm_switch.bin
     if (kind === "Switch0") {
       return new Switch0(this);
@@ -745,7 +745,7 @@ class KDM {
       if (name === "textureResourceDataTable") {
         constructors.push(Texture0, Texture1, Texture2);
       }
-
+      
       // kdm_switch.bin
       if (name === "gsseqSwitchTable") {
         constructors.push(Switch0);
