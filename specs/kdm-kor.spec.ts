@@ -162,9 +162,33 @@ describe("KDM (KOR)", () => {
     expect(sha256(built)).to.be.equal(checksum);
   });
 
+  test("kdm_map_viewer.bin", () => {
+    const checksum = "256259e741a6bda64819a41fa62a241906a3d078229e2d5f854125ab37c63aad";
+    const file = fs.readFileSync(`${TITLE_ID}/Data/kdm_map_viewer.bin`);
+ 
+    expect(sha256(file)).to.be.equal(checksum);
+
+    const parsed = new KDM().parse(file).get();
+    const built = new KDM().set(parsed).build();
+
+    expect(sha256(built)).to.be.equal(checksum);
+  });
+
   test("kdm_paper_data.bin", () => {
     const checksum = "64862a456488120a22140550f8de567ef7b1d07594666243d781850609c47692";
     const file = fs.readFileSync(`${TITLE_ID}/Data/kdm_paper_data.bin`);
+ 
+    expect(sha256(file)).to.be.equal(checksum);
+
+    const parsed = new KDM().parse(file).get();
+    const built = new KDM().set(parsed).build();
+
+    expect(sha256(built)).to.be.equal(checksum);
+  });
+
+  test("kdm_char_viewer.bin", () => {
+    const checksum = "0a6d660c0e49040c78e970dfc3d6c84d93e2bb809872675970f8a4a2649ef8c5";
+    const file = fs.readFileSync(`${TITLE_ID}/Data/kdm_char_viewer.bin`);
  
     expect(sha256(file)).to.be.equal(checksum);
 

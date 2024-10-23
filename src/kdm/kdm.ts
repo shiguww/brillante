@@ -111,6 +111,9 @@ import Texture2 from "./texture/texture2";
 import Switch0 from "./switch/switch0";
 import PaperData0 from "./paper-data/paper-data0";
 import PaperData1 from "./paper-data/paper-data1";
+import Viewer2 from "./viewer/viewer2";
+import Viewer0 from "./viewer/viewer0";
+import Viewer1 from "./viewer/viewer1";
 
 const IKDM = z.object({
   constant: z.number(),
@@ -191,6 +194,7 @@ const IKDM = z.object({
       ]),
       table: KDMStructArrayPointerArray.schema
     }),
+    // kdm_switch.bin
     z.object({
       name: z.union([
         z.literal("gsSwitchTable"),
@@ -202,6 +206,11 @@ const IKDM = z.object({
         z.literal("gsseqSwitchTable")
       ]),
       table: KDMStructArray.schema(Switch0.schema)
+    }),
+    // kdm_map_viewer.bin / kdm_char_viewer.bin
+    z.object({
+      name: z.literal("xml_type_data_list"),
+      table: KDMStructArray.schema(Viewer2.schema)
     })
   ]).array()
 });
@@ -639,6 +648,19 @@ class KDM {
       return new PaperData1(this);
     }
 
+    // kdm_map_viewer.bin / kdm_char_viewer.bin
+    if (kind === "Viewer0") {
+      return new Viewer0(this);
+    }
+
+    if (kind === "Viewer1") {
+      return new Viewer1(this);
+    }
+
+    if (kind === "Viewer2") {
+      return new Viewer2(this);
+    }
+
     assert.fail(`${kind}`);
   }
 
@@ -768,6 +790,11 @@ class KDM {
       // kdm_paper_data.bin
       if (name === "pasteDataTbl") {
         constructors.push(PaperData0, PaperData1);
+      }
+
+      // kdm_map_viewer.bin / kdm_char_viewer.bin
+      if (name === "xml_type_data_list") {
+        constructors.push(Viewer0, Viewer1, Viewer2);
       }
     });
 
@@ -937,6 +964,11 @@ class KDM {
       name === "pasteDataTbl"
     ) {
       return new KDMStructArrayPointerArray(this);
+    }
+
+    // kdm_map_viewer.bin / kdm_char_viewer.bin
+    if (name === "xml_type_data_list") {
+      return new KDMStructArray(this);
     }
 
     assert.fail();
@@ -1330,7 +1362,9 @@ class KDM {
             parameter.strings.forEach((s) => addString(s));
           }
         }
-      } else if (this.tables.find(({ name }) => name === "gsSwitchTable")) {
+      } else if (this.tables.find(({ name }) => name === "gsSwitchTable" || name === "xml_type_data_list")) {
+        this.arrays.forEach((arr) => arr.strings.forEach((s) => addString(s)));
+        
         this.tables.forEach(({ name, table }) => {
           addString(name);
           table.strings.forEach((s) => addString(s));

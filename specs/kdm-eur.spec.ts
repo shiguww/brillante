@@ -162,9 +162,33 @@ describe("KDM (EUR)", () => {
     expect(sha256(built)).to.be.equal(checksum);
   });
 
+  test("kdm_map_viewer.bin", () => {
+    const checksum = "256259e741a6bda64819a41fa62a241906a3d078229e2d5f854125ab37c63aad";
+    const file = fs.readFileSync(`${TITLE_ID}/Data/kdm_map_viewer.bin`);
+ 
+    expect(sha256(file)).to.be.equal(checksum);
+
+    const parsed = new KDM().parse(file).get();
+    const built = new KDM().set(parsed).build();
+
+    expect(sha256(built)).to.be.equal(checksum);
+  });
+
   test("kdm_paper_data.bin", () => {
     const checksum = "c05288f1cbfe39fb3cae34d8a3141149f43a4a3298cb45e357fba9612633e271";
     const file = fs.readFileSync(`${TITLE_ID}/Data/kdm_paper_data.bin`);
+ 
+    expect(sha256(file)).to.be.equal(checksum);
+
+    const parsed = new KDM().parse(file).get();
+    const built = new KDM().set(parsed).build();
+
+    expect(sha256(built)).to.be.equal(checksum);
+  });
+
+  test("kdm_char_viewer.bin", () => {
+    const checksum = "c4d3c266896da6ac1c54572c80f28f2e72a52fc748b16bdfeceb025e6ab82412";
+    const file = fs.readFileSync(`${TITLE_ID}/Data/kdm_char_viewer.bin`);
  
     expect(sha256(file)).to.be.equal(checksum);
 
