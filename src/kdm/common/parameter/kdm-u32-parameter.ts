@@ -65,7 +65,7 @@ class KDMU32Parameter extends KDMEntity<IKDMU32Parameter> {
     this.name.build(buffer);
 
     if(this.kdm.parameters.at(-1) !== this) {
-      this.unknown0.set(this.kdm.constant + buffer.offset);
+      this.unknown0.set(this.kdm.constant + buffer.offset + 32);
     }
 
     this.unknown0.build(buffer);
