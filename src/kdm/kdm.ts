@@ -108,6 +108,7 @@ import CharData6 from "./char-data/char-data6";
 import Texture0 from "./texture/texture0";
 import Texture1 from "./texture/texture1";
 import Texture2 from "./texture/texture2";
+import Switch0 from "./switch/switch0";
 
 const IKDM = z.object({
   constant: z.number(),
@@ -121,69 +122,83 @@ const IKDM = z.object({
     KDMStringPointerArray.schema,
     KDMStructArrayPointerArray.schema
   ]).array(),
-  tables: z.object({
-    name: z.union([
-      // kdm_mapdata.bin
-      z.literal("mapDataTable"),
-      // kdm_lucie.bin
-      z.literal("lucieMsgTbl"),
-      // kdm_shop.bin
-      z.literal("SHOP_DOR"),
-      z.literal("SHOP_IWA"),
-      z.literal("SHOP_MONO"),
-      z.literal("SHOP_SNOW"),
-      z.literal("SHOP_TOWN"),
-      z.literal("SHOP_KAZAN"),
-      z.literal("SHOP_KOOPA"),
-      // kdm_link_data.bin
-      z.literal("link_data_all"),
-      // kdm_worldmap_data.bin
-      z.literal("disposWorldMapTable"),
-      z.literal("disposWorldMapConnectTable"),
-      // kdm_pepalyze / kdm_pepalyze_museum.bin
-      z.literal("lockDataTable"),
-      z.literal("secretDataTable"),
-      z.literal("secretSealDataTable"),
-      // kdm_sound.bin
-      z.literal("setup3DDataTable"),
-      z.literal("battleBgmDataTable"),
-      z.literal("trackVolumeDataTable"),
-      z.literal("groupDataTable"),
-      z.literal("townWorldMapDataTable"),
-      z.literal("effectDataTable"),
-      z.literal("changeBGMDataTable"),
-      // kdm_mapobject.bin
-      z.literal("map_object_data_tbl"),
-      // kdm_dispos_data.bin
-      z.literal("all_disposDataTbl"),
-      // kdm_battle_model.bin
-      z.literal("unitModelTable"),
-      // kdm_battle_camera.bin
-      z.literal("eventCameraDataTable"),
-      // kdm_battle_common.bin
-      z.literal("commonModelDataTable"),
-      // kdm_sound_anime.bin
-      z.literal("animeSoundDataTable"),
-      // kdm_sound_env.bin
-      z.literal("envDataTable"),
-      // kdm_battle_map.bin
-      z.literal("bmapDataTable"),
-      // kdm_item_data.bin
-      z.literal("ItemDataList"),
-      z.literal("seal_sizeTable"),
-      z.literal("ItemDataSaveList"),
-      // kdm_char_data.bin
-      z.literal("npcDataTable"),
-      z.literal("mobjDataTable"),
-      z.literal("partyDataTable"),
-      z.literal("playerDataTable"),
-      z.literal("all_modelDataTable"),
-      // kdm_texture.bin
-      z.literal("textureCaptureDataTable"),
-      z.literal("textureResourceDataTable")
-    ]),
-    table: KDMStructArrayPointerArray.schema
-  }).array()
+  tables: z.union([
+    z.object({
+      name: z.union([
+        // kdm_mapdata.bin
+        z.literal("mapDataTable"),
+        // kdm_lucie.bin
+        z.literal("lucieMsgTbl"),
+        // kdm_shop.bin
+        z.literal("SHOP_DOR"),
+        z.literal("SHOP_IWA"),
+        z.literal("SHOP_MONO"),
+        z.literal("SHOP_SNOW"),
+        z.literal("SHOP_TOWN"),
+        z.literal("SHOP_KAZAN"),
+        z.literal("SHOP_KOOPA"),
+        // kdm_link_data.bin
+        z.literal("link_data_all"),
+        // kdm_worldmap_data.bin
+        z.literal("disposWorldMapTable"),
+        z.literal("disposWorldMapConnectTable"),
+        // kdm_pepalyze / kdm_pepalyze_museum.bin
+        z.literal("lockDataTable"),
+        z.literal("secretDataTable"),
+        z.literal("secretSealDataTable"),
+        // kdm_sound.bin
+        z.literal("setup3DDataTable"),
+        z.literal("battleBgmDataTable"),
+        z.literal("trackVolumeDataTable"),
+        z.literal("groupDataTable"),
+        z.literal("townWorldMapDataTable"),
+        z.literal("effectDataTable"),
+        z.literal("changeBGMDataTable"),
+        // kdm_mapobject.bin
+        z.literal("map_object_data_tbl"),
+        // kdm_dispos_data.bin
+        z.literal("all_disposDataTbl"),
+        // kdm_battle_model.bin
+        z.literal("unitModelTable"),
+        // kdm_battle_camera.bin
+        z.literal("eventCameraDataTable"),
+        // kdm_battle_common.bin
+        z.literal("commonModelDataTable"),
+        // kdm_sound_anime.bin
+        z.literal("animeSoundDataTable"),
+        // kdm_sound_env.bin
+        z.literal("envDataTable"),
+        // kdm_battle_map.bin
+        z.literal("bmapDataTable"),
+        // kdm_item_data.bin
+        z.literal("ItemDataList"),
+        z.literal("seal_sizeTable"),
+        z.literal("ItemDataSaveList"),
+        // kdm_char_data.bin
+        z.literal("npcDataTable"),
+        z.literal("mobjDataTable"),
+        z.literal("partyDataTable"),
+        z.literal("playerDataTable"),
+        z.literal("all_modelDataTable"),
+        // kdm_texture.bin
+        z.literal("textureCaptureDataTable"),
+        z.literal("textureResourceDataTable")
+      ]),
+      table: KDMStructArrayPointerArray.schema
+    }),
+    z.object({
+      name: z.union([
+        z.literal("gsSwitchTable"),
+        z.literal("gfSwitchTable"),
+        z.literal("asSwitchTable"),
+        z.literal("afSwitchTable"),
+        z.literal("msSwitchTable"),
+        z.literal("mfSwitchTable"),
+        z.literal("gsseqSwitchTable")
+      ]),
+      table: KDMStructArray.schema(Switch0.schema)
+    })
+  ]).array()
 });
 
 type IKDM = z.infer<typeof IKDM>;
@@ -604,6 +619,11 @@ class KDM {
     if (kind === "Texture2") {
       return new Texture2(this);
     }
+    
+    // kdm_switch.bin
+    if (kind === "Switch0") {
+      return new Switch0(this);
+    }
 
     assert.fail(`${kind}`);
   }
@@ -724,6 +744,11 @@ class KDM {
       // kdm_texture.bin
       if (name === "textureResourceDataTable") {
         constructors.push(Texture0, Texture1, Texture2);
+      }
+      
+      // kdm_switch.bin
+      if (name === "gsseqSwitchTable") {
+        constructors.push(Switch0);
       }
     });
 
@@ -872,6 +897,19 @@ class KDM {
     ) {
       return new KDMStructArrayPointerArray(this)
         .hasNULLTerminator();
+    }
+
+    // kdm_switch.bin
+    if (
+      name === "afSwitchTable" ||
+      name === "asSwitchTable" ||
+      name === "gfSwitchTable" ||
+      name === "gsSwitchTable" ||
+      name === "mfSwitchTable" ||
+      name === "msSwitchTable" ||
+      name === "gsseqSwitchTable"
+    ) {
+      return new KDMStructArray(this);
     }
 
     assert.fail();
@@ -1265,6 +1303,13 @@ class KDM {
             parameter.strings.forEach((s) => addString(s));
           }
         }
+      } else if (this.tables.find(({ name }) => name === "gsSwitchTable")) {
+        this.tables.forEach(({ name, table }) => {
+          addString(name);
+          table.strings.forEach((s) => addString(s));
+        });
+
+        this.parameters.forEach((p) => p.strings.forEach((s) => addString(s)));
       } else {
         this.tables.forEach(({ name, table }) => {
           const arrays = new Set(table.arrays);
