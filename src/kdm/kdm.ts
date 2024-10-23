@@ -849,14 +849,9 @@ class KDM {
 
       assert.equal(parameter.uid.get(), uid);
 
-      if (this.constant === 0 && left !== 0) {
-        assert(parameter.unknown0.offset !== null);
-        this.constant = parameter.unknown0.number - parameter.unknown0.offset;
-      }
-
       if (parameter.unknown0.number !== 0) {
         assert(parameter.unknown0.offset !== null);
-        const constant = parameter.unknown0.number - parameter.unknown0.offset;
+        const constant = parameter.unknown0.number - parameter.unknown0.offset - 32;
 
         if (this.constant === 0 && left !== 0) {
           this.constant = constant;
