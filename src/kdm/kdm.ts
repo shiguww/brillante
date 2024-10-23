@@ -87,6 +87,17 @@ import SoundEnv1 from "./sound-env/sound-env1";
 import SoundEnv2 from "./sound-env/sound-env2";
 import BattleMap0 from "./battle-map/battle-map0";
 import BattleMap1 from "./battle-map/battle-map1";
+import KDMU8 from "./common/primitive/kdm-u8";
+import ItemData0 from "./item-data/item-data0";
+import ItemData1 from "./item-data/item-data1";
+import ItemData2 from "./item-data/item-data2";
+import ItemData3 from "./item-data/item-data3";
+import ItemData4 from "./item-data/item-data4";
+import ItemData5 from "./item-data/item-data5";
+import ItemData6 from "./item-data/item-data6";
+import ItemData7 from "./item-data/item-data7";
+import ItemData8 from "./item-data/item-data8";
+import ItemData9 from "./item-data/item-data9";
 
 const IKDM = z.object({
   constant: z.number(),
@@ -146,7 +157,11 @@ const IKDM = z.object({
       // kdm_sound_env.bin
       z.literal("envDataTable"),
       // kdm_battle_map.bin
-      z.literal("bmapDataTable")
+      z.literal("bmapDataTable"),
+      // kdm_item_data.bin
+      z.literal("ItemDataList"),
+      z.literal("seal_sizeTable"),
+      z.literal("ItemDataSaveList")
     ]),
     table: KDMStructArrayPointerArray.schema
   }).array()
@@ -177,6 +192,7 @@ class KDM {
       { uid: 0x02, constructor: KDMUnknownType0 },
       { uid: 0x03, constructor: KDMStringPointer },
       { uid: 0x04, constructor: KDMBoolean },
+      { uid: 0x07, constructor: KDMU8 },
       { uid: 0x08, constructor: KDMU16 },
       { uid: 0x0A, constructor: KDMF32ArrayPointer },
       { uid: 0x0D, constructor: KDMStringPointerArrayPointer },
@@ -487,6 +503,47 @@ class KDM {
       return new BattleMap1(this);
     }
 
+    // kdm_item_data.bin
+    if (kind === "ItemData0") {
+      return new ItemData0(this);
+    }
+
+    if (kind === "ItemData1") {
+      return new ItemData1(this);
+    }
+
+    if (kind === "ItemData2") {
+      return new ItemData2(this);
+    }
+
+    if (kind === "ItemData3") {
+      return new ItemData3(this);
+    }
+
+    if (kind === "ItemData4") {
+      return new ItemData4(this);
+    }
+
+    if (kind === "ItemData5") {
+      return new ItemData5(this);
+    }
+
+    if (kind === "ItemData6") {
+      return new ItemData6(this);
+    }
+
+    if (kind === "ItemData7") {
+      return new ItemData7(this);
+    }
+
+    if (kind === "ItemData8") {
+      return new ItemData8(this);
+    }
+
+    if (kind === "ItemData9") {
+      return new ItemData9(this);
+    }
+
     assert.fail(`${kind}`);
   }
 
@@ -585,6 +642,18 @@ class KDM {
       // kdm_battle_map.bin
       if (name === "bmapDataTable") {
         constructors.push(BattleMap0, BattleMap1);
+      }
+
+      // kdm_item_data.bin
+      if (
+        name === "ItemDataList" ||
+        name === "seal_sizeTable" ||
+        name === "ItemDataSaveList"
+      ) {
+        constructors.push(
+          ItemData0, ItemData1, ItemData2, ItemData3, ItemData4,
+          ItemData5, ItemData6, ItemData7, ItemData8, ItemData9
+        );
       }
     });
 
@@ -697,6 +766,16 @@ class KDM {
 
     // kdm_battle_map.bin
     if (name === "bmapDataTable") {
+      return new KDMStructArrayPointerArray(this)
+        .hasNULLTerminator();
+    }
+
+    // kdm_item_data.bin
+    if (
+      name === "ItemDataList" ||
+      name === "seal_sizeTable" ||
+      name === "ItemDataSaveList"
+    ) {
       return new KDMStructArrayPointerArray(this)
         .hasNULLTerminator();
     }
