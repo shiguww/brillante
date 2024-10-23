@@ -98,6 +98,13 @@ import ItemData6 from "./item-data/item-data6";
 import ItemData7 from "./item-data/item-data7";
 import ItemData8 from "./item-data/item-data8";
 import ItemData9 from "./item-data/item-data9";
+import CharData0 from "./char-data/char-data0";
+import CharData1 from "./char-data/char-data1";
+import CharData2 from "./char-data/char-data2";
+import CharData3 from "./char-data/char-data3";
+import CharData4 from "./char-data/char-data4";
+import CharData5 from "./char-data/char-data5";
+import CharData6 from "./char-data/char-data6";
 
 const IKDM = z.object({
   constant: z.number(),
@@ -161,7 +168,13 @@ const IKDM = z.object({
       // kdm_item_data.bin
       z.literal("ItemDataList"),
       z.literal("seal_sizeTable"),
-      z.literal("ItemDataSaveList")
+      z.literal("ItemDataSaveList"),
+      // kdm_char_data.bin
+      z.literal("npcDataTable"),
+      z.literal("mobjDataTable"),
+      z.literal("partyDataTable"),
+      z.literal("playerDataTable"),
+      z.literal("all_modelDataTable")
     ]),
     table: KDMStructArrayPointerArray.schema
   }).array()
@@ -544,6 +557,35 @@ class KDM {
       return new ItemData9(this);
     }
 
+    // kdm_char_data.bin
+    if (kind === "CharData0") {
+      return new CharData0(this);
+    }
+
+    if (kind === "CharData1") {
+      return new CharData1(this);
+    }
+
+    if (kind === "CharData2") {
+      return new CharData2(this);
+    }
+
+    if (kind === "CharData3") {
+      return new CharData3(this);
+    }
+
+    if (kind === "CharData4") {
+      return new CharData4(this);
+    }
+
+    if (kind === "CharData5") {
+      return new CharData5(this);
+    }
+
+    if (kind === "CharData6") {
+      return new CharData6(this);
+    }
+
     assert.fail(`${kind}`);
   }
 
@@ -645,12 +687,18 @@ class KDM {
       }
 
       // kdm_item_data.bin
-      if (
-        name === "seal_sizeTable"
-      ) {
+      if (name === "seal_sizeTable") {
         constructors.push(
           ItemData0, ItemData1, ItemData2, ItemData3, ItemData4,
           ItemData5, ItemData6, ItemData7, ItemData8, ItemData9
+        );
+      }
+
+      // kdm_char_data.bin
+      if (name === "all_modelDataTable") {
+        constructors.push(
+          CharData0, CharData1, CharData2, CharData3,
+          CharData4, CharData5, CharData6
         );
       }
     });
@@ -773,6 +821,21 @@ class KDM {
       name === "ItemDataList" ||
       name === "seal_sizeTable" ||
       name === "ItemDataSaveList"
+    ) {
+      return new KDMStructArrayPointerArray(this)
+        .hasNULLTerminator();
+    }
+
+    // kdm_char_data.bin
+    if (name === "all_modelDataTable") {
+      return new KDMStructArrayPointerArray(this);
+    }
+
+    if (
+      name === "npcDataTable" ||
+      name === "mobjDataTable" ||
+      name === "partyDataTable" ||
+      name === "playerDataTable"
     ) {
       return new KDMStructArrayPointerArray(this)
         .hasNULLTerminator();
