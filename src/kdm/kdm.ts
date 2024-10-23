@@ -1261,7 +1261,32 @@ class KDM {
       }
     });
 
-    if (this.tables.find(({ name }) => name === "seal_sizeTable")) {
+    if (this.tables.find(({ name }) => name === "all_modelDataTable")) {
+      const count = Math.max(this.tables.length, this.parameters.length);
+
+      for (let i = 0; i < count; i += 1) {
+        const parameter = this.parameters.at(i);
+        const table = this.tables.at(i);
+
+        if (table !== undefined) {
+          const arrays = new Set(table.table.arrays);
+
+          this.arrays.forEach((arr) => {
+            if (arr.uid.get() === 0 && arrays.has(arr)) {
+              arr.uid.set(assignUID());
+            }
+          });
+
+          if(table.table.uid.get() === 0) {
+            table.table.uid.set(assignUID());
+          }
+        }
+
+        if (parameter !== undefined && parameter.uid.get() === 0) {
+          parameter.uid.set(assignUID());
+        }
+      }
+    } else if (this.tables.find(({ name }) => name === "seal_sizeTable")) {
       this.tables.forEach(({ name, table }) => {
         if (name !== "seal_sizeTable") {
           return;
@@ -1320,7 +1345,11 @@ class KDM {
           parameter.uid.set(assignUID());
         }
       }
-    } else if (this.tables.find(({ name }) => name === "disposWorldMapTable" || name === "lockDataTable" || name === "battleBgmDataTable")) {
+    } else if (this.tables.find(({ name }) => (
+      name === "battleBgmDataTable" ||
+      name === "all_modelDataTable" ||
+      name === "disposWorldMapTable"
+    ))) {
       this.tables.forEach(({ table }, i, arr) => {
         const last = (i + 1 === arr.length);
 
