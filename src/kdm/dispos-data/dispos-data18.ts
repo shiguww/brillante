@@ -1,7 +1,7 @@
 import z from "zod";
 import KDMStruct from "#/kdm/common/kdm-struct";
 import KDMStringPointer from "#/kdm/common/primitive/kdm-string-pointer";
-import KDMU32 from "#/kdm/common/primitive/kdm-u32"
+import KDMI32 from "#/kdm/common/primitive/kdm-i32"
 import KDMStructArrayPointer from "#/kdm/common/primitive/kdm-struct-array-pointer";
 import KDMF32 from "#/kdm/common/primitive/kdm-f32";
 import KDMBoolean from "#/kdm/common/primitive/kdm-boolean";
@@ -18,7 +18,7 @@ const IDisposData18 = z.object({
   unknown5: KDMF32.schema,
   unknown6: KDMF32.schema,
   unknown7: KDMBoolean.schema,
-  unknown8: KDMU32.schema,
+  unknown8: KDMI32.schema,
   unknown9: KDMStructArrayPointer.schema,
   _kind:z.literal("DisposData18").default("DisposData18")
 });
@@ -39,7 +39,7 @@ class DisposData18 extends KDMStruct<IDisposData18> {
   public readonly unknown5 = new KDMF32(this.kdm);
   public readonly unknown6 = new KDMF32(this.kdm);
   public readonly unknown7 = new KDMBoolean(this.kdm);
-  public readonly unknown8 = new KDMU32(this.kdm);
+  public readonly unknown8 = new KDMI32(this.kdm);
   public readonly unknown9 = new KDMStructArrayPointer(this.kdm);
 
   public constructor(kdm: KDM) {

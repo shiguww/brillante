@@ -3,23 +3,23 @@ import KDMStruct from "#/kdm/common/kdm-struct";
 import KDMStringPointer from "#/kdm/common/primitive/kdm-string-pointer";
 import KDMEntity from "../common/kdm-entity";
 import type KDM from "../kdm";
-import KDMU16 from "../common/primitive/kdm-u16";
+import KDMI16 from "../common/primitive/kdm-i16";
 import KDMF32 from "../common/primitive/kdm-f32";
 
 const IBattleCamera0 = z.object({
   _kind: z.literal("BattleCamera0").default("BattleCamera0"),
   unknown0: KDMStringPointer.schema,
-  unknown1: KDMU16.schema,
-  unknown2: KDMU16.schema,
-  unknown3: KDMU16.schema,
-  unknown4: KDMU16.schema,
-  unknown5: KDMU16.schema,
-  unknown6: KDMU16.schema,
+  unknown1: KDMI16.schema,
+  unknown2: KDMI16.schema,
+  unknown3: KDMI16.schema,
+  unknown4: KDMI16.schema,
+  unknown5: KDMI16.schema,
+  unknown6: KDMI16.schema,
   unknown7: KDMF32.schema,
   unknown8: KDMF32.schema,
   unknown9: KDMF32.schema,
-  unknown10: KDMU16.schema,
-  unknown11: KDMU16.schema
+  unknown10: KDMI16.schema,
+  unknown11: KDMI16.schema
 });
 
 type IBattleCamera0 = z.infer<typeof IBattleCamera0>;
@@ -31,17 +31,17 @@ class BattleCamera0 extends KDMStruct<IBattleCamera0> {
   public override readonly unknownSection4Value0 = 0x00000000;
 
   public readonly unknown0 = new KDMStringPointer(this.kdm);
-  public readonly unknown1 = new KDMU16(this.kdm);
-  public readonly unknown2 = new KDMU16(this.kdm);
-  public readonly unknown3 = new KDMU16(this.kdm);
-  public readonly unknown4 = new KDMU16(this.kdm);
-  public readonly unknown5 = new KDMU16(this.kdm);
-  public readonly unknown6 = new KDMU16(this.kdm);
+  public readonly unknown1 = new KDMI16(this.kdm);
+  public readonly unknown2 = new KDMI16(this.kdm);
+  public readonly unknown3 = new KDMI16(this.kdm);
+  public readonly unknown4 = new KDMI16(this.kdm);
+  public readonly unknown5 = new KDMI16(this.kdm);
+  public readonly unknown6 = new KDMI16(this.kdm);
   public readonly unknown7 = new KDMF32(this.kdm);
   public readonly unknown8 = new KDMF32(this.kdm);
   public readonly unknown9 = new KDMF32(this.kdm);
-  public readonly unknown10 = new KDMU16(this.kdm);
-  public readonly unknown11 = new KDMU16(this.kdm);
+  public readonly unknown10 = new KDMI16(this.kdm);
+  public readonly unknown11 = new KDMI16(this.kdm);
 
   public constructor(kdm: KDM) {
     super(kdm, IBattleCamera0);

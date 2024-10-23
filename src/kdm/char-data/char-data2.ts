@@ -2,8 +2,8 @@ import z from "zod";
 import type KDM from "#/kdm/kdm";
 import KDMStruct from "#/kdm/common/kdm-struct";
 import KDMF32 from "#/kdm/common/primitive/kdm-f32";
-import KDMU16 from "#/kdm/common/primitive/kdm-u16";
-import KDMU32 from "#/kdm/common/primitive/kdm-u32";
+import KDMI16 from "#/kdm/common/primitive/kdm-i16";
+import KDMI32 from "#/kdm/common/primitive/kdm-i32";
 import type KDMEntity from "#/kdm/common/kdm-entity";
 import KDMBoolean from "#/kdm/common/primitive/kdm-boolean";
 import KDMStringPointer from "#/kdm/common/primitive/kdm-string-pointer";
@@ -32,15 +32,15 @@ const ICharData2 = z.object({
   unknown18: KDMStringPointer.schema,
   unknown19: KDMF32.schema,
   unknown20: KDMF32.schema,
-  unknown21: KDMU16.schema,
+  unknown21: KDMI16.schema,
   unknown22: KDMBoolean.schema,
   unknown23: KDMBoolean.schema,
-  unknown24: KDMU32.schema,
-  unknown25: KDMU32.schema,
+  unknown24: KDMI32.schema,
+  unknown25: KDMI32.schema,
   unknown26: KDMStringPointer.schema,
   unknown27: KDMStringPointer.schema,
-  unknown28: KDMU32.schema,
-  unknown29: KDMU32.schema,
+  unknown28: KDMI32.schema,
+  unknown29: KDMI32.schema,
   unknown30: KDMStringPointer.schema,
   unknown31: KDMStringPointer.schema,
   unknown32: KDMStringPointer.schema,
@@ -50,7 +50,7 @@ const ICharData2 = z.object({
   unknown36: KDMStringPointer.schema,
   unknown37: KDMStringPointer.schema,
   unknown38: KDMF32.schema,
-  unknown39: KDMU32.schema,
+  unknown39: KDMI32.schema,
   unknown40: KDMStringPointer.schema,
   unknown41: KDMStringPointer.schema,
   unknown42: KDMStringPointer.schema,
@@ -88,15 +88,15 @@ class CharData2 extends KDMStruct<ICharData2> {
   public readonly unknown18 = new KDMStringPointer(this.kdm);
   public readonly unknown19 = new KDMF32(this.kdm);
   public readonly unknown20 = new KDMF32(this.kdm);
-  public readonly unknown21 = new KDMU16(this.kdm);
+  public readonly unknown21 = new KDMI16(this.kdm);
   public readonly unknown22 = new KDMBoolean(this.kdm);
   public readonly unknown23 = new KDMBoolean(this.kdm);
-  public readonly unknown24 = new KDMU32(this.kdm);
-  public readonly unknown25 = new KDMU32(this.kdm);
+  public readonly unknown24 = new KDMI32(this.kdm);
+  public readonly unknown25 = new KDMI32(this.kdm);
   public readonly unknown26 = new KDMStringPointer(this.kdm);
   public readonly unknown27 = new KDMStringPointer(this.kdm);
-  public readonly unknown28 = new KDMU32(this.kdm);
-  public readonly unknown29 = new KDMU32(this.kdm);
+  public readonly unknown28 = new KDMI32(this.kdm);
+  public readonly unknown29 = new KDMI32(this.kdm);
   public readonly unknown30 = new KDMStringPointer(this.kdm);
   public readonly unknown31 = new KDMStringPointer(this.kdm);
   public readonly unknown32 = new KDMStringPointer(this.kdm);
@@ -106,7 +106,7 @@ class CharData2 extends KDMStruct<ICharData2> {
   public readonly unknown36 = new KDMStringPointer(this.kdm);
   public readonly unknown37 = new KDMStringPointer(this.kdm);
   public readonly unknown38 = new KDMF32(this.kdm);
-  public readonly unknown39 = new KDMU32(this.kdm);
+  public readonly unknown39 = new KDMI32(this.kdm);
   public readonly unknown40 = new KDMStringPointer(this.kdm);
   public readonly unknown41 = new KDMStringPointer(this.kdm);
   public readonly unknown42 = new KDMStringPointer(this.kdm);

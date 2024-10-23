@@ -3,13 +3,13 @@ import type KDM from "#/kdm/kdm";
 import KDMU16Padding from "#/kdm/common/padding/kdm-u16-padding";
 import KDMStruct from "../common/kdm-struct";
 import KDMStringPointer from "../common/primitive/kdm-string-pointer";
-import KDMU16 from "../common/primitive/kdm-u16";
+import KDMI16 from "../common/primitive/kdm-i16";
 import KDMEntity from "../common/kdm-entity";
 import KDMStringPointerArrayPointer from "../common/primitive/kdm-string-pointer-array-pointer";
 
 const IShopListing = z.object({
   _kind: z.literal("ShopListing").default("ShopListing"),
-  unknown2: KDMU16.schema,
+  unknown2: KDMI16.schema,
   unknown0: KDMStringPointer.schema,
   unknown1: KDMStringPointer.schema,
   unknown3: KDMStringPointer.schema,
@@ -24,7 +24,7 @@ class ShopListing extends KDMStruct<IShopListing> {
   public override readonly unknownSection4Value0 = 0x000000000;
   public override readonly unknownSection4Value1 = 0x000000000;
 
-  public readonly unknown2 = new KDMU16(this.kdm);
+  public readonly unknown2 = new KDMI16(this.kdm);
   public readonly unknown0 = new KDMStringPointer(this.kdm);
   public readonly unknown1 = new KDMStringPointer(this.kdm);
   public readonly unknown3 = new KDMStringPointer(this.kdm);

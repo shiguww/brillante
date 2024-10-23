@@ -1,6 +1,6 @@
 import z from "zod";
 import KDMStruct from "#/kdm/common/kdm-struct";
-import KDMU32 from "#/kdm/common/primitive/kdm-u32"
+import KDMI32 from "#/kdm/common/primitive/kdm-i32"
 import KDMF32 from "#/kdm/common/primitive/kdm-f32";
 import KDMBoolean from "#/kdm/common/primitive/kdm-boolean";
 import KDMU24Padding from "../common/padding/kdm-u24-padding";
@@ -15,9 +15,9 @@ const IDisposData11 = z.object({
   unknown4: KDMF32.schema,
   unknown5: KDMF32.schema,
   unknown6: KDMF32.schema,
-  unknown7: KDMU32.schema,
+  unknown7: KDMI32.schema,
   unknown8: KDMBoolean.schema,
-  unknown9: KDMU32.schema,
+  unknown9: KDMI32.schema,
   unknown10: KDMF32.schema,
   unknown11: KDMF32.schema,
   unknown12: KDMF32.schema,
@@ -47,9 +47,9 @@ class DisposData11 extends KDMStruct<IDisposData11> {
   public readonly unknown4 = new KDMF32(this.kdm);
   public readonly unknown5 = new KDMF32(this.kdm);
   public readonly unknown6 = new KDMF32(this.kdm);
-  public readonly unknown7 = new KDMU32(this.kdm);
+  public readonly unknown7 = new KDMI32(this.kdm);
   public readonly unknown8 = new KDMBoolean(this.kdm);
-  public readonly unknown9 = new KDMU32(this.kdm);
+  public readonly unknown9 = new KDMI32(this.kdm);
   public readonly unknown10 = new KDMF32(this.kdm);
   public readonly unknown11 = new KDMF32(this.kdm);
   public readonly unknown12 = new KDMF32(this.kdm);

@@ -3,13 +3,13 @@ import KDMArray from "../common/array/kdm-array";
 import KDMStruct from "../common/kdm-struct";
 import KDMStructArrayPointer from "../common/primitive/kdm-struct-array-pointer";
 import KDMStringPointer from "../common/primitive/kdm-string-pointer";
-import KDMU32 from "../common/primitive/kdm-u32";
+import KDMI32 from "../common/primitive/kdm-i32";
 import KDMEntity from "../common/kdm-entity";
 import type KDM from "../kdm";
 
 const IWorldMapData1 = z.object({
   _kind: z.literal("WorldMapData1").default("WorldMapData1"),
-  unknown2: KDMU32.schema,
+  unknown2: KDMI32.schema,
   unknown0: KDMStringPointer.schema,
   unknown1: KDMStructArrayPointer.schema
 });
@@ -22,7 +22,7 @@ class WorldMapData1 extends KDMStruct<IWorldMapData1> {
   public override readonly unknownSection4Value0 = 0x00000000;
   public override readonly unknownSection4Value1 = 0x01390894;
 
-  public readonly unknown2 = new KDMU32(this.kdm);
+  public readonly unknown2 = new KDMI32(this.kdm);
   public readonly unknown0 = new KDMStringPointer(this.kdm);
   public readonly unknown1 = new KDMStructArrayPointer(this.kdm);
 

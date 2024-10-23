@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import MapData from "#/kdm/mapdata/mapdata";
 import KDMArray from "#/kdm/common/array/kdm-array";
 import KDMF32 from "#/kdm/common/primitive/kdm-f32";
-import KDMU32 from "#/kdm/common/primitive/kdm-u32";
+import KDMI32 from "#/kdm/common/primitive/kdm-i32";
 import type KDMEntity from "#/kdm/common/kdm-entity";
 import KDMString from "#/kdm/common/primitive/kdm-string";
 import KDMStructArray from "#/kdm/common/array/kdm-struct-array";
@@ -18,7 +18,7 @@ import KDMStruct from "./common/kdm-struct";
 import LucieMSG from "./lucie/lucie-msg";
 import KDMStringPointerArrayPointer from "./common/primitive/kdm-string-pointer-array-pointer";
 import ShopListing from "./shop/shop-listing";
-import KDMU16 from "./common/primitive/kdm-u16";
+import KDMI16 from "./common/primitive/kdm-i16";
 import Link from "./link-data/link";
 import LinkData from "./link-data/link-data";
 import KDMStructArrayPointerArrayPointer from "./common/primitive/kdm-struct-array-pointer-array-pointer";
@@ -87,7 +87,7 @@ import SoundEnv1 from "./sound-env/sound-env1";
 import SoundEnv2 from "./sound-env/sound-env2";
 import BattleMap0 from "./battle-map/battle-map0";
 import BattleMap1 from "./battle-map/battle-map1";
-import KDMU8 from "./common/primitive/kdm-u8";
+import KDMI8 from "./common/primitive/kdm-i8";
 import ItemData0 from "./item-data/item-data0";
 import ItemData1 from "./item-data/item-data1";
 import ItemData2 from "./item-data/item-data2";
@@ -227,12 +227,12 @@ class KDM {
     constructor: KDMEntityConstructor;
   }> = [
       { uid: 0x00, constructor: KDMF32 },
-      { uid: 0x01, constructor: KDMU32 },
+      { uid: 0x01, constructor: KDMI32 },
       { uid: 0x02, constructor: KDMUnknownType0 },
       { uid: 0x03, constructor: KDMStringPointer },
       { uid: 0x04, constructor: KDMBoolean },
-      { uid: 0x07, constructor: KDMU8 },
-      { uid: 0x08, constructor: KDMU16 },
+      { uid: 0x07, constructor: KDMI8 },
+      { uid: 0x08, constructor: KDMI16 },
       { uid: 0x0A, constructor: KDMF32ArrayPointer },
       { uid: 0x0D, constructor: KDMStringPointerArrayPointer },
       { uid: 0x0F, constructor: KDMStructArrayPointer },
@@ -997,7 +997,7 @@ class KDM {
         parameter = new KDMF32Parameter(this);
       }
 
-      if (this.entities.find((e) => e.uid === typeid)?.constructor === KDMU32) {
+      if (this.entities.find((e) => e.uid === typeid)?.constructor === KDMI32) {
         parameter = new KDMU32Parameter(this);
       }
 
@@ -1028,13 +1028,13 @@ class KDM {
     for (let i = 0; i < count; i += 1) {
       const left = count - i - 1;
 
-      new KDMU16(this).parse(buffer);
-      const size = new KDMU16(this).parse(buffer);
+      new KDMI16(this).parse(buffer);
+      const size = new KDMI16(this).parse(buffer);
 
       assert(size.offset !== null);
       assert.equal(buffer.getU32(), 0x00000000);
 
-      const unknown0 = new KDMU32(this).parse(buffer);
+      const unknown0 = new KDMI32(this).parse(buffer);
 
       if (unknown0.number !== 0) {
         assert(unknown0.offset !== null);
@@ -1050,7 +1050,7 @@ class KDM {
       }
 
       for (let i = 0; i < size.number; i += 1) {
-        new KDMU32(this).parse(buffer);
+        new KDMI32(this).parse(buffer);
       }
     }
 

@@ -2,7 +2,7 @@ import z from "zod";
 import type KDM from "#/kdm/kdm";
 import KDMStruct from "#/kdm/common/kdm-struct";
 import KDMF32 from "#/kdm/common/primitive/kdm-f32";
-import KDMU32 from "#/kdm/common/primitive/kdm-u32";
+import KDMI32 from "#/kdm/common/primitive/kdm-i32";
 import type KDMEntity from "#/kdm/common/kdm-entity";
 
 const ISoundEnv0 = z.object({
@@ -12,7 +12,7 @@ const ISoundEnv0 = z.object({
   unknown2: KDMF32.schema,
   unknown3: KDMF32.schema,
   unknown4: KDMF32.schema,
-  unknown5: KDMU32.schema
+  unknown5: KDMI32.schema
 });
 
 type ISoundEnv0 = z.infer<typeof ISoundEnv0>;
@@ -28,7 +28,7 @@ class SoundEnv0 extends KDMStruct<ISoundEnv0> {
   public readonly unknown2 = new KDMF32(this.kdm);
   public readonly unknown3 = new KDMF32(this.kdm);
   public readonly unknown4 = new KDMF32(this.kdm);
-  public readonly unknown5 = new KDMU32(this.kdm);
+  public readonly unknown5 = new KDMI32(this.kdm);
 
   public constructor(kdm: KDM) {
     super(kdm, ISoundEnv0);

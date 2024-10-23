@@ -1,7 +1,7 @@
 import z from "zod";
 import type KDM from "#/kdm/kdm";
 import KDMStruct from "#/kdm/common/kdm-struct";
-import KDMU16 from "#/kdm/common/primitive/kdm-u16";
+import KDMI16 from "#/kdm/common/primitive/kdm-i16";
 import type KDMEntity from "#/kdm/common/kdm-entity";
 import KDMBoolean from "#/kdm/common/primitive/kdm-boolean";
 import KDMStringPointer from "#/kdm/common/primitive/kdm-string-pointer";
@@ -14,17 +14,17 @@ const IItemData1 = z.object({
   unknown1: KDMStringPointer.schema,
   unknown2: KDMStringPointer.schema,
   unknown3: KDMStructArrayPointer.schema,
-  unknown4: KDMU16.schema,
-  unknown5: KDMU16.schema,
-  unknown6: KDMU16.schema,
-  unknown7: KDMU16.schema,
-  unknown8: KDMU16.schema,
-  unknown9: KDMU16.schema,
-  unknown10: KDMU16.schema,
-  unknown11: KDMU16.schema,
-  unknown12: KDMU16.schema,
-  unknown13: KDMU16.schema,
-  unknown14: KDMU16.schema,
+  unknown4: KDMI16.schema,
+  unknown5: KDMI16.schema,
+  unknown6: KDMI16.schema,
+  unknown7: KDMI16.schema,
+  unknown8: KDMI16.schema,
+  unknown9: KDMI16.schema,
+  unknown10: KDMI16.schema,
+  unknown11: KDMI16.schema,
+  unknown12: KDMI16.schema,
+  unknown13: KDMI16.schema,
+  unknown14: KDMI16.schema,
   unknown15: KDMBoolean.schema
 });
 
@@ -40,17 +40,17 @@ class ItemData1 extends KDMStruct<IItemData1> {
   public readonly unknown1 = new KDMStringPointer(this.kdm);
   public readonly unknown2 = new KDMStringPointer(this.kdm);
   public readonly unknown3 = new KDMStructArrayPointer(this.kdm);
-  public readonly unknown4 = new KDMU16(this.kdm);
-  public readonly unknown5 = new KDMU16(this.kdm);
-  public readonly unknown6 = new KDMU16(this.kdm);
-  public readonly unknown7 = new KDMU16(this.kdm);
-  public readonly unknown8 = new KDMU16(this.kdm);
-  public readonly unknown9 = new KDMU16(this.kdm);
-  public readonly unknown10 = new KDMU16(this.kdm);
-  public readonly unknown11 = new KDMU16(this.kdm);
-  public readonly unknown12 = new KDMU16(this.kdm);
-  public readonly unknown13 = new KDMU16(this.kdm);
-  public readonly unknown14 = new KDMU16(this.kdm);
+  public readonly unknown4 = new KDMI16(this.kdm);
+  public readonly unknown5 = new KDMI16(this.kdm);
+  public readonly unknown6 = new KDMI16(this.kdm);
+  public readonly unknown7 = new KDMI16(this.kdm);
+  public readonly unknown8 = new KDMI16(this.kdm);
+  public readonly unknown9 = new KDMI16(this.kdm);
+  public readonly unknown10 = new KDMI16(this.kdm);
+  public readonly unknown11 = new KDMI16(this.kdm);
+  public readonly unknown12 = new KDMI16(this.kdm);
+  public readonly unknown13 = new KDMI16(this.kdm);
+  public readonly unknown14 = new KDMI16(this.kdm);
   public readonly unknown15 = new KDMBoolean(this.kdm);
 
   public constructor(kdm: KDM) {

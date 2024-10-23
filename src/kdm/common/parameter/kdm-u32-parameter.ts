@@ -4,8 +4,8 @@ import type KDM from "#/kdm/kdm";
 import type RBuffer from "#/buffer/r-buffer";
 import type WBuffer from "#/buffer/w-buffer";
 import KDMEntity from "#/kdm/common/kdm-entity";
-import KDMU16 from "#/kdm/common/primitive/kdm-u16";
-import KDMU32 from "#/kdm/common/primitive/kdm-u32";
+import KDMI16 from "#/kdm/common/primitive/kdm-i16";
+import KDMI32 from "#/kdm/common/primitive/kdm-i32";
 import KDMStringPointer from "#/kdm/common/primitive/kdm-string-pointer";
 import type KDMArray from "../array/kdm-array";
 
@@ -14,10 +14,10 @@ class KDMU32Parameter extends KDMEntity<IKDMU32Parameter> {
     return IKDMU32Parameter;
   };
 
-  public readonly uid = new KDMU16(this.kdm);
-  public readonly value = new KDMU32(this.kdm);
-  public readonly typeid = new KDMU16(this.kdm);
-  public readonly unknown0 = new KDMU32(this.kdm);
+  public readonly uid = new KDMI16(this.kdm);
+  public readonly value = new KDMI32(this.kdm);
+  public readonly typeid = new KDMI16(this.kdm);
+  public readonly unknown0 = new KDMI32(this.kdm);
   public readonly name = new KDMStringPointer(this.kdm);
 
   public constructor(kdm: KDM) {
@@ -54,7 +54,7 @@ class KDMU32Parameter extends KDMEntity<IKDMU32Parameter> {
 
   protected override _build(buffer: WBuffer): void {
     // @ts-expect-error - wtf typescript?
-    const typeid = this.kdm.entities.find((e) => e.constructor === KDMU32)?.uid;
+    const typeid = this.kdm.entities.find((e) => e.constructor === KDMI32)?.uid;
     assert(typeid !== undefined);
 
     this.typeid.set(typeid);
@@ -86,7 +86,7 @@ class KDMU32Parameter extends KDMEntity<IKDMU32Parameter> {
 
 const IKDMU32Parameter = z.object({
   _kind: z.literal("KDMU32Parameter").default("KDMU32Parameter"),
-  value: KDMU32.schema,
+  value: KDMI32.schema,
   name: KDMStringPointer.schema
 });
 

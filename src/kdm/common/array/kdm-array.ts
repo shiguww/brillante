@@ -1,6 +1,6 @@
 import z from "zod";
 import KDMEntity from "#/kdm/common/kdm-entity";
-import KDMU16 from "#/kdm/common/primitive/kdm-u16";
+import KDMI16 from "#/kdm/common/primitive/kdm-i16";
 
 abstract class KDMArray<T = unknown> extends KDMEntity<IKDMArray<T>> {
   public static readonly HEADING_SIZE = 8;
@@ -13,10 +13,10 @@ abstract class KDMArray<T = unknown> extends KDMEntity<IKDMArray<T>> {
   public refkey = this.kdm.generateID();
   public entries: Array<KDMEntity<T>> = [];
 
-  public readonly tid = new KDMU16(this.kdm);
-  public readonly uid = new KDMU16(this.kdm);
-  public readonly size0 = new KDMU16(this.kdm);
-  public readonly size1 = new KDMU16(this.kdm);
+  public readonly tid = new KDMI16(this.kdm);
+  public readonly uid = new KDMI16(this.kdm);
+  public readonly size0 = new KDMI16(this.kdm);
+  public readonly size1 = new KDMI16(this.kdm);
 
   public override get arrays(): Array<KDMArray> {
     return [

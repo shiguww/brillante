@@ -4,9 +4,9 @@ import type KDM from "#/kdm/kdm";
 import type RBuffer from "#/buffer/r-buffer";
 import type WBuffer from "#/buffer/w-buffer";
 import KDMEntity from "#/kdm/common/kdm-entity";
-import KDMU16 from "#/kdm/common/primitive/kdm-u16";
+import KDMI16 from "#/kdm/common/primitive/kdm-i16";
 import KDMF32 from "#/kdm/common/primitive/kdm-f32";
-import KDMU32 from "#/kdm/common/primitive/kdm-u32";
+import KDMI32 from "#/kdm/common/primitive/kdm-i32";
 import KDMStringPointer from "#/kdm/common/primitive/kdm-string-pointer";
 import type KDMArray from "../array/kdm-array";
 
@@ -15,10 +15,10 @@ class KDMF32Parameter extends KDMEntity<IKDMF32Parameter> {
     return IKDMF32Parameter;
   }
 
-  public readonly uid = new KDMU16(this.kdm);
+  public readonly uid = new KDMI16(this.kdm);
   public readonly value = new KDMF32(this.kdm);
-  public readonly typeid = new KDMU16(this.kdm);
-  public readonly unknown0 = new KDMU32(this.kdm);
+  public readonly typeid = new KDMI16(this.kdm);
+  public readonly unknown0 = new KDMI32(this.kdm);
   public readonly name = new KDMStringPointer(this.kdm);
 
   public constructor(kdm: KDM) {

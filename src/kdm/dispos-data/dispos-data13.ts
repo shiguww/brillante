@@ -1,9 +1,9 @@
 import z from "zod";
 import KDMStruct from "#/kdm/common/kdm-struct";
 import KDMStringPointer from "#/kdm/common/primitive/kdm-string-pointer";
-import KDMU32 from "#/kdm/common/primitive/kdm-u32"
+import KDMI32 from "#/kdm/common/primitive/kdm-i32"
 import KDMF32 from "#/kdm/common/primitive/kdm-f32";
-import KDMU16 from "#/kdm/common/primitive/kdm-u16";
+import KDMI16 from "#/kdm/common/primitive/kdm-i16";
 import KDMBoolean from "#/kdm/common/primitive/kdm-boolean";
 import KDMStructArrayPointer from "#/kdm/common/primitive/kdm-struct-array-pointer";
 import DisposData11 from "./dispos-data11";
@@ -19,7 +19,7 @@ const IDisposData13 = z.object({
   unknown3: KDMF32.schema,
   unknown4: KDMF32.schema,
   unknown5: KDMF32.schema,
-  unknown6: KDMU16.schema,
+  unknown6: KDMI16.schema,
   unknown7: KDMBoolean.schema,
   unknown8: KDMStringPointer.schema,
   unknown9: KDMStringPointer.schema,
@@ -30,9 +30,9 @@ const IDisposData13 = z.object({
   unknown14: KDMStringPointer.schema,
   unknown15: KDMBoolean.schema,
   unknown16: KDMStructArrayPointer.schema,
-  unknown17: KDMU32.schema,
+  unknown17: KDMI32.schema,
   unknown18: DisposData11.schema,
-  unknown19: KDMU32.schema,
+  unknown19: KDMI32.schema,
   _kind:z.literal("DisposData13").default("DisposData13")
 });
 
@@ -50,7 +50,7 @@ class DisposData13 extends KDMStruct<IDisposData13> {
   public readonly unknown3 = new KDMF32(this.kdm);
   public readonly unknown4 = new KDMF32(this.kdm);
   public readonly unknown5 = new KDMF32(this.kdm);
-  public readonly unknown6 = new KDMU16(this.kdm);
+  public readonly unknown6 = new KDMI16(this.kdm);
   public readonly unknown7 = new KDMBoolean(this.kdm);
   public readonly unknown8 = new KDMStringPointer(this.kdm);
   public readonly unknown9 = new KDMStringPointer(this.kdm);
@@ -61,9 +61,9 @@ class DisposData13 extends KDMStruct<IDisposData13> {
   public readonly unknown14 = new KDMStringPointer(this.kdm);
   public readonly unknown15 = new KDMBoolean(this.kdm);
   public readonly unknown16 = new KDMStructArrayPointer(this.kdm);
-  public readonly unknown17 = new KDMU32(this.kdm);
+  public readonly unknown17 = new KDMI32(this.kdm);
   public readonly unknown18 = new DisposData11(this.kdm);
-  public readonly unknown19 = new KDMU32(this.kdm);
+  public readonly unknown19 = new KDMI32(this.kdm);
 
   public constructor(kdm: KDM) {
     super(kdm, IDisposData13);

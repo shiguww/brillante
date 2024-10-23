@@ -2,7 +2,7 @@ import z from "zod";
 import KDMArray from "#/kdm/common/array/kdm-array";
 import KDMStruct from "../common/kdm-struct";
 import KDMStringPointer from "../common/primitive/kdm-string-pointer";
-import KDMU32 from "../common/primitive/kdm-u32";
+import KDMI32 from "../common/primitive/kdm-i32";
 import KDMEntity from "../common/kdm-entity";
 import type KDM from "../kdm";
 import KDMStructArrayPointerArrayPointer from "../common/primitive/kdm-struct-array-pointer-array-pointer";
@@ -22,7 +22,7 @@ class LinkData extends KDMStruct<ILinkData> {
   public override readonly unknownSection4Value0 = 0x00000000;
   public override readonly unknownSection4Value1 = 0x00000000;
 
-  public readonly count = new KDMU32(this.kdm);
+  public readonly count = new KDMI32(this.kdm);
   public readonly name = new KDMStringPointer(this.kdm);
   public readonly links = new KDMStructArrayPointerArrayPointer(this.kdm);
 

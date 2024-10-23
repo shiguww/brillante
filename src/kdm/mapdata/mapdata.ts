@@ -4,7 +4,7 @@ import type RBuffer from "#/buffer/r-buffer";
 import type WBuffer from "#/buffer/w-buffer";
 import KDMEntity from "#/kdm/common/kdm-entity";
 import KDMStruct from "#/kdm/common/kdm-struct";
-import KDMU32 from "#/kdm/common/primitive/kdm-u32";
+import KDMI32 from "#/kdm/common/primitive/kdm-i32";
 import KDMStringPointer from "#/kdm/common/primitive/kdm-string-pointer";
 import type KDMArray from "../common/array/kdm-array";
 
@@ -95,9 +95,9 @@ class MapData extends KDMStruct<IMapData> {
   public override unknownSection4Value0 = 0x00000000;
   public override unknownSection4Value1 = 0x00000000;
 
-  public readonly unknown2 = new KDMU32(this.kdm);
-  public readonly unknown3 = new KDMU32(this.kdm);
-  public readonly unknown10 = new KDMU32(this.kdm);
+  public readonly unknown2 = new KDMI32(this.kdm);
+  public readonly unknown3 = new KDMI32(this.kdm);
+  public readonly unknown10 = new KDMI32(this.kdm);
   public readonly name = new KDMStringPointer(this.kdm);
   public readonly level = new KDMStringPointer(this.kdm);
   public readonly model = new KDMStringPointer(this.kdm);
@@ -185,9 +185,9 @@ class MapData extends KDMStruct<IMapData> {
 
 const IMapData = z.object({
   _kind: z.literal("MapData").default("MapData"),
-  unknown2: KDMU32.schema,
-  unknown3: KDMU32.schema,
-  unknown10: KDMU32.schema,
+  unknown2: KDMI32.schema,
+  unknown3: KDMI32.schema,
+  unknown10: KDMI32.schema,
   name: KDMStringPointer.schema,
   level: KDMStringPointer.schema,
   model: KDMStringPointer.schema,

@@ -2,7 +2,7 @@ import z from "zod";
 import type KDM from "#/kdm/kdm";
 import KDMStruct from "#/kdm/common/kdm-struct";
 import KDMF32 from "#/kdm/common/primitive/kdm-f32";
-import KDMU16 from "#/kdm/common/primitive/kdm-u16";
+import KDMI16 from "#/kdm/common/primitive/kdm-i16";
 import type KDMEntity from "#/kdm/common/kdm-entity";
 import KDMStringPointer from "#/kdm/common/primitive/kdm-string-pointer";
 import KDMStructArrayPointer from "#/kdm/common/primitive/kdm-struct-array-pointer";
@@ -10,8 +10,8 @@ import KDMStructArrayPointer from "#/kdm/common/primitive/kdm-struct-array-point
 const IItemData3 = z.object({
   _kind: z.literal("ItemData3").default("ItemData3"),
   unknown0: KDMStringPointer.schema,
-  unknown1: KDMU16.schema,
-  unknown2: KDMU16.schema,
+  unknown1: KDMI16.schema,
+  unknown2: KDMI16.schema,
   unknown3: KDMF32.schema,
   unknown4: KDMStructArrayPointer.schema,
   unknown5: KDMStructArrayPointer.schema
@@ -26,8 +26,8 @@ class ItemData3 extends KDMStruct<IItemData3> {
   public override readonly unknownSection4Value1 = 0x00000000;
 
   public readonly unknown0 = new KDMStringPointer(this.kdm);
-  public readonly unknown1 = new KDMU16(this.kdm);
-  public readonly unknown2 = new KDMU16(this.kdm);
+  public readonly unknown1 = new KDMI16(this.kdm);
+  public readonly unknown2 = new KDMI16(this.kdm);
   public readonly unknown3 = new KDMF32(this.kdm);
   public readonly unknown4 = new KDMStructArrayPointer(this.kdm);
   public readonly unknown5 = new KDMStructArrayPointer(this.kdm);

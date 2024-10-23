@@ -1,7 +1,7 @@
 import z from "zod";
 import type KDM from "#/kdm/kdm";
 import KDMStruct from "#/kdm/common/kdm-struct";
-import KDMU32 from "#/kdm/common/primitive/kdm-u32";
+import KDMI32 from "#/kdm/common/primitive/kdm-i32";
 import type KDMEntity from "#/kdm/common/kdm-entity";
 import KDMBoolean from "#/kdm/common/primitive/kdm-boolean";
 import KDMStringPointer from "#/kdm/common/primitive/kdm-string-pointer";
@@ -17,7 +17,7 @@ const ICharData5 = z.object({
   unknown4: KDMStringPointer.schema,
   unknown5: KDMStringPointer.schema,
   unknown6: KDMStringPointer.schema,
-  unknown7: KDMU32.schema,
+  unknown7: KDMI32.schema,
   unknown8: KDMBoolean.schema
 });
 
@@ -36,7 +36,7 @@ class CharData5 extends KDMStruct<ICharData5> {
   public readonly unknown4 = new KDMStringPointer(this.kdm);
   public readonly unknown5 = new KDMStringPointer(this.kdm);
   public readonly unknown6 = new KDMStringPointer(this.kdm);
-  public readonly unknown7 = new KDMU32(this.kdm);
+  public readonly unknown7 = new KDMI32(this.kdm);
   public readonly unknown8 = new KDMBoolean(this.kdm);
 
   public constructor(kdm: KDM) {

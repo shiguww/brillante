@@ -3,7 +3,7 @@ import KDMU16Padding from "../common/padding/kdm-u16-padding";
 import KDMStruct from "../common/kdm-struct";
 import KDMF32 from "../common/primitive/kdm-f32";
 import KDMStringPointer from "../common/primitive/kdm-string-pointer";
-import KDMU32 from "../common/primitive/kdm-u32";
+import KDMI32 from "../common/primitive/kdm-i32";
 import KDMBoolean from "../common/primitive/kdm-boolean";
 import type KDMEntity from "../common/kdm-entity";
 import type KDM from "../kdm";
@@ -11,7 +11,7 @@ import type KDM from "../kdm";
 const ILockData = z.object({
   _kind: z.literal("LockData").default("LockData"),
   unknown0: KDMStringPointer.schema,
-  unknown1: KDMU32.schema,
+  unknown1: KDMI32.schema,
   unknown2: KDMBoolean.schema,
   unknown3: KDMBoolean.schema,
   unknown4: KDMBoolean.schema,
@@ -20,7 +20,7 @@ const ILockData = z.object({
   unknown7: KDMBoolean.schema,
   unknown8: KDMBoolean.schema,
   unknown9: KDMBoolean.schema,
-  unknown10: KDMU32.schema,
+  unknown10: KDMI32.schema,
   unknown11: KDMStringPointer.schema,
   unknown12: KDMStringPointer.schema,
   unknown13: KDMF32.schema,
@@ -39,8 +39,8 @@ const ILockData = z.object({
   unknown26: KDMF32.schema,
   unknown27: KDMBoolean.schema,
   unknown28: KDMBoolean.schema,
-  unknown29: KDMU32.schema,
-  unknown30: KDMU32.schema,
+  unknown29: KDMI32.schema,
+  unknown30: KDMI32.schema,
   unknown31: KDMF32.schema,
   unknown32: KDMF32.schema,
   unknown33: KDMF32.schema,
@@ -58,7 +58,7 @@ const ILockData = z.object({
   unknown45: KDMStringPointer.schema,
   unknown46: KDMStringPointer.schema,
   unknown47: KDMStringPointer.schema,
-  unknown48: KDMU32.schema,
+  unknown48: KDMI32.schema,
   unknown49: KDMStringPointer.schema,
   unknown50: KDMF32.schema,
   unknown51: KDMF32.schema,
@@ -93,7 +93,7 @@ class LockData extends KDMStruct<ILockData> {
   public override readonly unknownSection4Value1 = 0x00A340F0;
 
   public readonly unknown0 = new KDMStringPointer(this.kdm);
-  public readonly unknown1 = new KDMU32(this.kdm);
+  public readonly unknown1 = new KDMI32(this.kdm);
   public readonly unknown2 = new KDMBoolean(this.kdm);
   public readonly unknown3 = new KDMBoolean(this.kdm);
   public readonly unknown4 = new KDMBoolean(this.kdm);
@@ -102,7 +102,7 @@ class LockData extends KDMStruct<ILockData> {
   public readonly unknown7 = new KDMBoolean(this.kdm);
   public readonly unknown8 = new KDMBoolean(this.kdm);
   public readonly unknown9 = new KDMBoolean(this.kdm);
-  public readonly unknown10 = new KDMU32(this.kdm);
+  public readonly unknown10 = new KDMI32(this.kdm);
   public readonly unknown11 = new KDMStringPointer(this.kdm);
   public readonly unknown12 = new KDMStringPointer(this.kdm);
   public readonly unknown13 = new KDMF32(this.kdm);
@@ -121,8 +121,8 @@ class LockData extends KDMStruct<ILockData> {
   public readonly unknown26 = new KDMF32(this.kdm);
   public readonly unknown27 = new KDMBoolean(this.kdm);
   public readonly unknown28 = new KDMBoolean(this.kdm);
-  public readonly unknown29 = new KDMU32(this.kdm);
-  public readonly unknown30 = new KDMU32(this.kdm);
+  public readonly unknown29 = new KDMI32(this.kdm);
+  public readonly unknown30 = new KDMI32(this.kdm);
   public readonly unknown31 = new KDMF32(this.kdm);
   public readonly unknown32 = new KDMF32(this.kdm);
   public readonly unknown33 = new KDMF32(this.kdm);
@@ -140,7 +140,7 @@ class LockData extends KDMStruct<ILockData> {
   public readonly unknown45 = new KDMStringPointer(this.kdm);
   public readonly unknown46 = new KDMStringPointer(this.kdm);
   public readonly unknown47 = new KDMStringPointer(this.kdm);
-  public readonly unknown48 = new KDMU32(this.kdm);
+  public readonly unknown48 = new KDMI32(this.kdm);
   public readonly unknown49 = new KDMStringPointer(this.kdm);
   public readonly unknown50 = new KDMF32(this.kdm);
   public readonly unknown51 = new KDMF32(this.kdm);

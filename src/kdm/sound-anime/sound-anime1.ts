@@ -1,7 +1,7 @@
 import z from "zod";
 import type KDM from "#/kdm/kdm";
 import KDMStruct from "#/kdm/common/kdm-struct";
-import KDMU32 from "#/kdm/common/primitive/kdm-u32";
+import KDMI32 from "#/kdm/common/primitive/kdm-i32";
 import type KDMEntity from "#/kdm/common/kdm-entity";
 import KDMBoolean from "#/kdm/common/primitive/kdm-boolean";
 import KDMStringPointer from "#/kdm/common/primitive/kdm-string-pointer";
@@ -21,7 +21,7 @@ const ISoundAnime1 = z.object({
   unknown8: KDMStringPointer.schema,
   unknown9: KDMBoolean.schema,
   unknown10: KDMStructArrayPointer.schema,
-  unknown11: KDMU32.schema
+  unknown11: KDMI32.schema
 });
 
 type ISoundAnime1 = z.infer<typeof ISoundAnime1>;
@@ -43,7 +43,7 @@ class SoundAnime1 extends KDMStruct<ISoundAnime1> {
   public readonly unknown8 = new KDMStringPointer(this.kdm);
   public readonly unknown9 = new KDMBoolean(this.kdm);
   public readonly unknown10 = new KDMStructArrayPointer(this.kdm);
-  public readonly unknown11 = new KDMU32(this.kdm);
+  public readonly unknown11 = new KDMI32(this.kdm);
 
   public constructor(kdm: KDM) {
     super(kdm, ISoundAnime1);

@@ -6,15 +6,15 @@ import KDMEntity from "#/kdm/common/kdm-entity";
 import type KDMStringPointer from "#/kdm/common/primitive/kdm-string-pointer";
 import type KDMArray from "../array/kdm-array";
 
-const IKDMU8 = z.number().int();
-type IKDMU8 = z.infer<typeof IKDMU8>;
+const IKDMI32 = z.number().int();
+type IKDMI32 = z.infer<typeof IKDMI32>;
 
-class KDMU8 extends KDMEntity<IKDMU8> {
-  public static readonly schema = IKDMU8;
+class KDMI32 extends KDMEntity<IKDMI32> {
+  public static readonly schema = IKDMI32;
   private state = 0;
 
   public constructor(kdm: KDM) {
-    super(kdm, IKDMU8);
+    super(kdm, IKDMI32);
   }
 
   public get number(): number {
@@ -26,9 +26,9 @@ class KDMU8 extends KDMEntity<IKDMU8> {
   }
 
   public override get sizeof(): number {
-    return WBuffer.U8_SIZE;
+    return WBuffer.I32_SIZE;
   }
-  
+
   public override get arrays(): Array<KDMArray> {
     return [];
   }
@@ -37,21 +37,21 @@ class KDMU8 extends KDMEntity<IKDMU8> {
     return [];
   }
 
-  protected override _get(): IKDMU8 {
-    return IKDMU8.parse(this.number);
+  protected override _get(): IKDMI32 {
+    return IKDMI32.parse(this.number);
   }
 
-  protected override _set(data: IKDMU8): void {
+  protected override _set(data: IKDMI32): void {
     this.number = data;
   }
 
   protected override _build(buffer: WBuffer): void {
-    buffer.setU8(this.number);
+    buffer.setI32(this.number);
   }
 
   protected override _parse(buffer: RBuffer): void {
-    this.number = buffer.getU8();
+    this.number = buffer.getI32();
   }
 }
 
-export default KDMU8;
+export default KDMI32;

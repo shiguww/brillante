@@ -1,7 +1,7 @@
 import z from "zod";
 import assert from "node:assert/strict";
 import KDMEntity from "../common/kdm-entity";
-import KDMU32 from "../common/primitive/kdm-u32";
+import KDMI32 from "../common/primitive/kdm-i32";
 import type KDM from "../kdm";
 import WBuffer from "#/buffer/w-buffer";
 import RBuffer from "#/buffer/r-buffer";
@@ -27,7 +27,7 @@ class LinkType extends KDMEntity<ILinkType> {
   public static readonly TYPE_UNKNOWN = 0x00000004;
   public static readonly TYPE_SAVE_BLOCK = 0x00000006;
 
-  public readonly type = new KDMU32(this.kdm);
+  public readonly type = new KDMI32(this.kdm);
   public override readonly schema = ILinkType;
 
   public constructor(kdm: KDM) {
@@ -131,8 +131,8 @@ class LinkType extends KDMEntity<ILinkType> {
 const ILink = z.object({
   _kind: z.literal("Link").default("Link"),
   type: LinkType.schema,
-  unknown0: KDMU32.schema,
-  unknown1: KDMU32.schema,
+  unknown0: KDMI32.schema,
+  unknown1: KDMI32.schema,
   rooms: z.tuple([
     KDMStringPointer.schema,
     KDMStringPointer.schema
@@ -157,8 +157,8 @@ class Link extends KDMStruct<ILink> {
   public override readonly unknownSection4Value1 = 0x00762BB4;
 
   public readonly type = new LinkType(this.kdm);
-  public readonly unknown0 = new KDMU32(this.kdm);
-  public readonly unknown1 = new KDMU32(this.kdm);
+  public readonly unknown0 = new KDMI32(this.kdm);
+  public readonly unknown1 = new KDMI32(this.kdm);
   public readonly room0 = new KDMStringPointer(this.kdm);
   public readonly room1 = new KDMStringPointer(this.kdm);
   public readonly event0 = new KDMStringPointer(this.kdm);

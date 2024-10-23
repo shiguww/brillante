@@ -2,7 +2,7 @@ import z from "zod";
 import type KDM from "#/kdm/kdm";
 import KDMStruct from "#/kdm/common/kdm-struct";
 import KDMF32 from "#/kdm/common/primitive/kdm-f32";
-import KDMU32 from "#/kdm/common/primitive/kdm-u32";
+import KDMI32 from "#/kdm/common/primitive/kdm-i32";
 import type KDMEntity from "#/kdm/common/kdm-entity";
 import KDMStringPointer from "#/kdm/common/primitive/kdm-string-pointer";
 
@@ -11,14 +11,14 @@ const ITexture2 = z.object({
   unknown0: KDMStringPointer.schema,
   unknown1: KDMStringPointer.schema,
   unknown2: KDMStringPointer.schema,
-  unknown3: KDMU32.schema,
+  unknown3: KDMI32.schema,
   unknown4: KDMF32.schema,
   unknown5: KDMF32.schema,
   unknown6: KDMF32.schema,
   unknown7: KDMF32.schema,
   unknown8: KDMF32.schema,
   unknown9: KDMF32.schema,
-  unknown10: KDMU32.schema
+  unknown10: KDMI32.schema
 });
 
 type ITexture2 = z.infer<typeof ITexture2>;
@@ -32,14 +32,14 @@ class Texture2 extends KDMStruct<ITexture2> {
   public readonly unknown0 = new KDMStringPointer(this.kdm);
   public readonly unknown1 = new KDMStringPointer(this.kdm);
   public readonly unknown2 = new KDMStringPointer(this.kdm);
-  public readonly unknown3 = new KDMU32(this.kdm);
+  public readonly unknown3 = new KDMI32(this.kdm);
   public readonly unknown4 = new KDMF32(this.kdm);
   public readonly unknown5 = new KDMF32(this.kdm);
   public readonly unknown6 = new KDMF32(this.kdm);
   public readonly unknown7 = new KDMF32(this.kdm);
   public readonly unknown8 = new KDMF32(this.kdm);
   public readonly unknown9 = new KDMF32(this.kdm);
-  public readonly unknown10 = new KDMU32(this.kdm);
+  public readonly unknown10 = new KDMI32(this.kdm);
 
   public constructor(kdm: KDM) {
     super(kdm, ITexture2);

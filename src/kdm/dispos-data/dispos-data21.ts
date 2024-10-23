@@ -1,7 +1,7 @@
 import z from "zod";
 import KDMStruct from "#/kdm/common/kdm-struct";
 import KDMStringPointer from "#/kdm/common/primitive/kdm-string-pointer";
-import KDMU32 from "#/kdm/common/primitive/kdm-u32"
+import KDMI32 from "#/kdm/common/primitive/kdm-i32"
 import KDMStructArrayPointer from "#/kdm/common/primitive/kdm-struct-array-pointer";
 import KDMEntity from "../common/kdm-entity";
 import KDMStructArrayPointerArrayPointer from "../common/primitive/kdm-struct-array-pointer-array-pointer";
@@ -10,13 +10,13 @@ import type KDM from "../kdm";
 const IDisposData21 = z.object({
   unknown0: KDMStringPointer.schema,
   unknown1: KDMStructArrayPointerArrayPointer.schema,
-  unknown2: KDMU32.schema,
+  unknown2: KDMI32.schema,
   unknown3: KDMStructArrayPointerArrayPointer.schema,
-  unknown4: KDMU32.schema,
+  unknown4: KDMI32.schema,
   unknown5: KDMStructArrayPointerArrayPointer.schema,
-  unknown6: KDMU32.schema,
+  unknown6: KDMI32.schema,
   unknown7: KDMStructArrayPointerArrayPointer.schema,
-  unknown8: KDMU32.schema,
+  unknown8: KDMI32.schema,
   unknown9: KDMStructArrayPointer.schema,
   _kind:z.literal("DisposData21").default("DisposData21")
 });
@@ -31,13 +31,13 @@ class DisposData21 extends KDMStruct<IDisposData21> {
 
   public readonly unknown0 = new KDMStringPointer(this.kdm);
   public readonly unknown1 = new KDMStructArrayPointerArrayPointer(this.kdm);
-  public readonly unknown2 = new KDMU32(this.kdm);
+  public readonly unknown2 = new KDMI32(this.kdm);
   public readonly unknown3 = new KDMStructArrayPointerArrayPointer(this.kdm);
-  public readonly unknown4 = new KDMU32(this.kdm);
+  public readonly unknown4 = new KDMI32(this.kdm);
   public readonly unknown5 = new KDMStructArrayPointerArrayPointer(this.kdm);
-  public readonly unknown6 = new KDMU32(this.kdm);
+  public readonly unknown6 = new KDMI32(this.kdm);
   public readonly unknown7 = new KDMStructArrayPointerArrayPointer(this.kdm);
-  public readonly unknown8 = new KDMU32(this.kdm);
+  public readonly unknown8 = new KDMI32(this.kdm);
   public readonly unknown9 = new KDMStructArrayPointer(this.kdm);
 
   public constructor(kdm: KDM) {

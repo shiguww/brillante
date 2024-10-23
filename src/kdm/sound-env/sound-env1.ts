@@ -2,7 +2,7 @@ import z from "zod";
 import type KDM from "#/kdm/kdm";
 import KDMStruct from "#/kdm/common/kdm-struct";
 import KDMF32 from "#/kdm/common/primitive/kdm-f32";
-import KDMU32 from "#/kdm/common/primitive/kdm-u32";
+import KDMI32 from "#/kdm/common/primitive/kdm-i32";
 import type KDMEntity from "#/kdm/common/kdm-entity";
 import KDMStringPointer from "#/kdm/common/primitive/kdm-string-pointer";
 import KDMStructArrayPointer from "#/kdm/common/primitive/kdm-struct-array-pointer";
@@ -11,7 +11,7 @@ const ISoundEnv1 = z.object({
   _kind: z.literal("SoundEnv1").default("SoundEnv1"),
   unknown0: KDMStringPointer.schema,
   unknown1: KDMStringPointer.schema,
-  unknown2: KDMU32.schema,
+  unknown2: KDMI32.schema,
   unknown3: KDMF32.schema,
   unknown4: KDMF32.schema,
   unknown5: KDMF32.schema,
@@ -29,7 +29,7 @@ class SoundEnv1 extends KDMStruct<ISoundEnv1> {
 
   public readonly unknown0 = new KDMStringPointer(this.kdm);
   public readonly unknown1 = new KDMStringPointer(this.kdm);
-  public readonly unknown2 = new KDMU32(this.kdm);
+  public readonly unknown2 = new KDMI32(this.kdm);
   public readonly unknown3 = new KDMF32(this.kdm);
   public readonly unknown4 = new KDMF32(this.kdm);
   public readonly unknown5 = new KDMF32(this.kdm);

@@ -3,7 +3,7 @@ import z from "zod";
 import KDMStruct from "../common/kdm-struct";
 import KDMF32 from "../common/primitive/kdm-f32";
 import KDMStringPointer from "../common/primitive/kdm-string-pointer";
-import KDMU32 from "../common/primitive/kdm-u32";
+import KDMI32 from "../common/primitive/kdm-i32";
 import KDMEntity from "../common/kdm-entity";
 import type KDM from "../kdm";
 
@@ -12,7 +12,7 @@ const IWorldMapData0 = z.object({
   unknown2: KDMF32.schema,
   unknown3: KDMF32.schema,
   unknown4: KDMF32.schema,
-  unknown6: KDMU32.schema,
+  unknown6: KDMI32.schema,
   unknown0: KDMStringPointer.schema,
   unknown1: KDMStringPointer.schema,
   unknown5: KDMStringPointer.schema
@@ -29,7 +29,7 @@ class WorldMapData0 extends KDMStruct<IWorldMapData0> {
   public readonly unknown2 = new KDMF32(this.kdm);
   public readonly unknown3 = new KDMF32(this.kdm);
   public readonly unknown4 = new KDMF32(this.kdm);
-  public readonly unknown6 = new KDMU32(this.kdm);
+  public readonly unknown6 = new KDMI32(this.kdm);
   public readonly unknown0 = new KDMStringPointer(this.kdm);
   public readonly unknown1 = new KDMStringPointer(this.kdm);
   public readonly unknown5 = new KDMStringPointer(this.kdm);

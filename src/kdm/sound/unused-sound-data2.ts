@@ -4,13 +4,13 @@ import KDMStruct from "../common/kdm-struct";
 import type KDM from "../kdm";
 import KDMStringPointer from "../common/primitive/kdm-string-pointer";
 import KDMStructArrayPointer from "../common/primitive/kdm-struct-array-pointer";
-import KDMU32 from "../common/primitive/kdm-u32";
+import KDMI32 from "../common/primitive/kdm-i32";
 
 const IUnusedSoundData2 = z.object({
   _kind: z.literal("UnusedSoundData2").default("UnusedSoundData2"),
   unknown0: KDMStringPointer.schema,
   unknown1: KDMStructArrayPointer.schema,
-  unknown2: KDMU32.schema
+  unknown2: KDMI32.schema
 });
 
 type IUnusedSoundData2 = z.infer<typeof IUnusedSoundData2>;
@@ -21,7 +21,7 @@ class UnusedSoundData2 extends KDMStruct<IUnusedSoundData2> {
   public override readonly unknownSection4Value0 = 0x00000000;
   public override readonly unknownSection4Value1 = 0x008E1164;
 
-  public readonly unknown2 = new KDMU32(this.kdm);
+  public readonly unknown2 = new KDMI32(this.kdm);
   public readonly unknown0 = new KDMStringPointer(this.kdm);
   public readonly unknown1 = new KDMStructArrayPointer(this.kdm);
 

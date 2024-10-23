@@ -3,7 +3,7 @@ import KDMArray from "../common/array/kdm-array";
 import KDMF32 from "../common/primitive/kdm-f32";
 import KDMF32ArrayPointer from "../common/primitive/kdm-f32-array-pointer";
 import KDMStringPointer from "../common/primitive/kdm-string-pointer";
-import KDMU32 from "../common/primitive/kdm-u32";
+import KDMI32 from "../common/primitive/kdm-i32";
 import KDMEntity from "../common/kdm-entity";
 import KDMStruct from "../common/kdm-struct";
 import type KDM from "../kdm";
@@ -12,13 +12,13 @@ const ITrackVolumeData = z.object({
   _kind: z.literal("TrackVolumeData").default("TrackVolumeData"),
   unknown3: KDMF32.schema,
   unknown4: KDMF32.schema,
-  unknown5: KDMU32.schema,
+  unknown5: KDMI32.schema,
   unknown6: KDMF32.schema,
   unknown7: KDMF32.schema,
   unknown8: KDMF32.schema,
   unknown9: KDMF32.schema,
   unknown10: KDMF32.schema,
-  unknown11: KDMU32.schema,
+  unknown11: KDMI32.schema,
   unknown12: KDMF32.schema,
   unknown13: KDMF32.schema,
   unknown14: KDMF32.schema,
@@ -37,13 +37,13 @@ class TrackVolumeData extends KDMStruct<ITrackVolumeData> {
 
   public readonly unknown3 = new KDMF32(this.kdm);
   public readonly unknown4 = new KDMF32(this.kdm);
-  public readonly unknown5 = new KDMU32(this.kdm);
+  public readonly unknown5 = new KDMI32(this.kdm);
   public readonly unknown6 = new KDMF32(this.kdm);
   public readonly unknown7 = new KDMF32(this.kdm);
   public readonly unknown8 = new KDMF32(this.kdm);
   public readonly unknown9 = new KDMF32(this.kdm);
   public readonly unknown10 = new KDMF32(this.kdm);
-  public readonly unknown11 = new KDMU32(this.kdm);
+  public readonly unknown11 = new KDMI32(this.kdm);
   public readonly unknown12 = new KDMF32(this.kdm);
   public readonly unknown13 = new KDMF32(this.kdm);
   public readonly unknown14 = new KDMF32(this.kdm);

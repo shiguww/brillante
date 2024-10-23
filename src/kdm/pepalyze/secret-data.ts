@@ -2,15 +2,15 @@ import z from "zod";
 import type KDMEntity from "../common/kdm-entity";
 import type KDM from "../kdm";
 import KDMStruct from "../common/kdm-struct";
-import KDMU32 from "../common/primitive/kdm-u32";
+import KDMI32 from "../common/primitive/kdm-i32";
 import KDMStringPointer from "../common/primitive/kdm-string-pointer";
 
 const ISecretData = z.object({
   _kind: z.literal("SecretData").default("SecretData"),
-  unknown2: KDMU32.schema,
-  unknown4: KDMU32.schema,
-  unknown6: KDMU32.schema,
-  unknown8: KDMU32.schema,
+  unknown2: KDMI32.schema,
+  unknown4: KDMI32.schema,
+  unknown6: KDMI32.schema,
+  unknown8: KDMI32.schema,
   unknown0: KDMStringPointer.schema,
   unknown1: KDMStringPointer.schema,
   unknown3: KDMStringPointer.schema,
@@ -26,10 +26,10 @@ class SecretData extends KDMStruct<ISecretData> {
   public override readonly unknownSection4Value0 = 0x00000000;
   public override readonly unknownSection4Value1 = 0x00A34120;
 
-  public readonly unknown2 = new KDMU32(this.kdm);
-  public readonly unknown4 = new KDMU32(this.kdm);
-  public readonly unknown6 = new KDMU32(this.kdm);
-  public readonly unknown8 = new KDMU32(this.kdm);
+  public readonly unknown2 = new KDMI32(this.kdm);
+  public readonly unknown4 = new KDMI32(this.kdm);
+  public readonly unknown6 = new KDMI32(this.kdm);
+  public readonly unknown8 = new KDMI32(this.kdm);
   public readonly unknown0 = new KDMStringPointer(this.kdm);
   public readonly unknown1 = new KDMStringPointer(this.kdm);
   public readonly unknown3 = new KDMStringPointer(this.kdm);

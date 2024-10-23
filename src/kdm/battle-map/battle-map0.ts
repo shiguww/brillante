@@ -2,7 +2,7 @@ import z from "zod";
 import type KDM from "#/kdm/kdm";
 import KDMStruct from "#/kdm/common/kdm-struct";
 import KDMF32 from "#/kdm/common/primitive/kdm-f32";
-import KDMU32 from "#/kdm/common/primitive/kdm-u32";
+import KDMI32 from "#/kdm/common/primitive/kdm-i32";
 import type KDMEntity from "#/kdm/common/kdm-entity";
 import KDMStringPointer from "#/kdm/common/primitive/kdm-string-pointer";
 
@@ -16,16 +16,16 @@ const IBattleMap0 = z.object({
   unknown5: KDMStringPointer.schema,
   unknown6: KDMF32.schema,
   unknown7: KDMF32.schema,
-  unknown8: KDMU32.schema,
-  unknown9: KDMU32.schema,
-  unknown10: KDMU32.schema,
-  unknown11: KDMU32.schema,
-  unknown12: KDMU32.schema,
-  unknown13: KDMU32.schema,
-  unknown14: KDMU32.schema,
-  unknown15: KDMU32.schema,
-  unknown16: KDMU32.schema,
-  unknown17: KDMU32.schema
+  unknown8: KDMI32.schema,
+  unknown9: KDMI32.schema,
+  unknown10: KDMI32.schema,
+  unknown11: KDMI32.schema,
+  unknown12: KDMI32.schema,
+  unknown13: KDMI32.schema,
+  unknown14: KDMI32.schema,
+  unknown15: KDMI32.schema,
+  unknown16: KDMI32.schema,
+  unknown17: KDMI32.schema
 });
 
 type IBattleMap0 = z.infer<typeof IBattleMap0>;
@@ -44,16 +44,16 @@ class BattleMap0 extends KDMStruct<IBattleMap0> {
   public readonly unknown5 = new KDMStringPointer(this.kdm);
   public readonly unknown6 = new KDMF32(this.kdm);
   public readonly unknown7 = new KDMF32(this.kdm);
-  public readonly unknown8 = new KDMU32(this.kdm);
-  public readonly unknown9 = new KDMU32(this.kdm);
-  public readonly unknown10 = new KDMU32(this.kdm);
-  public readonly unknown11 = new KDMU32(this.kdm);
-  public readonly unknown12 = new KDMU32(this.kdm);
-  public readonly unknown13 = new KDMU32(this.kdm);
-  public readonly unknown14 = new KDMU32(this.kdm);
-  public readonly unknown15 = new KDMU32(this.kdm);
-  public readonly unknown16 = new KDMU32(this.kdm);
-  public readonly unknown17 = new KDMU32(this.kdm);
+  public readonly unknown8 = new KDMI32(this.kdm);
+  public readonly unknown9 = new KDMI32(this.kdm);
+  public readonly unknown10 = new KDMI32(this.kdm);
+  public readonly unknown11 = new KDMI32(this.kdm);
+  public readonly unknown12 = new KDMI32(this.kdm);
+  public readonly unknown13 = new KDMI32(this.kdm);
+  public readonly unknown14 = new KDMI32(this.kdm);
+  public readonly unknown15 = new KDMI32(this.kdm);
+  public readonly unknown16 = new KDMI32(this.kdm);
+  public readonly unknown17 = new KDMI32(this.kdm);
 
   public constructor(kdm: KDM) {
     super(kdm, IBattleMap0);

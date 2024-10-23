@@ -2,14 +2,14 @@ import z from "zod";
 import KDMEntity from "../common/kdm-entity";
 import KDMStruct from "../common/kdm-struct";
 import KDMStringPointer from "../common/primitive/kdm-string-pointer";
-import KDMU32 from "../common/primitive/kdm-u32";
+import KDMI32 from "../common/primitive/kdm-i32";
 import MapObjectData1 from "./mapobject-data1";
 import type KDM from "../kdm";
 
 const IMapObjectData4 = z.object({
   _kind: z.literal("MapObjectData4").default("MapObjectData4"),
   unknown0: KDMStringPointer.schema,
-  unknown1: KDMU32.schema,
+  unknown1: KDMI32.schema,
   unknown2: MapObjectData1.schema,
   unknown3: KDMStringPointer.schema,
 
@@ -18,13 +18,13 @@ const IMapObjectData4 = z.object({
   unknown6: KDMStringPointer.schema,
   unknown7: KDMStringPointer.schema,
 
-  unknown8: KDMU32.schema,
-  unknown9: KDMU32.schema,
-  unknown10: KDMU32.schema,
-  unknown11: KDMU32.schema,
+  unknown8: KDMI32.schema,
+  unknown9: KDMI32.schema,
+  unknown10: KDMI32.schema,
+  unknown11: KDMI32.schema,
 
-  unknown12: KDMU32.schema,
-  unknown13: KDMU32.schema,
+  unknown12: KDMI32.schema,
+  unknown13: KDMI32.schema,
   unknown14: KDMStringPointer.schema,
   unknown15: KDMStringPointer.schema,
 
@@ -78,7 +78,7 @@ class MapObjectData4 extends KDMStruct<IMapObjectData4> {
   public override readonly unknownSection4Value0 = 0x00000000;
 
   public readonly unknown0 = new KDMStringPointer(this.kdm);
-  public readonly unknown1 = new KDMU32(this.kdm);
+  public readonly unknown1 = new KDMI32(this.kdm);
   public readonly unknown2 = new MapObjectData1(this.kdm);
   public readonly unknown3 = new KDMStringPointer(this.kdm);
 
@@ -87,13 +87,13 @@ class MapObjectData4 extends KDMStruct<IMapObjectData4> {
   public readonly unknown6 = new KDMStringPointer(this.kdm);
   public readonly unknown7 = new KDMStringPointer(this.kdm);
 
-  public readonly unknown8 = new KDMU32(this.kdm);
-  public readonly unknown9 = new KDMU32(this.kdm);
-  public readonly unknown10 = new KDMU32(this.kdm);
-  public readonly unknown11 = new KDMU32(this.kdm);
+  public readonly unknown8 = new KDMI32(this.kdm);
+  public readonly unknown9 = new KDMI32(this.kdm);
+  public readonly unknown10 = new KDMI32(this.kdm);
+  public readonly unknown11 = new KDMI32(this.kdm);
 
-  public readonly unknown12 = new KDMU32(this.kdm);
-  public readonly unknown13 = new KDMU32(this.kdm);
+  public readonly unknown12 = new KDMI32(this.kdm);
+  public readonly unknown13 = new KDMI32(this.kdm);
   public readonly unknown14 = new KDMStringPointer(this.kdm);
   public readonly unknown15 = new KDMStringPointer(this.kdm);
 
