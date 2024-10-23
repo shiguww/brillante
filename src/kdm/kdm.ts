@@ -1366,7 +1366,11 @@ class KDM {
       }
     });
 
-    if (this.tables.find(({ name }) => name === "all_modelDataTable" || name === "pasteDataTbl")) {
+    if (this.tables.find(({ name }) => (
+      name === "pasteDataTbl" ||
+      name === "lockDataTable" ||
+      name === "all_modelDataTable"
+    ))) {
       const count = Math.max(this.tables.length, this.parameters.length);
 
       for (let i = 0; i < count; i += 1) {
@@ -1522,11 +1526,9 @@ class KDM {
     const arrays = this.arrays.map((a) => a.get());
     const tables = this.tables.map((t) => ({ ...t, table: t.table.get() }));
 
-    const parameters = this.parameters.filter((p) => ![
-      "mapDataTableLen",
-      "link_data_all_len",
-      "all_disposDataTblLen"
-    ].includes(p.name.string)).map((p) => p.get());
+    const parameters = this.parameters
+      .filter((p) => !p.name.string.toLowerCase().endsWith("len"))
+      .map((p) => p.get());
 
     return IKDM.parse({ arrays, tables, constant, parameters });
   }
@@ -1536,29 +1538,42 @@ class KDM {
     this.constant = kdm.constant;
 
     for (const data of kdm.tables) {
-      if (data.name === "mapDataTable") {
+      const name = data.name;
+      const table = this.createTable(data.name);
+
+      if ([
+        "link_data_all",
+      ].includes(name)) {
         this.parameters.push(new KDMU32Parameter(this).set({
-          name: "mapDataTableLen",
-          value: data.table.entries.length + 1
-        }));
+          name: name + "_len",
+          value: table.nullTerminatorFlag
+            ? data.table.entries.length + 1
+            : data.table.entries.length
+        }))
       }
 
-      if (data.name === "link_data_all") {
+      if ([
+        "npcDataTable",
+        "mapDataTable",
+        "ItemDataList",
+        "pasteDataTbl",
+        "paperDataTbl",
+        "mobjDataTable",
+        "partyDataTable",
+        "playerDataTable",
+        "ItemDataSaveList",
+        "all_disposDataTbl",
+        "all_modelDataTable"
+      ].includes(name)) {
         this.parameters.push(new KDMU32Parameter(this).set({
-          name: "link_data_all_len",
-          value: data.table.entries.length
-        }));
+          name: name + "Len",
+          value: table.nullTerminatorFlag
+            ? data.table.entries.length + 1
+            : data.table.entries.length
+        }))
       }
 
-
-      if (data.name === "all_disposDataTbl") {
-        this.parameters.push(new KDMU32Parameter(this).set({
-          name: "all_disposDataTblLen",
-          value: data.table.entries.length + 1
-        }));
-      }
-
-      this.tables.push({ name: data.name, table: this.createTable(data.name) });
+      this.tables.push({ name, table });
     }
 
     this.addEntities();
