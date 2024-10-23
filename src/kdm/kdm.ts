@@ -621,7 +621,7 @@ class KDM {
     }
 
     // kdm_switch.bin
-    if(kind === "Switch0") {
+    if (kind === "Switch0") {
       return new Switch0(this);
     }
 
@@ -747,7 +747,7 @@ class KDM {
       }
 
       // kdm_switch.bin
-      if(name === "gsseqSwitchTable") {
+      if (name === "gsseqSwitchTable") {
         constructors.push(Switch0);
       }
     });
@@ -900,7 +900,7 @@ class KDM {
     }
 
     // kdm_switch.bin
-    if(
+    if (
       name === "afSwitchTable" ||
       name === "asSwitchTable" ||
       name === "gfSwitchTable" ||
@@ -1303,6 +1303,13 @@ class KDM {
             parameter.strings.forEach((s) => addString(s));
           }
         }
+      } else if (this.tables.find(({ name }) => name === "gsSwitchTable")) {
+        this.tables.forEach(({ name, table }) => {
+          addString(name);
+          table.strings.forEach((s) => addString(s));
+        });
+
+        this.parameters.forEach((p) => p.strings.forEach((s) => addString(s)));
       } else {
         this.tables.forEach(({ name, table }) => {
           const arrays = new Set(table.arrays);
